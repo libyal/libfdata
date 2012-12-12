@@ -255,13 +255,15 @@ int libfdata_block_get_data_size(
      libcerror_error_t **error );
 
 int libfdata_block_get_cached_data_buffer(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
+     libfcache_cache_t *cache,
      libfcache_cache_value_t *cache_value,
      libfdata_buffer_t **data_buffer,
      libcerror_error_t **error );
 
 int libfdata_block_read_data_buffer(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
+     intptr_t *file_io_handle,
      libfdata_buffer_t **data_buffer,
      libcerror_error_t **error );
 
@@ -272,19 +274,24 @@ int libfdata_block_get_data(
      libfcache_cache_t *cache,
      uint8_t **data,
      size_t *data_size,
+     uint8_t read_flags,
      libcerror_error_t **error );
 
 /* Segment data functions
  */
 int libfdata_block_get_cached_segment_data(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
+     libfcache_cache_t *cache,
      int segment_index,
-     libfdata_range_t *segment_data_range,
+     int segment_file_index,
+     off64_t segment_offset,
+     size64_t segment_size,
+     uint32_t segment_flags,
      libfcache_cache_value_t **cache_value,
      libcerror_error_t **error );
 
 int libfdata_block_read_segment_data(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
      intptr_t *file_io_handle,
      int segment_index,
      int segment_file_index,
@@ -297,13 +304,14 @@ int libfdata_block_read_segment_data(
      libcerror_error_t **error );
 
 int libfdata_block_read_segment_data_buffer(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
      intptr_t *file_io_handle,
      int segment_index,
      int segment_file_index,
      off64_t segment_offset,
      size64_t segment_size,
      uint32_t segment_flags,
+     libfdata_buffer_t **data_buffer,
      uint8_t read_flags,
      libcerror_error_t **error );
 

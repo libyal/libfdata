@@ -185,6 +185,7 @@ on_error:
 		{
 			libcdata_array_free(
 			 &( internal_block->segments_array ),
+			 (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_range_free,
 			 NULL );
 		}
 		memory_free(
@@ -861,6 +862,7 @@ int libfdata_block_append_segment(
 	libfdata_mapped_range_t *mapped_range     = NULL;
 	libfdata_range_t *segment_data_range      = NULL;
 	static char *function                     = "libfdata_block_append_segment";
+	int mapped_range_index                    = 0;
 
 	if( block == NULL )
 	{
@@ -875,6 +877,17 @@ int libfdata_block_append_segment(
 	}
 	internal_block = (libfdata_internal_block_t *) block;
 
+	if( segment_index == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid segment index.",
+		 function );
+
+		return( -1 );
+	}
 	if( libfdata_range_initialize(
 	     &segment_data_range,
 	     error ) != 1 )
@@ -950,7 +963,7 @@ int libfdata_block_append_segment(
 	}
 	if( libcdata_array_append_entry(
 	     internal_block->mapped_ranges_array,
-	     segment_index,
+	     &mapped_range_index,
 	     (intptr_t *) mapped_range,
 	     error ) != 1 )
 	{
@@ -963,7 +976,7 @@ int libfdata_block_append_segment(
 
 		libcdata_array_set_entry_by_index(
 		 internal_block->segments_array,
-		 segment_index,
+		 *segment_index,
 		 NULL,
 		 NULL );
 
@@ -1153,10 +1166,10 @@ int libfdata_block_calculate_mapped_ranges(
 		}
 		if( libfdata_range_get(
 		     segment_data_range,
-		     segment_file_index,
-		     segment_offset,
-		     segment_size,
-		     segment_flags,
+		     &segment_file_index,
+		     &segment_offset,
+		     &segment_size,
+		     &segment_flags,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1281,7 +1294,8 @@ int libfdata_block_get_data_size(
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int libfdata_block_get_cached_data_buffer(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
+     libfcache_cache_t *cache,
      libfcache_cache_value_t *cache_value,
      libfdata_buffer_t **data_buffer,
      libcerror_error_t **error )
@@ -1380,7 +1394,7 @@ int libfdata_block_get_cached_data_buffer(
 		return( 0 );
 	}
 	if( libfdata_buffer_get_data_size(
-	     data_buffer,
+	     *data_buffer,
 	     &data_size,
 	     error ) != 1 )
 	{
@@ -1412,7 +1426,8 @@ on_error:
  * Returns 1 if successful or -1 on error
  */
 int libfdata_block_read_data_buffer(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
+     intptr_t *file_io_handle,
      libfdata_buffer_t **data_buffer,
      libcerror_error_t **error )
 {
@@ -1510,7 +1525,7 @@ int libfdata_block_read_data_buffer(
 		goto on_error;
 	}
 	if( libfdata_buffer_get_data(
-	     data_buffer,
+	     *data_buffer,
 	     &data,
 	     &data_size,
 	     error ) != 1 )
@@ -1524,20 +1539,20 @@ int libfdata_block_read_data_buffer(
 
 		goto on_error;
 	}
-	if( data_buffer_data == NULL )
+	if( data == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing data buffer data.",
+		 "%s: missing data.",
 		 function );
 
 		goto on_error;
 	}
 	if( libcdata_array_get_number_of_entries(
 	     internal_block->segments_array,
-	     number_of_segments,
+	     &number_of_segments,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1648,10 +1663,10 @@ int libfdata_block_read_data_buffer(
 	return( 1 );
 
 on_error:
-	if( data_buffer != NULL )
+	if( *data_buffer != NULL )
 	{
 		libfdata_buffer_free(
-		 &data_buffer,
+		 data_buffer,
 		 NULL );
 	}
 	return( -1 );
@@ -1668,17 +1683,14 @@ int libfdata_block_get_data(
      libfcache_cache_t *cache,
      uint8_t **data,
      size_t *data_size,
+     uint8_t read_flags,
      libcerror_error_t **error )
 {
 	libfcache_cache_value_t *cache_value      = NULL;
 	libfdata_buffer_t *data_buffer            = NULL;
 	libfdata_internal_block_t *internal_block = NULL;
 	static char *function                     = "libfdata_block_get_data";
-	off64_t segment_offset                    = 0;
-	size64_t segment_size                     = 0;
-	size_t data_buffer_size                   = 0;
-	uint32_t segment_flags                    = 0;
-	int number_of_cache_values                = 0;
+	int result                                = 0;
 
 	if( block == NULL )
 	{
@@ -1693,33 +1705,16 @@ int libfdata_block_get_data(
 	}
 	internal_block = (libfdata_internal_block_t *) block;
 
-	if( libfdata_range_get(
-	     segment_data_range,
-	     &segment_file_index,
-	     &segment_offset,
-	     &segment_size,
-	     &segment_flags,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segment: %d data range values.",
-		 function,
-		 segment_index );
-
-		return( -1 );
-	}
 	if( ( read_flags & LIBFDATA_READ_FLAG_IGNORE_CACHE ) != 0 )
 	{
 		result = libfdata_block_get_cached_segment_data(
 			  internal_block,
-			  segment_index,
-		          segment_file_index,
-		          segment_offset,
-		          segment_size,
-		          segment_flags,
+			  cache,
+			  0,
+		          0,
+		          0,
+		          internal_block->data_size,
+		          0,
 			  &cache_value,
 			  error );
 
@@ -1740,6 +1735,7 @@ int libfdata_block_get_data(
 			 */
 			result = libfdata_block_get_cached_data_buffer(
 				  internal_block,
+				  cache,
 				  cache_value,
 				  &data_buffer,
 				  error );
@@ -1778,6 +1774,7 @@ int libfdata_block_get_data(
 
 		if( libfdata_block_read_data_buffer(
 		     internal_block,
+		     file_io_handle,
 		     &data_buffer,
 		     error ) != 1 )
 		{
@@ -1842,7 +1839,8 @@ int libfdata_block_get_data(
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int libfdata_block_get_cached_segment_data(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
+     libfcache_cache_t *cache,
      int segment_index,
      int segment_file_index,
      off64_t segment_offset,
@@ -1851,14 +1849,12 @@ int libfdata_block_get_cached_segment_data(
      libfcache_cache_value_t **cache_value,
      libcerror_error_t **error )
 {
-	libfcache_cache_value_t *cache_value = NULL;
-	static char *function                = "libfdata_block_get_cached_segment_data";
-        off64_t cache_value_offset           = (off64_t) -1;
-	time_t cache_value_timestamp         = 0;
-	int cache_entry_index                = -1;
-        int cache_value_file_index           = -1;
-	int number_of_cache_entries          = 0;
-	int segment_file_index               = 0;
+	static char *function        = "libfdata_block_get_cached_segment_data";
+        off64_t cache_value_offset   = (off64_t) -1;
+	time_t cache_value_timestamp = 0;
+	int cache_entry_index        = -1;
+        int cache_value_file_index   = -1;
+	int number_of_cache_entries  = 0;
 
 	if( internal_block == NULL )
 	{
@@ -1914,7 +1910,7 @@ int libfdata_block_get_cached_segment_data(
 	if( libfcache_cache_get_value_by_index(
 	     cache,
 	     cache_entry_index,
-	     &cache_value,
+	     cache_value,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1927,12 +1923,12 @@ int libfdata_block_get_cached_segment_data(
 
 		return( -1 );
 	}
-	if( cache_value == NULL )
+	if( *cache_value == NULL )
 	{
 		return( 0 );
 	}
 	if( libfcache_cache_value_get_identifier(
-	     cache_value,
+	     *cache_value,
 	     &cache_value_file_index,
 	     &cache_value_offset,
 	     &cache_value_timestamp,
@@ -1984,7 +1980,7 @@ int libfdata_block_get_cached_segment_data(
  * Returns 1 if successful or -1 on error
  */
 int libfdata_block_read_segment_data(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
      intptr_t *file_io_handle,
      int segment_index,
      int segment_file_index,
@@ -1997,6 +1993,7 @@ int libfdata_block_read_segment_data(
      libcerror_error_t **error )
 {
 	static char *function = "libfdata_block_read_segment_data";
+	ssize_t read_count    = 0;
 
 	if( internal_block == NULL )
 	{
@@ -2100,13 +2097,14 @@ int libfdata_block_read_segment_data(
  * Returns 1 if successful or -1 on error
  */
 int libfdata_block_read_segment_data_buffer(
-     libfdata_internal_block_t *interal_block,
+     libfdata_internal_block_t *internal_block,
      intptr_t *file_io_handle,
      int segment_index,
      int segment_file_index,
      off64_t segment_offset,
      size64_t segment_size,
      uint32_t segment_flags,
+     libfdata_buffer_t **data_buffer,
      uint8_t read_flags,
      libcerror_error_t **error )
 {
@@ -2136,8 +2134,30 @@ int libfdata_block_read_segment_data_buffer(
 
 		goto on_error;
 	}
+	if( data_buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid data buffer.",
+		 function );
+
+		return( -1 );
+	}
+	if( *data_buffer != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid data buffer value already set.",
+		 function );
+
+		return( -1 );
+	}
 	if( libfdata_buffer_initialize(
-	     &data_buffer,
+	     data_buffer,
 	     (size_t) segment_size,
 	     error ) != 1 )
 	{
@@ -2151,7 +2171,7 @@ int libfdata_block_read_segment_data_buffer(
 		goto on_error;
 	}
 	if( libfdata_buffer_get_data(
-	     data_buffer,
+	     *data_buffer,
 	     &data,
 	     &data_size,
 	     error ) != 1 )
@@ -2166,7 +2186,7 @@ int libfdata_block_read_segment_data_buffer(
 		goto on_error;
 	}
 	if( libfdata_block_read_segment_data(
-	     internal_block->data_handle,
+	     internal_block,
 	     file_io_handle,
 	     segment_file_index,
 	     segment_file_index,
@@ -2191,10 +2211,10 @@ int libfdata_block_read_segment_data_buffer(
 	return( 1 );
 
 on_error:
-	if( data_buffer != NULL )
+	if( *data_buffer != NULL )
 	{
 		libfdata_buffer_free(
-		 &data_buffer,
+		 data_buffer,
 		 NULL );
 	}
 	return( -1 );
@@ -2217,7 +2237,6 @@ int libfdata_block_get_segment_data(
 	libfdata_buffer_t *data_buffer            = NULL;
 	libfdata_mapped_range_t *mapped_range     = NULL;
 	libfdata_range_t *segment_data_range      = NULL;
-	libfcache_cache_value_t *cache_value      = NULL;
 	libfdata_internal_block_t *internal_block = NULL;
 	static char *function                     = "libfdata_block_get_segment_data";
 	off64_t mapped_range_offset               = 0;
@@ -2227,6 +2246,7 @@ int libfdata_block_get_segment_data(
 	size_t data_buffer_size                   = 0;
 	uint32_t segment_flags                    = 0;
 	int number_of_cache_values                = 0;
+	int result                                = 0;
 	int segment_file_index                    = 0;
 
 	if( block == NULL )
@@ -2318,6 +2338,7 @@ int libfdata_block_get_segment_data(
 	{
 		result = libfdata_block_get_cached_segment_data(
 			  internal_block,
+			  cache,
 			  segment_index,
 		          segment_file_index,
 		          segment_offset,
@@ -2343,6 +2364,7 @@ int libfdata_block_get_segment_data(
 			 */
 			result = libfdata_block_get_cached_data_buffer(
 				  internal_block,
+				  cache,
 				  cache_value,
 				  &data_buffer,
 				  error );
@@ -2403,11 +2425,22 @@ int libfdata_block_get_segment_data(
 
 					return( -1 );
 				}
+				if( mapped_range_size > (off64_t) SSIZE_MAX )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+					 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+					 "%s: invalid mapped range size value exceeds maximum.",
+					 function );
+
+					return( -1 );
+				}
 				if( libfdata_buffer_get_data_at_offset(
 				     data_buffer,
 				     (size_t) mapped_range_offset,
-				     data,
-				     data_size,
+				     segment_data,
+				     segment_data_size,
 				     error ) != 1 )
 				{
 					libcerror_error_set(
@@ -2417,17 +2450,6 @@ int libfdata_block_get_segment_data(
 					 "%s: unable to retrieve data from data buffer at offset: %" PRIi64 ".",
 					 function,
 					 mapped_range_offset );
-
-					return( -1 );
-				}
-				if( mapped_range_size > (off64_t) SSIZE_MAX )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-					 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-					 "%s: invalid mapped range size value exceeds maximum.",
-					 function );
 
 					return( -1 );
 				}
@@ -2451,8 +2473,8 @@ int libfdata_block_get_segment_data(
 				}
 				if( libfdata_buffer_get_data(
 				     data_buffer,
-				     data,
-				     data_size,
+				     segment_data,
+				     segment_data_size,
 				     error ) != 1 )
 				{
 					libcerror_error_set(
@@ -2472,12 +2494,14 @@ int libfdata_block_get_segment_data(
 	{
 		if( libfdata_block_read_segment_data_buffer(
 		     internal_block,
+		     file_io_handle,
 		     segment_index,
 		     segment_file_index,
 		     segment_offset,
 		     segment_size,
 		     segment_flags,
 		     &data_buffer,
+		     read_flags,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -2490,6 +2514,7 @@ int libfdata_block_get_segment_data(
 
 			return( -1 );
 		}
+/* TODO */
 		if( libfdata_list_element_set_element_value(
 		     segment,
 		     cache,

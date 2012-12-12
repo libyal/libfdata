@@ -3,6 +3,9 @@ TODO
 * update manuals
 * update msvscpp files
 
+20121212
+* worked on refactor to combine fdata and mfdata
+
 20121211
 * created stand-alone version based on libfguid
 
