@@ -39,7 +39,7 @@
 void libfdata_notify_set_verbose(
       int verbose )
 {
-	libcnotify_set_verbose(
+	libcnotify_verbose_set(
 	 verbose );
 }
 
@@ -52,7 +52,7 @@ int libfdata_notify_set_stream(
 {
 	static char *function = "libfdata_notify_set_stream";
 
-	if( libcnotify_set_stream(
+	if( libcnotify_stream_set(
 	     stream,
 	     error ) != 1 )
 	{
