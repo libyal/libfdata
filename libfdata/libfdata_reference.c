@@ -23,7 +23,6 @@
 #include <memory.h>
 #include <types.h>
 
-#include "libfdata_block.h"
 #include "libfdata_buffer.h"
 #include "libfdata_definitions.h"
 #include "libfdata_libcerror.h"

@@ -11,8 +11,6 @@ lib_LTLIBRARIES = libfdata.la
 
 libfdata_la_SOURCES = \
 	libfdata.c \
-	libfdata_block.c libfdata_block.h \
-	libfdata_block_reference.c libfdata_block_reference.h \
 	libfdata_buffer.c libfdata_buffer.h \
 	libfdata_buffer_reference.c libfdata_buffer_reference.h \
 	libfdata_definitions.h \
@@ -28,6 +26,8 @@ libfdata_la_SOURCES = \
 	libfdata_notify.c libfdata_notify.h \
 	libfdata_range.c libfdata_range.h \
 	libfdata_reference.c libfdata_reference.h \
+	libfdata_stream.c libfdata_stream.h \
+	libfdata_stream_reference.c libfdata_stream_reference.h \
 	libfdata_support.c libfdata_support.h \
 	libfdata_tree.c libfdata_tree.h \
 	libfdata_tree_node.c libfdata_tree_node.h \

@@ -1,5 +1,5 @@
 /*
- * The block functions
+ * The stream functions
  *
  * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBFDATA_INTERNAL_BLOCK_H )
-#define _LIBFDATA_INTERNAL_BLOCK_H
+#if !defined( _LIBFDATA_INTERNAL_STREAM_H )
+#define _LIBFDATA_INTERNAL_STREAM_H
 
 #include <common.h>
 #include <types.h>
@@ -35,9 +35,9 @@
 extern "C" {
 #endif
 
-typedef struct libfdata_internal_block libfdata_internal_block_t;
+typedef struct libfdata_internal_stream libfdata_internal_stream_t;
 
-struct libfdata_internal_block
+struct libfdata_internal_stream
 {
 	/* The data offset
 	 */
@@ -126,8 +126,8 @@ struct libfdata_internal_block
 };
 
 LIBFDATA_EXTERN \
-int libfdata_block_initialize(
-     libfdata_block_t **block,
+int libfdata_stream_initialize(
+     libfdata_stream_t **stream,
      intptr_t *data_handle,
      int (*free_data_handle)(
             intptr_t **data_handle,
@@ -163,38 +163,38 @@ int libfdata_block_initialize(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_free(
-     libfdata_block_t **block,
+int libfdata_stream_free(
+     libfdata_stream_t **stream,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_clone(
-     libfdata_block_t **destination_block,
-     libfdata_block_t *source_block,
+int libfdata_stream_clone(
+     libfdata_stream_t **destination_stream,
+     libfdata_stream_t *source_stream,
      libcerror_error_t **error );
 
 /* Segment functions
  */
 LIBFDATA_EXTERN \
-int libfdata_block_empty_segments(
-     libfdata_block_t *block,
+int libfdata_stream_empty_segments(
+     libfdata_stream_t *stream,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_resize_segments(
-     libfdata_block_t *block,
+int libfdata_stream_resize_segments(
+     libfdata_stream_t *stream,
      int number_of_segments,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_number_of_segments(
-     libfdata_block_t *block,
+int libfdata_stream_get_number_of_segments(
+     libfdata_stream_t *stream,
      int *number_of_segments,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_segment_by_index(
-     libfdata_block_t *block,
+int libfdata_stream_get_segment_by_index(
+     libfdata_stream_t *stream,
      int segment_index,
      int *segment_file_index,
      off64_t *segment_offset,
@@ -203,8 +203,8 @@ int libfdata_block_get_segment_by_index(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_set_segment_by_index(
-     libfdata_block_t *block,
+int libfdata_stream_set_segment_by_index(
+     libfdata_stream_t *stream,
      int segment_index,
      int segment_file_index,
      off64_t segment_offset,
@@ -213,8 +213,8 @@ int libfdata_block_set_segment_by_index(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_append_segment(
-     libfdata_block_t *block,
+int libfdata_stream_append_segment(
+     libfdata_stream_t *stream,
      int *segment_index,
      int segment_file_index,
      off64_t segment_offset,
@@ -223,53 +223,53 @@ int libfdata_block_append_segment(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_maximum_segment_size(
-     libfdata_block_t *block,
+int libfdata_stream_get_maximum_segment_size(
+     libfdata_stream_t *stream,
      size64_t *maximum_segment_size,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_set_maximum_segment_size(
-     libfdata_block_t *block,
+int libfdata_stream_set_maximum_segment_size(
+     libfdata_stream_t *stream,
      size64_t maximum_segment_size,
      libcerror_error_t **error );
 
 /* Mapped range functions
  */
-int libfdata_block_calculate_mapped_ranges(
-     libfdata_internal_block_t *internal_block,
+int libfdata_stream_calculate_mapped_ranges(
+     libfdata_internal_stream_t *internal_stream,
      libcerror_error_t **error );
 
 /* Data functions
  */
 LIBFDATA_EXTERN \
-int libfdata_block_get_data_offset(
-     libfdata_block_t *block,
+int libfdata_stream_get_data_offset(
+     libfdata_stream_t *stream,
      off64_t *data_offset,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_data_size(
-     libfdata_block_t *block,
+int libfdata_stream_get_data_size(
+     libfdata_stream_t *stream,
      size64_t *data_size,
      libcerror_error_t **error );
 
-int libfdata_block_get_cached_data_buffer(
-     libfdata_internal_block_t *internal_block,
+int libfdata_stream_get_cached_data_buffer(
+     libfdata_internal_stream_t *internal_stream,
      libfcache_cache_t *cache,
      libfcache_cache_value_t *cache_value,
      libfdata_buffer_t **data_buffer,
      libcerror_error_t **error );
 
-int libfdata_block_read_data_buffer(
-     libfdata_internal_block_t *internal_block,
+int libfdata_stream_read_data_buffer(
+     libfdata_internal_stream_t *internal_stream,
      intptr_t *file_io_handle,
      libfdata_buffer_t **data_buffer,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_data(
-     libfdata_block_t *block,
+int libfdata_stream_get_data(
+     libfdata_stream_t *stream,
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      uint8_t **data,
@@ -279,8 +279,15 @@ int libfdata_block_get_data(
 
 /* Segment data functions
  */
-int libfdata_block_get_cached_segment_data(
-     libfdata_internal_block_t *internal_block,
+int libfdata_stream_get_segment_index_at_data_offset(
+     libfdata_internal_stream_t *internal_stream,
+     off64_t data_offset,
+     int *segment_index,
+     off64_t *segment_data_offset,
+     libcerror_error_t **error );
+
+int libfdata_stream_get_cached_segment_data(
+     libfdata_internal_stream_t *internal_stream,
      libfcache_cache_t *cache,
      int segment_index,
      int segment_file_index,
@@ -290,8 +297,8 @@ int libfdata_block_get_cached_segment_data(
      libfcache_cache_value_t **cache_value,
      libcerror_error_t **error );
 
-int libfdata_block_read_segment_data(
-     libfdata_internal_block_t *internal_block,
+int libfdata_stream_read_segment_data(
+     libfdata_internal_stream_t *internal_stream,
      intptr_t *file_io_handle,
      int segment_index,
      int segment_file_index,
@@ -303,8 +310,8 @@ int libfdata_block_read_segment_data(
      uint8_t read_flags,
      libcerror_error_t **error );
 
-int libfdata_block_read_segment_data_buffer(
-     libfdata_internal_block_t *internal_block,
+int libfdata_stream_read_segment_data_buffer(
+     libfdata_internal_stream_t *internal_stream,
      intptr_t *file_io_handle,
      int segment_index,
      int segment_file_index,
@@ -316,8 +323,8 @@ int libfdata_block_read_segment_data_buffer(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_segment_data(
-     libfdata_block_t *block,
+int libfdata_stream_get_segment_data(
+     libfdata_stream_t *stream,
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      int segment_index,
@@ -327,8 +334,8 @@ int libfdata_block_get_segment_data(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_segment_data_at_offset(
-     libfdata_block_t *block,
+int libfdata_stream_get_segment_data_at_offset(
+     libfdata_stream_t *stream,
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      off64_t data_offset,
@@ -338,20 +345,8 @@ int libfdata_block_get_segment_data_at_offset(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_block_get_segment_data_at_value_index(
-     libfdata_block_t *block,
-     intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
-     int value_index,
-     size_t value_size,
-     uint8_t **segment_data,
-     size_t *segment_data_size,
-     uint8_t read_flags,
-     libcerror_error_t **error );
-
-LIBFDATA_EXTERN \
-int libfdata_block_set_segment_data(
-     libfdata_block_t *block,
+int libfdata_stream_set_segment_data(
+     libfdata_stream_t *stream,
      libfcache_cache_t *cache,
      int segment_index,
      uint8_t *segment_data,
@@ -362,8 +357,8 @@ int libfdata_block_set_segment_data(
 /* IO functions
  */
 LIBFDATA_EXTERN \
-ssize_t libfdata_block_read_buffer(
-         libfdata_block_t *block,
+ssize_t libfdata_stream_read_buffer(
+         libfdata_stream_t *stream,
          intptr_t *file_io_handle,
          libfcache_cache_t *cache,
          uint8_t *buffer,
@@ -372,8 +367,8 @@ ssize_t libfdata_block_read_buffer(
          libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-ssize_t libfdata_block_write_buffer(
-         libfdata_block_t *block,
+ssize_t libfdata_stream_write_buffer(
+         libfdata_stream_t *stream,
          intptr_t *file_io_handle,
          libfcache_cache_t *cache,
          const uint8_t *buffer,
@@ -382,8 +377,8 @@ ssize_t libfdata_block_write_buffer(
          libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-off64_t libfdata_block_seek_offset(
-         libfdata_block_t *block,
+off64_t libfdata_stream_seek_offset(
+         libfdata_stream_t *stream,
          intptr_t *file_io_handle,
          off64_t offset,
          int whence,

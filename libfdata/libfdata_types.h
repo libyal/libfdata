@@ -34,23 +34,21 @@
 /* The following type definitions hide internal data structures
  */
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libfdata_block {}		libfdata_block_t;
 typedef struct libfdata_buffer {}		libfdata_buffer_t;
-typedef struct libfdata_file_io_handle {}	libfdata_file_io_handle_t;
 typedef struct libfdata_list {}			libfdata_list_t;
 typedef struct libfdata_list_element {}		libfdata_list_element_t;
 typedef struct libfdata_reference {}		libfdata_reference_t;
+typedef struct libfdata_stream {}		libfdata_stream_t;
 typedef struct libfdata_tree {}			libfdata_tree_t;
 typedef struct libfdata_tree_node {}		libfdata_tree_node_t;
 typedef struct libfdata_vector {}		libfdata_vector_t;
 
 #else
-typedef intptr_t libfdata_block_t;
 typedef intptr_t libfdata_buffer_t;
-typedef intptr_t libfdata_file_io_handle_t;
 typedef intptr_t libfdata_list_t;
 typedef intptr_t libfdata_list_element_t;
 typedef intptr_t libfdata_reference_t;
+typedef intptr_t libfdata_stream_t;
 typedef intptr_t libfdata_tree_t;
 typedef intptr_t libfdata_tree_node_t;
 typedef intptr_t libfdata_vector_t;

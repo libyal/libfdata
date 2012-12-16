@@ -1,5 +1,5 @@
 /*
- * Block data reference functions
+ * Stream data reference functions
  *
  * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBFDATA_BLOCK_REFERENCE_H )
-#define _LIBFDATA_BLOCK_REFERENCE_H
+#if !defined( _LIBFDATA_STREAM_REFERENCE_H )
+#define _LIBFDATA_STREAM_REFERENCE_H
 
 #include <common.h>
 #include <types.h>
@@ -34,9 +34,9 @@ extern "C" {
 #endif
 
 LIBFDATA_EXTERN \
-int libfdata_block_reference_initialize(
+int libfdata_stream_reference_initialize(
      libfdata_reference_t **reference,
-     libfdata_block_t *block,
+     libfdata_stream_t *stream,
      uint8_t flags,
      libcerror_error_t **error );
 

@@ -169,12 +169,11 @@ typedef int64_t off64_t;
 
 /* The following type definitions hide internal data structures
  */
-typedef intptr_t libfdata_block_t;
 typedef intptr_t libfdata_buffer_t;
-typedef intptr_t libfdata_file_io_handle_t;
 typedef intptr_t libfdata_list_t;
 typedef intptr_t libfdata_list_element_t;
 typedef intptr_t libfdata_reference_t;
+typedef intptr_t libfdata_stream_t;
 typedef intptr_t libfdata_tree_t;
 typedef intptr_t libfdata_tree_node_t;
 typedef intptr_t libfdata_vector_t;

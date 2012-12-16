@@ -1,5 +1,5 @@
 /*
- * Block data reference functions
+ * Stream data reference functions
  *
  * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -23,24 +23,24 @@
 #include <memory.h>
 #include <types.h>
 
-#include "libfdata_block.h"
-#include "libfdata_block_reference.h"
 #include "libfdata_definitions.h"
 #include "libfdata_libcerror.h"
 #include "libfdata_libfcache.h"
 #include "libfdata_reference.h"
+#include "libfdata_stream.h"
+#include "libfdata_stream_reference.h"
 #include "libfdata_types.h"
 
-/* Initializes the block reference and its values
+/* Initializes the stream reference and its values
  * Returns 1 if successful or -1 on error
  */
-int libfdata_block_reference_initialize(
+int libfdata_stream_reference_initialize(
      libfdata_reference_t **reference,
-     libfdata_block_t *block,
+     libfdata_stream_t *stream,
      uint8_t flags,
      libcerror_error_t **error )
 {
-	static char *function = "libfdata_block_reference_initialize";
+	static char *function = "libfdata_stream_reference_initialize";
 
 	if( reference == NULL )
 	{
@@ -53,40 +53,33 @@ int libfdata_block_reference_initialize(
 
 		return( -1 );
 	}
-	if( block == NULL )
+	if( stream == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid block.",
+		 "%s: invalid stream.",
 		 function );
 
 		return( -1 );
 	}
 	if( libfdata_reference_initialize(
 	     reference,
-	     (intptr_t *) block,
-	     (int (*)(intptr_t **, libcerror_error_t **))
-	           libfdata_block_free,
-	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **))
-	           libfdata_block_clone,
-	     (int (*)(intptr_t *, int *, libcerror_error_t **))
-	           libfdata_block_get_number_of_segments,
-	     (int (*)(intptr_t *, size64_t *, libcerror_error_t **))
-	           libfdata_block_get_size,
-	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, uint8_t **, size_t *, libcerror_error_t **))
-	           libfdata_block_get_data,
-	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, int, uint8_t **, size_t *, uint8_t, libcerror_error_t **))
-	           libfdata_block_get_segment_data,
-	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, off64_t, uint8_t **, size_t *, uint8_t, libcerror_error_t **))
-	           libfdata_block_get_segment_data_at_offset,
-	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, int, size_t, uint8_t **, size_t *, uint8_t, libcerror_error_t **))
-	           libfdata_block_get_segment_data_at_value_index,
-	     (ssize_t (*)(intptr_t *, intptr_t *, libfcache_cache_t *, uint8_t *, size_t, libcerror_error_t **))
-	           libfdata_block_read_buffer,
-	     (off64_t (*)(intptr_t *, off64_t, int, libcerror_error_t **))
-	           libfdata_block_seek_offset,
+	     (intptr_t *) stream,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_stream_free,
+	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libfdata_stream_clone,
+	     (int (*)(intptr_t *, int *, libcerror_error_t **)) &libfdata_stream_get_number_of_segments,
+	     (int (*)(intptr_t *, size64_t *, libcerror_error_t **)) &libfdata_stream_get_data_size,
+	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, uint8_t **, size_t *, libcerror_error_t **)) &libfdata_stream_get_data,
+	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, int, uint8_t **, size_t *, uint8_t, libcerror_error_t **)) &libfdata_stream_get_segment_data,
+	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, off64_t, uint8_t **, size_t *, uint8_t, libcerror_error_t **)) &libfdata_stream_get_segment_data_at_offset,
+/* TODO
+	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, int, size_t, uint8_t **, size_t *, uint8_t, libcerror_error_t **)) &libfdata_stream_get_segment_data_at_value_index,
+*/
+	     NULL,
+	     (ssize_t (*)(intptr_t *, intptr_t *, libfcache_cache_t *, uint8_t *, size_t, libcerror_error_t **)) &libfdata_stream_read_buffer,
+	     (off64_t (*)(intptr_t *, off64_t, int, libcerror_error_t **)) &libfdata_stream_seek_offset,
 	     flags,
 	     error ) != 1 )
 	{
