@@ -1,7 +1,7 @@
 /*
  * The stream functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -97,6 +97,8 @@ struct libfdata_internal_stream
 	ssize_t (*read_segment_data)(
 	           intptr_t *data_handle,
 	           intptr_t *file_io_handle,
+	           libfdata_stream_t *stream,
+                   int segment_index,
                    int segment_file_index,
 	           uint8_t *segment_data,
 	           size_t segment_data_size,
@@ -108,6 +110,8 @@ struct libfdata_internal_stream
 	ssize_t (*write_segment_data)(
 	           intptr_t *data_handle,
 	           intptr_t *file_io_handle,
+	           libfdata_stream_t *stream,
+	           int segment_index,
 	           int segment_file_index,
 	           const uint8_t *segment_data,
 	           size_t segment_data_size,
@@ -119,6 +123,8 @@ struct libfdata_internal_stream
 	off64_t (*seek_segment_offset)(
 	           intptr_t *data_handle,
 	           intptr_t *file_io_handle,
+	           libfdata_stream_t *stream,
+	           int segment_index,
 	           int segment_file_index,
 	           off64_t segment_offset,
 	           int whence,
@@ -139,6 +145,8 @@ int libfdata_stream_initialize(
      ssize_t (*read_segment_data)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
                 int segment_file_index,
                 uint8_t *segment_data,
                 size_t segment_data_size,
@@ -147,6 +155,8 @@ int libfdata_stream_initialize(
      ssize_t (*write_segment_data)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
                 int segment_file_index,
                 const uint8_t *segment_data,
                 size_t segment_data_size,
@@ -155,6 +165,8 @@ int libfdata_stream_initialize(
      off64_t (*seek_segment_offset)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
                 int segment_file_index,
                 off64_t segment_offset,
                 int whence,

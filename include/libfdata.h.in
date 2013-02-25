@@ -1,7 +1,7 @@
 /*
  * Library to provide generic file data functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,6 +25,7 @@
 #include <libfdata/definitions.h>
 #include <libfdata/error.h>
 #include <libfdata/extern.h>
+#include <libfdata/features.h>
 #include <libfdata/types.h>
 
 #include <stdio.h>

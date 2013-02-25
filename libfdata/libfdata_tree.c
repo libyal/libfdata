@@ -1,7 +1,7 @@
 /*
  * The tree functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -212,7 +212,7 @@ int libfdata_tree_free(
 		{
 			if( internal_tree->data_handle != NULL )
 			{
-				if( internal_tree->free_data_handle != NULL )
+				if( internal_tree->free_data_handle == NULL )
 				{
 					libcerror_error_set(
 					 error,
@@ -259,7 +259,7 @@ int libfdata_tree_clone(
 	off64_t node_data_offset                       = 0;
 	size64_t node_data_size                        = 0;
 	uint32_t node_data_flags                       = 0;
-	int node_data_file_index                       = 0;
+	int node_data_file_index                       = -1;
 
 	if( destination_tree == NULL )
 	{
@@ -442,7 +442,7 @@ int libfdata_tree_get_node_value(
 	uint32_t node_data_flags                = 0;
 	int cache_entry_index                   = -1;
 	int number_of_cache_entries             = 0;
-	int node_data_file_index                = 0;
+	int node_data_file_index                = -1;
 	int result                              = 0;
 
 	if( tree == NULL )
@@ -617,8 +617,6 @@ int libfdata_tree_get_node_value(
 			 node_data_size );
 		}
 #endif
-		/* Read the node data from the file IO handle
-		 */
 		if( internal_tree->read_node_data(
 		     internal_tree->data_handle,
 		     file_io_handle,
@@ -757,7 +755,7 @@ int libfdata_tree_set_node_value(
 	uint32_t node_data_flags    = 0;
 	int cache_entry_index       = -1;
 	int number_of_cache_entries = 0;
-	int node_data_file_index    = 0;
+	int node_data_file_index    = -1;
 
 	if( tree == NULL )
 	{
@@ -918,8 +916,6 @@ int libfdata_tree_read_sub_nodes(
 
 		return( -1 );
 	}
-	/* Read the sub nodes from the file IO handle
-	 */
 	if( internal_tree->read_sub_nodes(
 	     internal_tree->data_handle,
 	     file_io_handle,

@@ -1,7 +1,7 @@
 /*
  * The internal definitions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -53,7 +53,7 @@ enum LIBFDATA_FLAGS
 
 	/* The mapped ranges need to be calculated
 	 */
-	LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES				= 0x10,
+	LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES				= 0x80
 };
 
 /* The buffer data flags definitions
@@ -117,7 +117,7 @@ enum LIBFDATA_READ_FLAGS
 enum LIBFDATA_REFERENCE_TYPES
 {
 	LIBFDATA_REFERENCE_TYPE_BUFFER					= 1,
-	LIBFDATA_REFERENCE_TYPE_BLOCK					= 2
+	LIBFDATA_REFERENCE_TYPE_STREAM					= 2
 };
 
 /* The reference flags definitions
@@ -179,11 +179,7 @@ enum LIBFDATA_TREE_NODE_FLAGS
 
 	/* The node data has been read (at least once)
 	 */
-	LIBFDATA_TREE_NODE_FLAG_NOTE_DATA_READ				= 0x40,
-
-	/* The leaf nodes values need to be calculated
-	 */
-	LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES		= 0x80
+	LIBFDATA_TREE_NODE_FLAG_NOTE_DATA_READ				= 0x40
 };
 
 /* The tree node insert flag definitions

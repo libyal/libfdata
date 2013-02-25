@@ -1,7 +1,7 @@
 /*
  * The vector functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -370,190 +370,6 @@ on_error:
 		 NULL );
 	}
 	return( -1 );
-}
-
-/* Retrieves the element index for a specific offset
- * Returns 1 if successful or -1 on error
- */
-int libfdata_vector_get_element_index_at_offset(
-     libfdata_vector_t *vector,
-     off64_t value_offset,
-     int *element_index,
-     size_t *element_offset,
-     libcerror_error_t **error )
-{
-	libfdata_internal_vector_t *internal_vector = NULL;
-	libfdata_range_t *segment_data_range        = NULL;
-	static char *function                       = "libfdata_vector_get_element_index_at_offset";
-	off64_t segment_data_offset                 = 0;
-	uint64_t calculated_element_index           = 0;
-	int number_of_segments                      = 0;
-	int segment_index                           = 0;
-
-	if( vector == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid vector.",
-		 function );
-
-		return( -1 );
-	}
-	internal_vector = (libfdata_internal_vector_t *) vector;
-
-	if( internal_vector->element_size == 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid vector - element size value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( value_offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid value offset value less than zero.",
-		 function );
-
-		return( -1 );
-	}
-	if( element_index == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid element index.",
-		 function );
-
-		return( -1 );
-	}
-	if( element_offset == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid element offset.",
-		 function );
-
-		return( -1 );
-	}
-	if( libcdata_array_get_number_of_entries(
-	     internal_vector->segments_array,
-	     &number_of_segments,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of segments.",
-		 function );
-
-		return( -1 );
-	}
-	if( number_of_segments <= 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid number of segments value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	for( segment_index = 0;
-	     segment_index < number_of_segments;
-	     segment_index++ )
-	{
-		if( libcdata_array_get_entry_by_index(
-		     internal_vector->segments_array,
-		     segment_index,
-		     (intptr_t **) &segment_data_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve segment data range: %d from array.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-		if( segment_data_range == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing segment data range: %d.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-/* TODO what about compressed data ranges */
-		if( value_offset < (off64_t)( segment_data_offset + segment_data_range->size ) )
-		{
-			break;
-		}
-		segment_data_offset += (off64_t) segment_data_range->size;
-	}
-	if( segment_index >= number_of_segments )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	calculated_element_index  = segment_data_offset + value_offset;
-	calculated_element_index /= internal_vector->element_size;
-
-	if( calculated_element_index > (uint64_t) INT_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid element index value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	value_offset -= (off64_t) ( calculated_element_index * internal_vector->element_size );
-
-	if( ( value_offset < 0 )
-	 || ( value_offset > (off64_t) SSIZE_MAX ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid element offset value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	*element_index  = (int) calculated_element_index;
-	*element_offset = (size_t) value_offset;
-
-	return( 1 );
 }
 
 /* Segment functions
@@ -1033,6 +849,193 @@ int libfdata_vector_get_number_of_elements(
 
 	return( 1 );
 }
+
+/* Retrieves the element index for a specific offset
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_vector_get_element_index_at_offset(
+     libfdata_vector_t *vector,
+     off64_t value_offset,
+     int *element_index,
+     size_t *element_offset,
+     libcerror_error_t **error )
+{
+	libfdata_internal_vector_t *internal_vector = NULL;
+	libfdata_range_t *segment_data_range        = NULL;
+	static char *function                       = "libfdata_vector_get_element_index_at_offset";
+	off64_t segment_data_offset                 = 0;
+	uint64_t calculated_element_index           = 0;
+	int number_of_segments                      = 0;
+	int segment_index                           = 0;
+
+	if( vector == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid vector.",
+		 function );
+
+		return( -1 );
+	}
+	internal_vector = (libfdata_internal_vector_t *) vector;
+
+	if( internal_vector->element_size == 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid vector - element size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( value_offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
+		 "%s: invalid value offset value less than zero.",
+		 function );
+
+		return( -1 );
+	}
+	if( element_index == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid element index.",
+		 function );
+
+		return( -1 );
+	}
+	if( element_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid element offset.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_array_get_number_of_entries(
+	     internal_vector->segments_array,
+	     &number_of_segments,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of segments.",
+		 function );
+
+		return( -1 );
+	}
+	if( number_of_segments <= 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of segments value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	for( segment_index = 0;
+	     segment_index < number_of_segments;
+	     segment_index++ )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_vector->segments_array,
+		     segment_index,
+		     (intptr_t **) &segment_data_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve segment data range: %d from array.",
+			 function,
+			 segment_index );
+
+			return( -1 );
+		}
+		if( segment_data_range == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing segment data range: %d.",
+			 function,
+			 segment_index );
+
+			return( -1 );
+		}
+/* TODO what about compressed data ranges */
+		if( value_offset < (off64_t)( segment_data_offset + segment_data_range->size ) )
+		{
+			break;
+		}
+		segment_data_offset += (off64_t) segment_data_range->size;
+	}
+	if( segment_index >= number_of_segments )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	calculated_element_index  = segment_data_offset + value_offset;
+	calculated_element_index /= internal_vector->element_size;
+
+	if( calculated_element_index > (uint64_t) INT_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid element index value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	value_offset -= (off64_t) ( calculated_element_index * internal_vector->element_size );
+
+	if( ( value_offset < 0 )
+	 || ( value_offset > (off64_t) SSIZE_MAX ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid element offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	*element_index  = (int) calculated_element_index;
+	*element_offset = (size_t) value_offset;
+
+	return( 1 );
+}
+
+/* Vector element value functions
+ */
 
 /* Retrieves the value of a specific element
  * Returns 1 if successful or -1 on error

@@ -2,6 +2,11 @@ TODO
 * add tests
 * update manuals
 * update msvscpp files
+* add write support (at minimum the stubs)
+
+20130224
+* 2013 update
+* code clean up
 
 20121216
 * worked on refactor to combine fdata and mfdata

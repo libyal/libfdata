@@ -1,7 +1,7 @@
 /*
  * The list functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -681,8 +681,8 @@ int libfdata_list_calculate_value_offsets(
 	off64_t data_range_offset             = 0;
 	size64_t data_range_size              = 0;
 	uint32_t data_range_flags             = 0;
-	int data_range_file_index             = 0;
-	int element_index                     = 0;
+	int data_range_file_index             = -1;
+	int element_index                     = -1;
 	int number_of_elements                = 0;
 
 	if( internal_list == NULL )
@@ -829,7 +829,7 @@ int libfdata_list_get_element_by_offset(
 	off64_t data_range_offset               = 0;
 	size64_t data_range_size                = 0;
         uint32_t data_range_flags               = 0;
-	int data_range_file_index               = 0;
+	int data_range_file_index               = -1;
 	int number_of_elements                  = 0;
 
 	if( list == NULL )
@@ -1248,9 +1248,9 @@ int libfdata_list_get_element_index_at_value_offset(
 	off64_t data_range_offset               = 0;
 	size64_t data_range_size                = 0;
 	uint32_t data_range_flags               = 0;
-	int calculated_element_index            = 0;
-	int data_range_file_index               = 0;
-	int initial_element_index               = 0;
+	int calculated_element_index            = -1;
+	int data_range_file_index               = -1;
+	int initial_element_index               = -1;
 	int number_of_elements                  = 0;
 
 	if( list == NULL )
@@ -1540,8 +1540,8 @@ int libfdata_list_get_element_index_at_value_index(
 	size64_t data_range_size                = 0;
 	uint64_t number_of_values               = 0;
 	uint32_t data_range_flags               = 0;
-	int calculated_element_index            = 0;
-	int data_range_file_index               = 0;
+	int calculated_element_index            = -1;
+	int data_range_file_index               = -1;
 	int number_of_elements                  = 0;
 
 	if( list == NULL )
@@ -1887,7 +1887,8 @@ int libfdata_list_get_element_value(
 	time_t element_timestamp                = 0;
 	uint32_t data_range_flags               = 0;
 	int cache_entry_index                   = -1;
-	int data_range_file_index               = 0;
+	int cache_value_file_index              = -1;
+	int data_range_file_index               = -1;
 	int element_index                       = -1;
 	int number_of_cache_entries             = 0;
 	int result                              = 0;
@@ -2012,7 +2013,7 @@ int libfdata_list_get_element_value(
 			}
 			if( libfcache_cache_value_get_identifier(
 			     cache_value,
-			     0,
+			     &cache_value_file_index,
 			     &cache_value_offset,
 			     &cache_value_timestamp,
 			     error ) != 1 )
@@ -2129,7 +2130,7 @@ int libfdata_list_get_element_value(
 			}
 			if( libfcache_cache_value_get_identifier(
 			     cache_value,
-			     0,
+			     &cache_value_file_index,
 			     &cache_value_offset,
 			     &cache_value_timestamp,
 			     error ) != 1 )
@@ -2320,7 +2321,7 @@ int libfdata_list_set_element_value(
 	time_t element_timestamp    = 0;
 	uint32_t data_range_flags   = 0;
 	int cache_entry_index       = -1;
-	int data_range_file_index   = 0;
+	int data_range_file_index   = -1;
 	int element_index           = -1;
 	int number_of_cache_entries = 0;
 

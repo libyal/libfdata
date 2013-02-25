@@ -1,7 +1,7 @@
 /*
  * The stream functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -58,6 +58,8 @@ int libfdata_stream_initialize(
      ssize_t (*read_segment_data)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
                 int segment_file_index,
                 uint8_t *segment_data,
                 size_t segment_data_size,
@@ -66,6 +68,8 @@ int libfdata_stream_initialize(
      ssize_t (*write_segment_data)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
                 int segment_file_index,
                 const uint8_t *segment_data,
                 size_t segment_data_size,
@@ -74,6 +78,8 @@ int libfdata_stream_initialize(
      off64_t (*seek_segment_offset)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
                 int segment_file_index,
                 off64_t segment_offset,
                 int whence,
@@ -982,6 +988,22 @@ int libfdata_stream_append_segment(
 
 		goto on_error;
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 *segment_index,
+		 segment_file_index,
+		 segment_offset,
+		 segment_offset + segment_size,
+		 segment_size,
+		 internal_stream->data_size,
+		 internal_stream->data_size + segment_size,
+		 segment_size );
+	}
+#endif
 	internal_stream->data_size += segment_size;
 
 	return( 1 );
@@ -1182,6 +1204,22 @@ int libfdata_stream_calculate_mapped_ranges(
 
 			return( -1 );
 		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 segment_index,
+			 segment_file_index,
+			 segment_offset,
+			 segment_offset + segment_size,
+			 segment_size,
+			 mapped_range_offset,
+			 mapped_range_offset + segment_size,
+			 segment_size );
+		}
+#endif
 		if( libfdata_mapped_range_set(
 		     mapped_range,
 		     mapped_range_offset,
@@ -1620,6 +1658,8 @@ int libfdata_stream_read_data_buffer(
 		if( internal_stream->seek_segment_offset(
 		     internal_stream->data_handle,
 		     file_io_handle,
+		     (libfdata_stream_t *) internal_stream,
+		     segment_index,
 		     segment_file_index,
 		     segment_offset,
 		     SEEK_SET,
@@ -1629,8 +1669,9 @@ int libfdata_stream_read_data_buffer(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek segment offset: %" PRIi64 " in segment file: %d.",
+			 "%s: unable to seek segment: %d at offset: %" PRIi64 " in segment file: %d.",
 			 function,
+			 segment_index,
 			 segment_offset,
 			 segment_file_index );
 
@@ -1639,6 +1680,8 @@ int libfdata_stream_read_data_buffer(
 		read_count = internal_stream->read_segment_data(
 			      internal_stream->data_handle,
 			      file_io_handle,
+		              (libfdata_stream_t *) internal_stream,
+			      segment_index,
 			      segment_file_index,
 			      &( data[ data_offset ] ),
 			      (size_t) segment_size,
@@ -1651,7 +1694,7 @@ int libfdata_stream_read_data_buffer(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read segment data: %d from segment file: %d.",
+			 "%s: unable to read segment: %d data from segment file: %d.",
 			 function,
 			 segment_index,
 			 segment_file_index );
@@ -1924,7 +1967,7 @@ int libfdata_stream_get_segment_index_at_data_offset(
 		}
 	}
 	if( libcdata_array_get_number_of_entries(
-	     internal_stream->segments_array,
+	     internal_stream->mapped_ranges_array,
 	     &number_of_segments,
 	     error ) != 1 )
 	{
@@ -1932,7 +1975,7 @@ int libfdata_stream_get_segment_index_at_data_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of entries from segments array.",
+		 "%s: unable to retrieve number of entries from mapped ranges array.",
 		 function );
 
 		return( -1 );
@@ -1948,7 +1991,7 @@ int libfdata_stream_get_segment_index_at_data_offset(
 	     *segment_index += 1 )
 	{
 		if( libcdata_array_get_entry_by_index(
-		     internal_stream->segments_array,
+		     internal_stream->mapped_ranges_array,
 		     *segment_index,
 		     (intptr_t **) &mapped_range,
 		     error ) != 1 )
@@ -2006,7 +2049,7 @@ int libfdata_stream_get_segment_index_at_data_offset(
 		     *segment_index -= 1 )
 		{
 			if( libcdata_array_get_entry_by_index(
-			     internal_stream->segments_array,
+			     internal_stream->mapped_ranges_array,
 			     *segment_index,
 			     (intptr_t **) &mapped_range,
 			     error ) != 1 )
@@ -2312,6 +2355,8 @@ int libfdata_stream_read_segment_data(
 	if( internal_stream->seek_segment_offset(
 	     internal_stream->data_handle,
 	     file_io_handle,
+	     (libfdata_stream_t *) internal_stream,
+	     segment_index,
 	     segment_file_index,
 	     segment_offset,
 	     SEEK_SET,
@@ -2331,6 +2376,8 @@ int libfdata_stream_read_segment_data(
 	read_count = internal_stream->read_segment_data(
 		      internal_stream->data_handle,
 		      file_io_handle,
+	              (libfdata_stream_t *) internal_stream,
+		      segment_index,
 		      segment_file_index,
 		      segment_data,
 		      segment_data_size,
@@ -2447,7 +2494,7 @@ int libfdata_stream_read_segment_data_buffer(
 	if( libfdata_stream_read_segment_data(
 	     internal_stream,
 	     file_io_handle,
-	     segment_file_index,
+	     segment_index,
 	     segment_file_index,
 	     segment_offset,
 	     segment_size,
@@ -3358,7 +3405,7 @@ off64_t libfdata_stream_seek_offset(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve segment index at offset %" PRIi64 ".",
+			 "%s: unable to retrieve segment index at offset: %" PRIi64 ".",
 			 function,
 			 offset );
 

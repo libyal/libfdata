@@ -1,7 +1,7 @@
 /*
  * The node functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -137,7 +137,7 @@ int libfdata_tree_node_initialize(
 	internal_tree_node->tree        = tree;
 	internal_tree_node->parent_node = parent_node;
 	internal_tree_node->timestamp   = libfcache_date_time_get_timestamp();
-	internal_tree_node->flags       = LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES;
+	internal_tree_node->flags       = LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	*node = (libfdata_tree_node_t *) internal_tree_node;
 
@@ -2356,7 +2356,7 @@ int libfdata_tree_node_set_calculate_leaf_node_values(
 			return( -1 );
 		}
 	}
-	internal_tree_node->flags |= LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES;
+	internal_tree_node->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	return( 1 );
 }
@@ -2837,7 +2837,7 @@ int libfdata_tree_node_get_number_of_leaf_nodes(
 
 		return( -1 );
 	}
-	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES ) != 0 )
+	if( ( internal_tree_node->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
 	{
 		if( libfdata_tree_node_read_leaf_node_values(
 		     node,
@@ -2855,7 +2855,7 @@ int libfdata_tree_node_get_number_of_leaf_nodes(
 
 			return( -1 );
 		}
-		internal_tree_node->flags &= ~( LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES );
+		internal_tree_node->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 	}
 	*number_of_leaf_nodes = internal_tree_node->number_of_leaf_nodes;
 
@@ -2908,7 +2908,7 @@ int libfdata_tree_node_get_leaf_node_by_index(
 
 		return( -1 );
 	}
-	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES ) != 0 )
+	if( ( internal_tree_node->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
 	{
 		if( libfdata_tree_node_read_leaf_node_values(
 		     node,
@@ -2926,7 +2926,7 @@ int libfdata_tree_node_get_leaf_node_by_index(
 
 			return( -1 );
 		}
-		internal_tree_node->flags &= ~( LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES );
+		internal_tree_node->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 	}
 	if( libcdata_array_get_number_of_entries(
 	     internal_tree_node->sub_nodes,
@@ -3128,7 +3128,7 @@ int libfdata_tree_node_get_number_of_deleted_leaf_nodes(
 
 		return( -1 );
 	}
-	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES ) != 0 )
+	if( ( internal_tree_node->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
 	{
 		if( libfdata_tree_node_read_leaf_node_values(
 		     node,
@@ -3146,7 +3146,7 @@ int libfdata_tree_node_get_number_of_deleted_leaf_nodes(
 
 			return( -1 );
 		}
-		internal_tree_node->flags &= ~( LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES );
+		internal_tree_node->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 	}
 	*number_of_deleted_leaf_nodes = internal_tree_node->number_of_deleted_leaf_nodes;
 
@@ -3199,7 +3199,7 @@ int libfdata_tree_node_get_deleted_leaf_node_by_index(
 
 		return( -1 );
 	}
-	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES ) != 0 )
+	if( ( internal_tree_node->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
 	{
 		if( libfdata_tree_node_read_leaf_node_values(
 		     node,
@@ -3217,7 +3217,7 @@ int libfdata_tree_node_get_deleted_leaf_node_by_index(
 
 			return( -1 );
 		}
-		internal_tree_node->flags &= ~( LIBFDATA_TREE_NODE_FLAG_CALCULATE_LEAF_NODE_VALUES );
+		internal_tree_node->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 	}
 	if( libcdata_array_get_number_of_entries(
 	     internal_tree_node->sub_nodes,

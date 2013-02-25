@@ -1,7 +1,7 @@
 /*
  * The vector functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -47,7 +47,7 @@ struct libfdata_internal_vector
 	 */
 	size64_t data_size;
 
-	/* The segments array 
+	/* The segments array
 	 */
 	libcdata_array_t *segments_array;
 
@@ -88,7 +88,7 @@ struct libfdata_internal_vector
 	       off64_t element_data_offset,
 	       size64_t element_data_size,
 	       uint32_t element_data_flags,
-               uint8_t read_flags,
+	       uint8_t read_flags,
 	       libcerror_error_t **error );
 
 	/* The write element data function
@@ -103,7 +103,7 @@ struct libfdata_internal_vector
 	       off64_t element_data_offset,
 	       size64_t element_data_size,
 	       uint32_t element_data_flags,
-               uint8_t write_flags,
+	       uint8_t write_flags,
 	       libcerror_error_t **error );
 };
 

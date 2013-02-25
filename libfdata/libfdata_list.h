@@ -1,7 +1,7 @@
 /*
  * The list functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -39,7 +39,7 @@ typedef struct libfdata_internal_list libfdata_internal_list_t;
 
 struct libfdata_internal_list
 {
-	/* The data size
+	/* The (list) data size
 	 */
 	size64_t data_size;
 
