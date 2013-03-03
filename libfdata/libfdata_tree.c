@@ -441,6 +441,7 @@ int libfdata_tree_get_node_value(
 	time_t node_timestamp                   = 0;
 	uint32_t node_data_flags                = 0;
 	int cache_entry_index                   = -1;
+	int cache_value_file_index              = -1;
 	int number_of_cache_entries             = 0;
 	int node_data_file_index                = -1;
 	int result                              = 0;
@@ -560,7 +561,7 @@ int libfdata_tree_get_node_value(
 			}
 			if( libfcache_cache_value_get_identifier(
 			     cache_value,
-			     0,
+			     &cache_value_file_index,
 			     &cache_value_offset,
 			     &cache_value_timestamp,
 			     error ) != 1 )
@@ -622,6 +623,7 @@ int libfdata_tree_get_node_value(
 		     file_io_handle,
 		     node,
 		     cache,
+		     node_data_file_index,
 		     node_data_offset,
 		     node_data_size,
 		     read_flags,
@@ -684,7 +686,7 @@ int libfdata_tree_get_node_value(
 			}
 			if( libfcache_cache_value_get_identifier(
 			     cache_value,
-			     0,
+			     &cache_value_file_index,
 			     &cache_value_offset,
 			     &cache_value_timestamp,
 			     error ) != 1 )
@@ -754,8 +756,8 @@ int libfdata_tree_set_node_value(
 	time_t node_timestamp       = 0;
 	uint32_t node_data_flags    = 0;
 	int cache_entry_index       = -1;
-	int number_of_cache_entries = 0;
 	int node_data_file_index    = -1;
+	int number_of_cache_entries = 0;
 
 	if( tree == NULL )
 	{
@@ -876,6 +878,7 @@ int libfdata_tree_read_sub_nodes(
 	static char *function                   = "libfdata_tree_read_sub_nodes";
 	off64_t sub_nodes_offset                = 0;
 	size64_t sub_nodes_size                 = 0;
+	int sub_nodes_file_index                = 0;
 
 	if( tree == NULL )
 	{
@@ -901,6 +904,7 @@ int libfdata_tree_read_sub_nodes(
 
 		return( -1 );
 	}
+/* TODO set sub_nodes_file_index */
 	if( libfdata_tree_node_get_sub_nodes_range(
 	     node,
 	     &sub_nodes_offset,
@@ -921,6 +925,7 @@ int libfdata_tree_read_sub_nodes(
 	     file_io_handle,
 	     node,
 	     cache,
+	     &sub_nodes_file_index,
 	     sub_nodes_offset,
 	     sub_nodes_size,
 	     read_flags,

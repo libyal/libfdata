@@ -1120,7 +1120,7 @@ int libfdata_tree_node_set_sub_node_by_index(
 	off64_t node_data_offset                          = 0;
 	size64_t node_data_size                           = 0;
 	uint32_t node_data_flags                          = 0;
-	int node_data_file_index                          = 0;
+	int node_data_file_index                          = -1;
 
 	if( node == NULL )
 	{
@@ -1371,7 +1371,7 @@ int libfdata_tree_node_insert_sub_node(
      uint8_t read_flags,
      libcerror_error_t **error )
 {
-	libfcache_cache_t *insert_cache                    = NULL;
+	libfcache_cache_t *insert_cache                   = NULL;
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;
 	libfdata_tree_node_t *insert_sub_node             = NULL;
 	libfdata_tree_node_t *sub_node                    = NULL;
