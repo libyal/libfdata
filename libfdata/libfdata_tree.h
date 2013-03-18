@@ -73,6 +73,7 @@ struct libfdata_internal_tree
 	       int node_data_file_index,
 	       off64_t node_data_offset,
 	       size64_t node_data_size,
+	       uint32_t node_data_flags,
                uint8_t read_flags,
 	       libcerror_error_t **error );
 
@@ -83,9 +84,10 @@ struct libfdata_internal_tree
 	       intptr_t *file_io_handle,
 	       libfdata_tree_node_t *node,
 	       libfcache_cache_t *cache,
-	       int node_data_file_index,
-	       off64_t sub_nodes_offset,
-	       size64_t sub_nodes_size,
+	       int sub_nodes_data_file_index,
+	       off64_t sub_nodes_data_offset,
+	       size64_t sub_nodes_data_size,
+	       uint32_t sub_nodes_data_flags,
                uint8_t read_flags,
 	       libcerror_error_t **error );
 };
@@ -109,6 +111,7 @@ int libfdata_tree_initialize(
             int node_data_file_index,
             off64_t node_data_offset,
             size64_t node_data_size,
+            uint32_t node_data_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*read_sub_nodes)(
@@ -116,9 +119,10 @@ int libfdata_tree_initialize(
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
             libfcache_cache_t *cache,
-            int node_data_file_index,
-            off64_t sub_nodes_offset,
-            size64_t sub_nodes_size,
+            int sub_nodes_data_file_index,
+            off64_t sub_nodes_data_offset,
+            size64_t sub_nodes_data_size,
+            uint32_t sub_nodes_data_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      uint8_t flags,

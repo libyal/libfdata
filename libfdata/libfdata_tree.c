@@ -54,8 +54,10 @@ int libfdata_tree_initialize(
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
             libfcache_cache_t *cache,
+            int node_data_file_index,
             off64_t node_data_offset,
             size64_t node_data_size,
+            uint32_t node_data_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*read_sub_nodes)(
@@ -63,8 +65,10 @@ int libfdata_tree_initialize(
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
             libfcache_cache_t *cache,
-            off64_t sub_nodes_offset,
-            size64_t sub_nodes_size,
+            int sub_nodes_data_file_index,
+            off64_t sub_nodes_data_offset,
+            size64_t sub_nodes_data_size,
+            uint32_t sub_nodes_data_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      uint8_t flags,
@@ -626,6 +630,7 @@ int libfdata_tree_get_node_value(
 		     node_data_file_index,
 		     node_data_offset,
 		     node_data_size,
+		     node_data_flags,
 		     read_flags,
 		     error ) != 1 )
 		{
@@ -876,9 +881,10 @@ int libfdata_tree_read_sub_nodes(
 {
 	libfdata_internal_tree_t *internal_tree = NULL;
 	static char *function                   = "libfdata_tree_read_sub_nodes";
-	off64_t sub_nodes_offset                = 0;
-	size64_t sub_nodes_size                 = 0;
-	int sub_nodes_file_index                = 0;
+	off64_t sub_nodes_data_offset           = 0;
+	size64_t sub_nodes_data_size            = 0;
+        uint32_t sub_nodes_data_flags           = 0;
+	int sub_nodes_data_file_index           = 0;
 
 	if( tree == NULL )
 	{
@@ -904,11 +910,11 @@ int libfdata_tree_read_sub_nodes(
 
 		return( -1 );
 	}
-/* TODO set sub_nodes_file_index */
+/* TODO set sub_nodes_data_flags and sub_nodes_data_file_index */
 	if( libfdata_tree_node_get_sub_nodes_range(
 	     node,
-	     &sub_nodes_offset,
-	     &sub_nodes_size,
+	     &sub_nodes_data_offset,
+	     &sub_nodes_data_size,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -925,9 +931,10 @@ int libfdata_tree_read_sub_nodes(
 	     file_io_handle,
 	     node,
 	     cache,
-	     &sub_nodes_file_index,
-	     sub_nodes_offset,
-	     sub_nodes_size,
+	     sub_nodes_data_file_index,
+	     sub_nodes_data_offset,
+	     sub_nodes_data_size,
+	     sub_nodes_data_flags,
 	     read_flags,
 	     error ) != 1 )
 	{
@@ -937,7 +944,7 @@ int libfdata_tree_read_sub_nodes(
 		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read sub nodes at offset: %" PRIi64 ".",
 		 function,
-		 sub_nodes_offset );
+		 sub_nodes_data_offset );
 
 		return( -1 );
 	}
