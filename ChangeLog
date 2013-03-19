@@ -5,6 +5,9 @@ TODO
 * update msvscpp files
 * add write support (at minimum the stubs)
 
+20130319
+* worked on refactor to combine fdata and mfdata
+
 20130303
 * worked on refactor to combine fdata and mfdata
 
