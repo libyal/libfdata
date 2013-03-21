@@ -1,5 +1,5 @@
 /*
- * Notification function
+ * The internal inline definition
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,44 +19,20 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBFDATA_NOTIFY_H )
-#define _LIBFDATA_NOTIFY_H
+#if !defined( _LIBFDATA_INTERNAL_INLINE_H )
+#define _LIBFDATA_INTERNAL_INLINE_H
 
 #include <common.h>
-#include <file_stream.h>
-#include <types.h>
 
-#include "libfdata_extern.h"
-#include "libfdata_libcerror.h"
+#if defined( _MSC_VER )
+#define LIBFDATA_INLINE _inline
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
+#elif defined( __BORLANDC__ )
+#define LIBFDATA_INLINE /* inline */
 
-#if !defined( HAVE_LOCAL_LIBFDATA )
+#else
+#define LIBFDATA_INLINE inline
 
-LIBFDATA_EXTERN \
-void libfdata_notify_set_verbose(
-      int verbose );
-
-LIBFDATA_EXTERN \
-int libfdata_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
-
-LIBFDATA_EXTERN \
-int libfdata_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBFDATA_EXTERN \
-int libfdata_notify_stream_close(
-     libcerror_error_t **error );
-
-#endif
-
-#if defined( __cplusplus )
-}
 #endif
 
 #endif

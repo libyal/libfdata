@@ -20,9 +20,8 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
-
-#include <stdio.h>
 
 #include "libfdata_error.h"
 #include "libfdata_libcerror.h"

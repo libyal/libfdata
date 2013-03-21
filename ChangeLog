@@ -1,9 +1,17 @@
 TODO
-* update libfdata_tree_initialize
+* stream rewrite
+  - only have read/write/seek no caching
+
+* rewrite
+  - remove list from stream
+  - add write support
+  - update libfdata_tree_initialize
 * add tests
 * update manuals
 * update msvscpp files
-* add write support (at minimum the stubs)
+
+20130320
+* worked on refactor to combine fdata and mfdata
 
 20130319
 * worked on refactor to combine fdata and mfdata

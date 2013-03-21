@@ -16,6 +16,7 @@ libfdata_la_SOURCES = \
 	libfdata_definitions.h \
 	libfdata_error.c libfdata_error.h \
 	libfdata_extern.h \
+	libfdata_inline.h \
 	libfdata_libcdata.h \
 	libfdata_libcerror.h \
 	libfdata_libcnotify.h \

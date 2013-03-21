@@ -74,7 +74,10 @@ int libfdata_stream_reference_initialize(
 	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, uint8_t **, size_t *, libcerror_error_t **)) &libfdata_stream_get_data,
 	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, int, uint8_t **, size_t *, uint8_t, libcerror_error_t **)) &libfdata_stream_get_segment_data,
 	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, off64_t, uint8_t **, size_t *, uint8_t, libcerror_error_t **)) &libfdata_stream_get_segment_data_at_offset,
+/* TODO
 	     (int (*)(intptr_t *, intptr_t *, libfcache_cache_t *, int, size_t, uint8_t **, size_t *, uint8_t, libcerror_error_t **)) &libfdata_stream_get_segment_data_at_value_index,
+*/
+	     NULL,
 	     (ssize_t (*)(intptr_t *, intptr_t *, libfcache_cache_t *, uint8_t *, size_t, libcerror_error_t **)) &libfdata_stream_read_buffer,
 	     (off64_t (*)(intptr_t *, off64_t, int, libcerror_error_t **)) &libfdata_stream_seek_offset,
 	     flags,

@@ -1,5 +1,5 @@
 /*
- * The (data) range functions
+ * The range functions
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
