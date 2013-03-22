@@ -1,5 +1,6 @@
 TODO
 * stream rewrite
+  - removed segment data functions
   - only have create/read/write/seek no caching
 * remove clone functions ?
 * rewrite

@@ -46,6 +46,10 @@ struct libfdata_internal_stream
 	 */
 	off64_t current_offset;
 
+	/* The (current) segment data offset
+	 */
+	off64_t segment_data_offset;
+
 	/* The (stream) size
 	 */
 	size64_t size;
