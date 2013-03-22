@@ -28,7 +28,6 @@
 #include "libfdata_extern.h"
 #include "libfdata_libcdata.h"
 #include "libfdata_libcerror.h"
-#include "libfdata_libfcache.h"
 #include "libfdata_types.h"
 
 #if defined( __cplusplus )
@@ -39,25 +38,29 @@ typedef struct libfdata_internal_stream libfdata_internal_stream_t;
 
 struct libfdata_internal_stream
 {
-	/* The data offset
+	/* The current segment index
 	 */
-	off64_t data_offset;
+	int current_segment_index;
 
-	/* The segment index
+	/* The current offset
 	 */
-	int segment_index;
+	off64_t current_offset;
 
-	/* The segment data offset
+	/* The (stream) size
 	 */
-	size_t segment_data_offset;
+	size64_t size;
+
+	/* The maximum segment size
+	 */
+	size64_t maximum_segment_size;
 
 	/* The segments array 
 	 */
 	libcdata_array_t *segments_array;
 
-	/* The segments list
+	/* The mapped ranges array 
 	 */
-	libfdata_list_t *segments_list;
+	libcdata_array_t *mapped_ranges_array;
 
 	/* The flags
 	 */
@@ -80,15 +83,51 @@ struct libfdata_internal_stream
 	       intptr_t *source_data_handle,
 	       libcerror_error_t **error );
 
+	/* The create segment function
+	 */
+	int (*create_segment)(
+	       intptr_t *data_handle,
+	       intptr_t *file_io_handle,
+	       int segment_index,
+               int *segment_file_index,
+	       libcerror_error_t **error )
+
 	/* The read segment data function
 	 */
 	ssize_t (*read_segment_data)(
 	           intptr_t *data_handle,
 	           intptr_t *file_io_handle,
+	           libfdata_stream_t *stream,
                    int segment_index,
-	           uint8_t *data,
-	           size_t data_size,
+                   int segment_file_index,
+	           uint8_t *segment_data,
+	           size_t segment_data_size,
                    uint8_t read_flags,
+	           libcerror_error_t **error );
+
+	/* The write segment data function
+	 */
+	ssize_t (*write_segment_data)(
+	           intptr_t *data_handle,
+	           intptr_t *file_io_handle,
+	           libfdata_stream_t *stream,
+	           int segment_index,
+	           int segment_file_index,
+	           const uint8_t *segment_data,
+	           size_t segment_data_size,
+                   uint8_t write_flags,
+	           libcerror_error_t **error );
+
+	/* The seek segment offset function
+	 */
+	off64_t (*seek_segment_offset)(
+	           intptr_t *data_handle,
+	           intptr_t *file_io_handle,
+	           libfdata_stream_t *stream,
+	           int segment_index,
+	           int segment_file_index,
+	           off64_t segment_offset,
+	           int whence,
 	           libcerror_error_t **error );
 };
 
@@ -103,13 +142,40 @@ int libfdata_stream_initialize(
             intptr_t **destination_data_handle,
             intptr_t *source_data_handle,
             libcerror_error_t **error ),
+     int (*create_segment)(
+            intptr_t *data_handle,
+            intptr_t *file_io_handle,
+            int segment_index,
+            int *segment_file_index,
+            libcerror_error_t **error )
      ssize_t (*read_segment_data)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
                 int segment_index,
-                uint8_t *data,
-                size_t data_size,
+                int segment_file_index,
+                uint8_t *segment_data,
+                size_t segment_data_size,
                 uint8_t read_flags,
+                libcerror_error_t **error ),
+     ssize_t (*write_segment_data)(
+                intptr_t *data_handle,
+                intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
+                int segment_file_index,
+                const uint8_t *segment_data,
+                size_t segment_data_size,
+                uint8_t write_flags,
+                libcerror_error_t **error ),
+     off64_t (*seek_segment_offset)(
+                intptr_t *data_handle,
+                intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
+                int segment_file_index,
+                off64_t segment_offset,
+                int whence,
                 libcerror_error_t **error ),
      uint8_t flags,
      libcerror_error_t **error );
@@ -174,15 +240,49 @@ int libfdata_stream_append_segment(
      uint32_t segment_flags,
      libcerror_error_t **error );
 
+LIBFDATA_EXTERN \
+int libfdata_stream_get_maximum_segment_size(
+     libfdata_stream_t *stream,
+     size64_t *maximum_segment_size,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_stream_set_maximum_segment_size(
+     libfdata_stream_t *stream,
+     size64_t maximum_segment_size,
+     libcerror_error_t **error );
+
+/* Mapped range functions
+ */
+int libfdata_stream_calculate_mapped_ranges(
+     libfdata_internal_stream_t *internal_stream,
+     libcerror_error_t **error );
+
+int libfdata_stream_get_segment_index_at_offset(
+     libfdata_internal_stream_t *internal_stream,
+     off64_t data_offset,
+     int *segment_index,
+     off64_t *segment_data_offset,
+     libcerror_error_t **error );
+
 /* IO functions
  */
 LIBFDATA_EXTERN \
 ssize_t libfdata_stream_read_buffer(
          libfdata_stream_t *stream,
          intptr_t *file_io_handle,
-         libfcache_cache_t *cache,
          uint8_t *buffer,
          size_t buffer_size,
+         uint8_t read_flags,
+         libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+ssize_t libfdata_stream_write_buffer(
+         libfdata_stream_t *stream,
+         intptr_t *file_io_handle,
+         const uint8_t *buffer,
+         size_t buffer_size,
+         uint8_t write_flags,
          libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
@@ -191,6 +291,18 @@ off64_t libfdata_stream_seek_offset(
          off64_t offset,
          int whence,
          libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_stream_get_offset(
+     libfdata_stream_t *stream,
+     off64_t *offset,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_stream_get_size(
+     libfdata_stream_t *stream,
+     size64_t *size,
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

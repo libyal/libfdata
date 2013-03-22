@@ -28,7 +28,6 @@ libfdata_la_SOURCES = \
 	libfdata_range.c libfdata_range.h \
 	libfdata_reference.c libfdata_reference.h \
 	libfdata_stream.c libfdata_stream.h \
-	libfdata_stream_reference.c libfdata_stream_reference.h \
 	libfdata_support.c libfdata_support.h \
 	libfdata_tree.c libfdata_tree.h \
 	libfdata_tree_node.c libfdata_tree_node.h \

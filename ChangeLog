@@ -1,7 +1,7 @@
 TODO
 * stream rewrite
-  - only have read/write/seek no caching
-
+  - only have create/read/write/seek no caching
+* remove clone functions ?
 * rewrite
   - remove list from stream
   - add write support
@@ -12,6 +12,8 @@ TODO
 
 20130320
 * worked on refactor to combine fdata and mfdata
+* worked on stream
+* removed stream reference
 
 20130319
 * worked on refactor to combine fdata and mfdata

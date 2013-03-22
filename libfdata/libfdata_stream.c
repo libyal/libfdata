@@ -28,9 +28,9 @@
 #include "libfdata_definitions.h"
 #include "libfdata_libcerror.h"
 #include "libfdata_libcnotify.h"
-#include "libfdata_libfcache.h"
 #include "libfdata_list.h"
 #include "libfdata_list_element.h"
+#include "libfdata_mapped_range.h"
 #include "libfdata_types.h"
 #include "libfdata_unused.h"
 
@@ -52,13 +52,40 @@ int libfdata_stream_initialize(
             intptr_t **destination_data_handle,
             intptr_t *source_data_handle,
             libcerror_error_t **error ),
+     int (*create_segment)(
+            intptr_t *data_handle,
+            intptr_t *file_io_handle,
+            int segment_index,
+            int *segment_file_index,
+            libcerror_error_t **error )
      ssize_t (*read_segment_data)(
                 intptr_t *data_handle,
                 intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
                 int segment_index,
-                uint8_t *data,
-                size_t data_size,
+                int segment_file_index,
+                uint8_t *segment_data,
+                size_t segment_data_size,
                 uint8_t read_flags,
+                libcerror_error_t **error ),
+     ssize_t (*write_segment_data)(
+                intptr_t *data_handle,
+                intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
+                int segment_file_index,
+                const uint8_t *segment_data,
+                size_t segment_data_size,
+                uint8_t write_flags,
+                libcerror_error_t **error ),
+     off64_t (*seek_segment_offset)(
+                intptr_t *data_handle,
+                intptr_t *file_io_handle,
+                libfdata_stream_t *stream,
+                int segment_index,
+                int segment_file_index,
+                off64_t segment_offset,
+                int whence,
                 libcerror_error_t **error ),
      uint8_t flags,
      libcerror_error_t **error )
@@ -88,17 +115,6 @@ int libfdata_stream_initialize(
 
 		return( -1 );
 	}
-	if( read_segment_data == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid read segment data function.",
-		 function );
-
-		return( -1 );
-	}
 	internal_stream = memory_allocate_structure(
 	                   libfdata_internal_stream_t );
 
@@ -111,7 +127,10 @@ int libfdata_stream_initialize(
 		 "%s: unable to create stream.",
 		 function );
 
-		goto on_error;
+		memory_free(
+		 internal_stream );
+
+		return( -1 );
 	}
 	if( memory_set(
 	     internal_stream,
@@ -125,7 +144,10 @@ int libfdata_stream_initialize(
 		 "%s: unable to clear stream.",
 		 function );
 
-		goto on_error;
+		memory_free(
+		 internal_stream );
+
+		return( -1 );
 	}
 	if( libcdata_array_initialize(
 	     &( internal_stream->segments_array ),
@@ -141,11 +163,28 @@ int libfdata_stream_initialize(
 
 		goto on_error;
 	}
-	internal_stream->flags            |= flags;
-	internal_stream->data_handle       = data_handle;
-	internal_stream->free_data_handle  = free_data_handle;
-	internal_stream->clone_data_handle = clone_data_handle;
-	internal_stream->read_segment_data = read_segment_data;
+	if( libcdata_array_initialize(
+	     &( internal_stream->mapped_ranges_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create mapped ranges array.",
+		 function );
+
+		goto on_error;
+	}
+	internal_stream->flags              |= flags;
+	internal_stream->data_handle         = data_handle;
+	internal_stream->free_data_handle    = free_data_handle;
+	internal_stream->clone_data_handle   = clone_data_handle;
+	internal_stream->create_segment      = create_segment;
+	internal_stream->read_segment_data   = read_segment_data;
+	internal_stream->write_segment_data  = write_segment_data;
+	internal_stream->seek_segment_offset = seek_segment_offset;
 
 	*stream = (libfdata_stream_t *) internal_stream;
 
@@ -204,6 +243,20 @@ int libfdata_stream_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free the segments array.",
+			 function );
+
+			result = -1;
+		}
+		if( libcdata_array_free(
+		     &( internal_stream->mapped_ranges_array ),
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_mapped_range_free,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free the mapped ranges array.",
 			 function );
 
 			result = -1;
@@ -356,7 +409,7 @@ int libfdata_stream_clone(
 	}
 	destination_data_handle = NULL;
 
-/* TODO clone data ranges */
+/* TODO clone data ranges and mapped offset ranges */
 	return( 1 );
 
 on_error:
@@ -415,6 +468,20 @@ int libfdata_stream_empty_segments(
 
 		return( -1 );
 	}
+	if( libcdata_array_empty(
+	     internal_stream->mapped_ranges_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_mapped_range_free,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to empty mapped ranges array.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -457,10 +524,25 @@ int libfdata_stream_resize_segments(
 
 		return( -1 );
 	}
+	if( libcdata_array_resize(
+	     internal_stream->mapped_ranges_array,
+	     number_of_segments,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_mapped_range_free,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
+		 "%s: unable to resize mapped ranges array.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
-/* Retrieves the number of segments of the stream
+/* Retrieves the number of segments
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_get_number_of_segments(
@@ -501,7 +583,7 @@ int libfdata_stream_get_number_of_segments(
 	return( 1 );
 }
 
-/* Retrieves the offset and size of a specific segment
+/* Retrieves a specific segment
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_get_segment_by_index(
@@ -567,7 +649,7 @@ int libfdata_stream_get_segment_by_index(
 	return( 1 );
 }
 
-/* Sets the offset and size of a specific segment
+/* Sets a specific segment
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_set_segment_by_index(
@@ -579,8 +661,9 @@ int libfdata_stream_set_segment_by_index(
      uint32_t segment_flags,
      libcerror_error_t **error )
 {
-	libfdata_range_t *segment_data_range        = NULL;
 	libfdata_internal_stream_t *internal_stream = NULL;
+	libfdata_mapped_range_t *mapped_range       = NULL;
+	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_stream_set_segment_by_index";
 	off64_t previous_segment_offset             = 0;
 	size64_t previous_segment_size              = 0;
@@ -672,7 +755,7 @@ int libfdata_stream_set_segment_by_index(
 
 			return( -1 );
 		}
-		internal_stream->data_size -= previous_segment_size;
+		internal_stream->size -= previous_segment_size;
 	}
 	if( libfdata_range_set(
 	     segment_data_range,
@@ -691,13 +774,67 @@ int libfdata_stream_set_segment_by_index(
 
 		return( -1 );
 	}
-	internal_stream->data_size += segment_size;
-	internal_stream->flags     |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
+	/* Make sure the stream has a mapped range entry for every segment
+	 */
+	if( libcdata_array_get_entry_by_index(
+	     internal_stream->mapped_ranges_array,
+	     segment_index,
+	     (intptr_t **) &mapped_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve entry: %d from mapped ranges array.",
+		 function,
+		 segment_index );
+
+		return( -1 );
+	}
+	if( mapped_range == NULL )
+	{
+		if( libfdata_mapped_range_initialize(
+		     &mapped_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create mapped range.",
+			 function );
+
+			return( -1 );
+		}
+		if( libcdata_array_set_entry_by_index(
+		     internal_stream->mapped_ranges_array,
+		     segment_index,
+		     (intptr_t *) mapped_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set entry: %d in mapped ranges array.",
+			 function,
+			 segment_index );
+
+			libfdata_mapped_range_free(
+			 &mapped_range,
+			 NULL );
+
+			return( -1 );
+		}
+	}
+	internal_stream->size  += segment_size;
+	internal_stream->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	return( 1 );
 }
 
-/* Appends a segment offset and size
+/* Appends a segment
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_append_segment(
@@ -710,8 +847,10 @@ int libfdata_stream_append_segment(
      libcerror_error_t **error )
 {
 	libfdata_internal_stream_t *internal_stream = NULL;
+	libfdata_mapped_range_t *mapped_range       = NULL;
 	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_stream_append_segment";
+	int mapped_range_index                      = 0;
 
 	if( stream == NULL )
 	{
@@ -782,24 +921,94 @@ int libfdata_stream_append_segment(
 
 		goto on_error;
 	}
+	if( libfdata_mapped_range_initialize(
+	     &mapped_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create mapped range.",
+		 function );
+
+		libcdata_array_set_entry_by_index(
+		 internal_stream->segments_array,
+		 *segment_index,
+		 NULL,
+		 NULL );
+
+		goto on_error;
+	}
+	if( libfdata_mapped_range_set(
+	     mapped_range,
+	     (off64_t) internal_stream->size,
+	     segment_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set mapped range values.",
+		 function );
+
+		libcdata_array_set_entry_by_index(
+		 internal_stream->segments_array,
+		 *segment_index,
+		 NULL,
+		 NULL );
+
+		goto on_error;
+	}
+	if( libcdata_array_append_entry(
+	     internal_stream->mapped_ranges_array,
+	     &mapped_range_index,
+	     (intptr_t *) mapped_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+		 "%s: unable to append mapped range to array.",
+		 function );
+
+		libcdata_array_set_entry_by_index(
+		 internal_stream->segments_array,
+		 *segment_index,
+		 NULL,
+		 NULL );
+
+		goto on_error;
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 		 function,
 		 *segment_index,
 		 segment_file_index,
 		 segment_offset,
 		 segment_offset + segment_size,
+		 segment_size,
+		 internal_stream->size,
+		 internal_stream->size + segment_size,
 		 segment_size );
 	}
 #endif
-	internal_stream->data_size += segment_size;
+	internal_stream->size += segment_size;
 
 	return( 1 );
 
 on_error:
+	if( mapped_range != NULL )
+	{
+		libfdata_mapped_range_free(
+		 &mapped_range,
+		 NULL );
+	}
 	if( segment_data_range != NULL )
 	{
 		libfdata_range_free(
@@ -807,6 +1016,475 @@ on_error:
 		 NULL );
 	}
 	return( -1 );
+}
+
+/* Retrieves the maximum segment size
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_get_maximum_segment_size(
+     libfdata_stream_t *stream,
+     size64_t *maximum_segment_size,
+     libcerror_error_t **error )
+{
+	libfdata_internal_stream_t *internal_stream = NULL;
+	static char *function                       = "libfdata_stream_get_maximum_segment_size";
+
+	if( stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream = (libfdata_internal_stream_t *) stream;
+
+	if( maximum_segment_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid maximum segment size.",
+		 function );
+
+		return( -1 );
+	}
+	*maximum_segment_size = internal_stream->maximum_segment_size;
+
+	return( 1 );
+}
+
+/* Sets the maximum segment size
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_set_maximum_segment_size(
+     libfdata_stream_t *stream,
+     size64_t maximum_segment_size,
+     libcerror_error_t **error )
+{
+	libfdata_internal_stream_t *internal_stream = NULL;
+	static char *function                       = "libfdata_stream_set_maximum_segment_size";
+
+	if( stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream = (libfdata_internal_stream_t *) stream;
+
+	if( maximum_segment_size > (size64_t) INT64_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid maximum segment size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream->maximum_segment_size = maximum_segment_size;
+
+	return( 1 );
+}
+
+/* Mapped range functions
+ */
+
+/* Calculates the mapped ranges
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_calculate_mapped_ranges(
+     libfdata_internal_stream_t *internal_stream,
+     libcerror_error_t **error )
+{
+	libfdata_mapped_range_t *mapped_range = NULL;
+	libfdata_range_t *segment_data_range  = NULL;
+	static char *function                 = "libfdata_stream_calculate_mapped_ranges";
+	off64_t mapped_range_offset           = 0;
+	off64_t segment_offset                = 0;
+	size64_t segment_size                 = 0;
+	uint32_t segment_flags                = 0;
+	int number_of_segments                = 0;
+	int segment_file_index                = 0;
+	int segment_index                     = 0;
+
+	if( internal_stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream ",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_array_get_number_of_entries(
+	     internal_stream->segments_array,
+	     &number_of_segments,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of entries from segments array.",
+		 function );
+
+		return( -1 );
+	}
+	for( segment_index = 0;
+	     segment_index < number_of_segments;
+	     segment_index++ )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_stream->segments_array,
+		     segment_index,
+		     (intptr_t **) &segment_data_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from segments array.",
+			 function,
+			 segment_index );
+
+			return( -1 );
+		}
+		if( libcdata_array_get_entry_by_index(
+		     internal_stream->mapped_ranges_array,
+		     segment_index,
+		     (intptr_t **) &mapped_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from mapped ranges array.",
+			 function,
+			 segment_index );
+
+			return( -1 );
+		}
+		if( libfdata_range_get(
+		     segment_data_range,
+		     &segment_file_index,
+		     &segment_offset,
+		     &segment_size,
+		     &segment_flags,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve segment: %d data range values.",
+			 function,
+			 segment_index );
+
+			return( -1 );
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 segment_index,
+			 segment_file_index,
+			 segment_offset,
+			 segment_offset + segment_size,
+			 segment_size,
+			 mapped_range_offset,
+			 mapped_range_offset + segment_size,
+			 segment_size );
+		}
+#endif
+		if( libfdata_mapped_range_set(
+		     mapped_range,
+		     mapped_range_offset,
+		     segment_size,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set mapped range: %d values.",
+			 function,
+			 segment_index );
+
+			return( -1 );
+		}
+		mapped_range_offset += (off64_t) segment_size;
+	}
+	internal_stream->timestamp = libfcache_date_time_get_timestamp();
+	internal_stream->flags    &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
+
+	return( 1 );
+}
+
+/* Retrieves the segment index for a specific offset
+ * The segment_data_offset value is set to the offset relative to the start of the segment
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_get_segment_index_at_offset(
+     libfdata_internal_stream_t *internal_stream,
+     off64_t offset,
+     int *segment_index,
+     off64_t *segment_data_offset,
+     libcerror_error_t **error )
+{
+	libfdata_mapped_range_t *mapped_range = NULL;
+	static char *function                 = "libfdata_stream_get_segment_index_at_offset";
+	off64_t mapped_range_offset           = 0;
+	size64_t mapped_range_size            = 0;
+	int initial_segment_index             = 0;
+	int number_of_segments                = 0;
+
+	if( internal_stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_stream->data_size == 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid stream - data size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
+		 "%s: invalid offset value less than zero.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_index == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid segment index.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid segment offset.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( internal_stream->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
+	{
+		if( libfdata_stream_calculate_mapped_ranges(
+		     internal_stream,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to calculate mapped ranges.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	if( libcdata_array_get_number_of_entries(
+	     internal_stream->mapped_ranges_array,
+	     &number_of_segments,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of entries from mapped ranges array.",
+		 function );
+
+		return( -1 );
+	}
+	/* This assumes a fairly even distribution of the sizes of the segments
+	 */
+	initial_segment_index = (int) ( ( number_of_segments * offset ) / internal_stream->data_size );
+
+	/* Look for the corresponding segment upwards in the array
+	 */
+	for( *segment_index = initial_segment_index;
+	     *segment_index < number_of_segments;
+	     *segment_index += 1 )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_stream->mapped_ranges_array,
+		     *segment_index,
+		     (intptr_t **) &mapped_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from mapped ranges array.",
+			 function,
+			 *segment_index );
+
+			return( -1 );
+		}
+		if( libfdata_mapped_range_get(
+		     mapped_range,
+		     &mapped_range_offset,
+		     &mapped_range_size,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to retrieve values from mapped range: %d.",
+			 function,
+			 *segment_index );
+
+			return( -1 );
+		}
+		/* Check if the offset is in the mapped range
+		 */
+		if( ( offset >= mapped_range_offset )
+		 && ( offset < ( mapped_range_offset + (off64_t) mapped_range_size ) ) )
+		{
+			offset -= mapped_range_offset;
+
+			break;
+		}
+		/* Check if the offset is out of bounds
+		 */
+		if( offset < mapped_range_offset )
+		{
+			*segment_index = number_of_segments;
+
+			break;
+		}
+	}
+	if( *segment_index >= number_of_segments )
+	{
+		/* Look for the corresponding segment downwards in the array
+		 */
+		for( *segment_index = initial_segment_index;
+		     *segment_index >= 0;
+		     *segment_index -= 1 )
+		{
+			if( libcdata_array_get_entry_by_index(
+			     internal_stream->mapped_ranges_array,
+			     *segment_index,
+			     (intptr_t **) &mapped_range,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve entry: %d from mapped ranges array.",
+				 function,
+				 *segment_index );
+
+				return( -1 );
+			}
+			if( libfdata_mapped_range_get(
+			     mapped_range,
+			     &mapped_range_offset,
+			     &mapped_range_size,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to retrieve values from mapped range: %d.",
+				 function,
+				 *segment_index );
+
+				return( -1 );
+			}
+			/* Check if the offset is in the mapped range
+			 */
+			if( ( offset >= mapped_range_offset )
+			 && ( offset < ( mapped_range_offset + (off64_t) mapped_range_size ) ) )
+			{
+				offset -= mapped_range_offset;
+
+				break;
+			}
+			/* Check if the offset is out of bounds
+			 */
+			if( offset > mapped_range_offset )
+			{
+				*segment_index = -1;
+
+				break;
+			}
+		}
+	}
+	if( *segment_index < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	*segment_data_offset = offset;
+
+	return( 1 );
 }
 
 /* IO functions
@@ -818,15 +1496,14 @@ on_error:
 ssize_t libfdata_stream_read_buffer(
          libfdata_stream_t *stream,
          intptr_t *file_io_handle,
-         libfcache_cache_t *cache,
          uint8_t *buffer,
          size_t buffer_size,
+         uint8_t read_flags,
          libcerror_error_t **error )
 {
 	libfdata_internal_stream_t *internal_stream = NULL;
 	uint8_t *segment_data                       = NULL;
 	static char *function                       = "libfdata_stream_read_buffer";
-	size64_t data_stream_size                   = 0;
 	size_t buffer_offset                        = 0;
 	size_t read_size                            = 0;
 	size_t segment_data_size                    = 0;
@@ -844,6 +1521,17 @@ ssize_t libfdata_stream_read_buffer(
 	}
 	internal_stream = (libfdata_internal_stream_t *) stream;
 
+	if( read_segment_data == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid read segment data function.",
+		 function );
+
+		return( -1 );
+	}
 	if( buffer == NULL )
 	{
 		libcerror_error_set(
@@ -866,48 +1554,33 @@ ssize_t libfdata_stream_read_buffer(
 
 		return( -1 );
 	}
-	if( libfdata_list_get_data_size(
-	     internal_stream->segments_list,
-	     &data_stream_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segments list data size.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( internal_stream->data_offset < 0 )
-	 || ( internal_stream->data_offset >= (off64_t) data_stream_size ) )
+	if( ( internal_stream->current_offset < 0 )
+	 || ( internal_stream->current_offset >= (off64_t) internal_stream->size ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid stream - data offset: %" PRIi64 " value out of bounds: 0 - %" PRIu64 ".",
+		 "%s: invalid stream - current offset: %" PRIi64 " value out of bounds: 0 - %" PRIu64 ".",
 		 function,
-		 internal_stream->data_offset,
-		 data_stream_size );
+		 internal_stream->current_offset,
+		 internal_stream->size );
 
 		return( -1 );
 	}
-	if( (off64_t) ( internal_stream->data_offset + buffer_size ) > (off64_t) data_stream_size )
+	if( (off64_t) ( internal_stream->current_offset + buffer_size ) > (off64_t) internal_stream->size )
 	{
-		buffer_size = (size_t) ( data_stream_size - internal_stream->data_offset );
+		buffer_size = (size_t) ( internal_stream->size - internal_stream->current_offset );
 	}
 	while( buffer_size > 0 )
 	{
 		if( libfdata_stream_get_segment_data(
 		     stream,
 		     file_io_handle,
-		     cache,
 		     internal_stream->segment_index,
 		     &segment_data,
 		     &segment_data_size,
-		     0,
+		     read_flags,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -916,7 +1589,7 @@ ssize_t libfdata_stream_read_buffer(
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve segment data at offset: %" PRIi64 ".",
 			 function,
-			 internal_stream->data_offset );
+			 internal_stream->current_offset );
 
 			return( -1 );
 		}
@@ -951,7 +1624,7 @@ ssize_t libfdata_stream_read_buffer(
 
 			return( -1 );
 		}
-		internal_stream->data_offset += read_size;
+		internal_stream->current_offset += read_size;
 
 		if( ( internal_stream->segment_data_offset + read_size ) == segment_data_size )
 		{
@@ -968,6 +1641,21 @@ ssize_t libfdata_stream_read_buffer(
 	return( (size_t) buffer_offset );
 }
 
+/* Writes data in the buffer to the current offset
+ * Returns the number of bytes read or -1 on error
+ */
+ssize_t libfdata_stream_write_buffer(
+         libfdata_stream_t *stream,
+         intptr_t *file_io_handle,
+         const uint8_t *buffer,
+         size_t buffer_size,
+         uint8_t write_flags,
+         libcerror_error_t **error )
+{
+/* TODO implement */
+	return( -1 );
+}
+
 /* Seeks a certain offset of the data
  * Returns the offset if seek is successful or -1 on error
  */
@@ -979,8 +1667,7 @@ off64_t libfdata_stream_seek_offset(
 {
 	libfdata_internal_stream_t *internal_stream = NULL;
 	static char *function                       = "libfdata_stream_seek_offset";
-	size64_t data_stream_size                   = 0;
-	size_t segment_data_offset                  = 0;
+	off64_t segment_data_offset                 = 0;
 	int segment_index                           = 0;
 
 	if( stream == NULL )
@@ -996,13 +1683,13 @@ off64_t libfdata_stream_seek_offset(
 	}
 	internal_stream = (libfdata_internal_stream_t *) stream;
 
-	if( internal_stream->data_offset < 0 )
+	if( internal_stream->current_offset < 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid stream - data offset value out of bounds.",
+		 "%s: invalid stream - current offset value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1020,27 +1707,13 @@ off64_t libfdata_stream_seek_offset(
 
 		return( -1 );
 	}
-	if( libfdata_list_get_data_size(
-	     internal_stream->segments_list,
-	     &data_stream_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segments list data size.",
-		 function );
-
-		return( -1 );
-	}
 	if( whence == SEEK_CUR )
 	{
-		offset += internal_stream->data_offset;
+		offset += internal_stream->current_offset;
 	}
 	else if( whence == SEEK_END )
 	{
-		offset += (off64_t) data_stream_size;
+		offset += (off64_t) internal_stream->size;
 	}
 #if defined( HAVE_VERBOSE_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -1062,10 +1735,10 @@ off64_t libfdata_stream_seek_offset(
 
 		return( -1 );
 	}
-	if( offset < (off64_t) data_stream_size )
+	if( offset < (off64_t) internal_stream->size )
 	{
-		if( libfdata_list_get_element_index_at_value_offset(
-		     internal_stream->segments_list,
+		if( libfdata_stream_get_segment_index_at_offset(
+		     internal_stream,
 		     offset,
 		     &segment_index,
 		     &segment_data_offset,
@@ -1075,7 +1748,7 @@ off64_t libfdata_stream_seek_offset(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve element index at offset %" PRIi64 ".",
+			 "%s: unable to retrieve segment index at offset: %" PRIi64 ".",
 			 function,
 			 offset );
 
@@ -1084,8 +1757,93 @@ off64_t libfdata_stream_seek_offset(
 		internal_stream->segment_index       = segment_index;
 		internal_stream->segment_data_offset = segment_data_offset;
 	}
-	internal_stream->data_offset = offset;
+	else
+	{
+		internal_stream->segment_index       = -1;
+		internal_stream->segment_data_offset = 0;
+	}
+	internal_stream->current_offset = offset;
 
 	return( offset );
+}
+
+/* Retrieves the offset
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_get_offset(
+     libfdata_stream_t *stream,
+     off64_t *offset,
+     libcerror_error_t **error )
+{
+	libfdata_internal_stream_t *internal_stream = NULL;
+	static char *function                       = "libfdata_stream_get_data_offset";
+
+	if( stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream = (libfdata_internal_stream_t *) stream;
+
+	if( offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid offset.",
+		 function );
+
+		return( -1 );
+	}
+	*offset = internal_stream->current_offset;
+
+	return( 1 );
+}
+
+/* Retrieves the size
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_get_size(
+     libfdata_stream_t *stream,
+     size64_t *size,
+     libcerror_error_t **error )
+{
+	libfdata_internal_stream_t *internal_stream = NULL;
+	static char *function                       = "libfdata_stream_get_size";
+
+	if( stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream = (libfdata_internal_stream_t *) stream;
+
+	if( size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid size.",
+		 function );
+
+		return( -1 );
+	}
+	*size = internal_stream->size;
+
+	return( 1 );
 }
 
