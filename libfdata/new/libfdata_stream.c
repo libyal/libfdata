@@ -991,7 +991,7 @@ on_error:
 }
 
 /* Retrieves the segment data and size of a specific segment
- * This function requires a cache 
+ * This function requires a cache
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_get_segment_data(
@@ -1358,7 +1358,7 @@ int libfdata_stream_get_segment_data(
 }
 
 /* Retrieves the segment data and size at a certain offset
- * This function requires a cache 
+ * This function requires a cache
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_get_segment_data_at_offset(

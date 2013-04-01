@@ -1,15 +1,20 @@
 TODO
-* stream rewrite
-  - removed segment data functions
-  - only have create/read/write/seek no caching
 * remove clone functions ?
+* stream
+  - create callback allow for return of 0 to indicate no segment could be created?
 * rewrite
-  - remove list from stream
-  - add write support
   - update libfdata_tree_initialize
 * add tests
 * update manuals
 * update msvscpp files
+
+20130401
+* worked on refactor to combine fdata and mfdata
+* stream rewrite
+  - removed list
+  - removed caching
+  - removed segment data functions
+  - added write support
 
 20130320
 * worked on refactor to combine fdata and mfdata
