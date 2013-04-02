@@ -1,4 +1,4 @@
-.Dd April 1, 2013
+.Dd April 2, 2013
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -13,6 +13,16 @@ Support functions
 .Ft const char *
 .Fn libfdata_get_version "void"
 .Pp
+Notify functions
+.Ft void
+.Fn libfdata_notify_set_verbose "int verbose"
+.Ft int
+.Fn libfdata_notify_set_stream "FILE *stream, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_notify_stream_open "const char *filename, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_notify_stream_close "libfdata_error_t **error"
+.Pp
 Error functions
 .Ft void
 .Fn libfdata_error_free "libfdata_error_t **error"
@@ -25,41 +35,37 @@ Error functions
 .Ft int
 .Fn libfdata_error_backtrace_sprint "libfdata_error_t *error, char *string, size_t size"
 .Pp
-Identifier functions
+Stream functions
 .Ft int
-.Fn libfdata_identifier_initialize "libfdata_identifier_t **identifier, libfdata_error_t **error"
+.Fn libfdata_stream_initialize "libfdata_stream_t **stream, intptr_t *data_handle, int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error ), int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error ), int (*create_segment)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int *segment_file_index, off64_t *segment_offset, size64_t *segment_size, uint32_t *segment_flags, libfdata_error_t **error ), ssize_t (*read_segment_data)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int segment_file_index, uint8_t *segment_data, size_t segment_data_size, uint32_t segment_flags, uint8_t read_flags, libfdata_error_t **error ), ssize_t (*write_segment_data)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int segment_file_index, const uint8_t *segment_data, size_t segment_data_size, uint32_t segment_flags, uint8_t write_flags, libfdata_error_t **error ), off64_t (*seek_segment_offset)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int segment_file_index, off64_t segment_offset, libfdata_error_t **error ), uint8_t flags, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_free "libfdata_identifier_t **identifier, libfdata_error_t **error"
+.Fn libfdata_stream_free "libfdata_stream_t **stream, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_from_byte_stream "libfdata_identifier_t *identifier, const uint8_t *byte_stream, size_t byte_stream_size, int byte_order, libfdata_error_t **error"
+.Fn libfdata_stream_clone "libfdata_stream_t **destination_stream, libfdata_stream_t *source_stream, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_to_byte_stream "libfdata_identifier_t *identifier, uint8_t *byte_stream, size_t byte_stream_size, int byte_order, libfdata_error_t **error"
+.Fn libfdata_stream_empty_segments "libfdata_stream_t *stream, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_get_string_size "libfdata_identifier_t *identifier, size_t *string_size, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_resize_segments "libfdata_stream_t *stream, int number_of_segments, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_from_utf8_string "libfdata_identifier_t *identifier, const uint8_t *utf8_string, size_t utf8_string_length, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_get_number_of_segments "libfdata_stream_t *stream, int *number_of_segments, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_from_utf8_string_with_index "libfdata_identifier_t *identifier, const uint8_t *utf8_string, size_t utf8_string_length, size_t* utf8_string_index, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_get_segment_by_index "libfdata_stream_t *stream, int segment_index, int *segment_file_index, off64_t *segment_offset, size64_t *segment_size, uint32_t *segment_flags, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_to_utf8_string "libfdata_identifier_t *identifier, uint8_t *utf8_string, size_t utf8_string_size, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_set_segment_by_index "libfdata_stream_t *stream, int segment_index, int segment_file_index, off64_t segment_offset, size64_t segment_size, uint32_t segment_flags, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_to_utf8_string_with_index "libfdata_identifier_t *identifier, uint8_t *utf8_string, size_t utf8_string_size, size_t* utf8_string_index, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_append_segment "libfdata_stream_t *stream, int *segment_index, int segment_file_index, off64_t segment_offset, size64_t segment_size, uint32_t segment_flags, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_from_utf16_string "libfdata_identifier_t *identifier, const uint16_t *utf16_string, size_t utf16_string_length, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_get_segment_index_at_offset "libfdata_stream_t *stream, off64_t data_offset, int *segment_index, off64_t *segment_data_offset, libfdata_error_t **error"
+.Ft ssize_t
+.Fn libfdata_stream_read_buffer "libfdata_stream_t *stream, intptr_t *file_io_handle, uint8_t *buffer, size_t buffer_size, uint8_t read_flags, libfdata_error_t **error"
+.Ft ssize_t
+.Fn libfdata_stream_write_buffer "libfdata_stream_t *stream, intptr_t *file_io_handle, const uint8_t *buffer, size_t buffer_size, uint8_t write_flags, libfdata_error_t **error"
+.Ft off64_t
+.Fn libfdata_stream_seek_offset "libfdata_stream_t *stream, off64_t offset, int whence, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_from_utf16_string_with_index "libfdata_identifier_t *identifier, const uint16_t *utf16_string, size_t utf16_string_length, size_t* utf16_string_index, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_get_offset "libfdata_stream_t *stream, off64_t *offset, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_identifier_copy_to_utf16_string "libfdata_identifier_t *identifier, uint16_t *utf16_string, size_t utf16_string_size, uint32_t string_format_flags, libfdata_error_t **error"
-.Ft int
-.Fn libfdata_identifier_copy_to_utf16_string_with_index "libfdata_identifier_t *identifier, uint16_t *utf16_string, size_t utf16_string_size, size_t* utf16_string_index, uint32_t string_format_flags, libfdata_error_t **error"
-.Ft int
-.Fn libfdata_identifier_copy_from_utf32_string "libfdata_identifier_t *identifier, const uint32_t *utf32_string, size_t utf32_string_length, uint32_t string_format_flags, libfdata_error_t **error"
-.Ft int
-.Fn libfdata_identifier_copy_from_utf32_string_with_index "libfdata_identifier_t *identifier, const uint32_t *utf32_string, size_t utf32_string_length, size_t* utf32_string_index, uint32_t string_format_flags, libfdata_error_t **error"
-.Ft int
-.Fn libfdata_identifier_copy_to_utf32_string "libfdata_identifier_t *identifier, uint32_t *utf32_string, size_t utf32_string_size, uint32_t string_format_flags, libfdata_error_t **error"
-.Ft int
-.Fn libfdata_identifier_copy_to_utf32_string_with_index "libfdata_identifier_t *identifier, uint32_t *utf32_string, size_t utf32_string_size, size_t* utf32_string_index, uint32_t string_format_flags, libfdata_error_t **error"
+.Fn libfdata_stream_get_size "libfdata_stream_t *stream, size64_t *size, libfdata_error_t **error"
 .Sh DESCRIPTION
 The
 .Fn libfdata_get_version

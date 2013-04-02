@@ -45,6 +45,40 @@ const char *libfdata_get_version(
              void );
 
 /* -------------------------------------------------------------------------
+ * Notify functions
+ * ------------------------------------------------------------------------- */
+
+/* Sets the verbose notification
+ */
+LIBFDATA_EXTERN \
+void libfdata_notify_set_verbose(
+      int verbose );
+
+/* Sets the notification stream
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_notify_set_stream(
+     FILE *stream,
+     libfdata_error_t **error );
+
+/* Opens the notification stream using a filename
+ * The stream is opened in append mode
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_notify_stream_open(
+     const char *filename,
+     libfdata_error_t **error );
+
+/* Closes the notification stream if opened using a filename
+ * Returns 0 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_notify_stream_close(
+     libfdata_error_t **error );
+
+/* -------------------------------------------------------------------------
  * Error functions
  * ------------------------------------------------------------------------- */
 
@@ -91,199 +125,211 @@ int libfdata_error_backtrace_sprint(
      size_t size );
 
 /* -------------------------------------------------------------------------
- * Identifier functions
+ * Stream functions
  * ------------------------------------------------------------------------- */
 
-/* Initialize an identifier
+/* Initializes the stream
+ *
+ * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the stream
+ * takes over management of the data handle and the data handle is freed when
+ * no longer needed
+ *
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_initialize(
-     libfdata_identifier_t **identifier,
+int libfdata_stream_initialize(
+     libfdata_stream_t **stream,
+     intptr_t *data_handle,
+     int (*free_data_handle)(
+            intptr_t **data_handle,
+            libfdata_error_t **error ),
+     int (*clone_data_handle)(
+            intptr_t **destination_data_handle,
+            intptr_t *source_data_handle,
+            libfdata_error_t **error ),
+     int (*create_segment)(
+            intptr_t *data_handle,
+            intptr_t *file_io_handle,
+            int segment_index,
+            int *segment_file_index,
+            off64_t *segment_offset,
+            size64_t *segment_size,
+            uint32_t *segment_flags,
+            libfdata_error_t **error ),
+     ssize_t (*read_segment_data)(
+                intptr_t *data_handle,
+                intptr_t *file_io_handle,
+                int segment_index,
+                int segment_file_index,
+                uint8_t *segment_data,
+                size_t segment_data_size,
+                uint32_t segment_flags,
+                uint8_t read_flags,
+                libfdata_error_t **error ),
+     ssize_t (*write_segment_data)(
+                intptr_t *data_handle,
+                intptr_t *file_io_handle,
+                int segment_index,
+                int segment_file_index,
+                const uint8_t *segment_data,
+                size_t segment_data_size,
+                uint32_t segment_flags,
+                uint8_t write_flags,
+                libfdata_error_t **error ),
+     off64_t (*seek_segment_offset)(
+                intptr_t *data_handle,
+                intptr_t *file_io_handle,
+                int segment_index,
+                int segment_file_index,
+                off64_t segment_offset,
+                libfdata_error_t **error ),
+     uint8_t flags,
      libfdata_error_t **error );
 
-/* Frees an identifier
+/* Frees the stream
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_free(
-     libfdata_identifier_t **identifier,
+int libfdata_stream_free(
+     libfdata_stream_t **stream,
      libfdata_error_t **error );
 
-/* Copies the identifier from a byte stream
+/* Clones (duplicates) the stream
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_from_byte_stream(
-     libfdata_identifier_t *identifier,
-     const uint8_t *byte_stream,
-     size_t byte_stream_size,
-     int byte_order,
+int libfdata_stream_clone(
+     libfdata_stream_t **destination_stream,
+     libfdata_stream_t *source_stream,
      libfdata_error_t **error );
 
-/* Copies the identifier to a byte stream
+/* Clones (duplicates) the stream
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_to_byte_stream(
-     libfdata_identifier_t *identifier,
-     uint8_t *byte_stream,
-     size_t byte_stream_size,
-     int byte_order,
+int libfdata_stream_empty_segments(
+     libfdata_stream_t *stream,
      libfdata_error_t **error );
 
-/* Retrieves the size of an UTF-8 encoded string of the identifier
- * The string size includes the end of string character
+/* Resizes the segments
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_get_string_size(
-     libfdata_identifier_t *identifier,
-     size_t *string_size,
-     uint32_t string_format_flags,
+int libfdata_stream_resize_segments(
+     libfdata_stream_t *stream,
+     int number_of_segments,
      libfdata_error_t **error );
 
-/* Copies the identifier from an UTF-8 encoded string
+/* Retrieves the number of segments
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_from_utf8_string(
-     libfdata_identifier_t *identifier,
-     const uint8_t *utf8_string,
-     size_t utf8_string_length,
-     uint32_t string_format_flags,
+int libfdata_stream_get_number_of_segments(
+     libfdata_stream_t *stream,
+     int *number_of_segments,
      libfdata_error_t **error );
 
-/* Copies the identifier from an UTF-8 encoded string
+/* Retrieves a specific segment
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_from_utf8_string_with_index(
-     libfdata_identifier_t *identifier,
-     const uint8_t *utf8_string,
-     size_t utf8_string_length,
-     size_t *utf8_string_index,
-     uint32_t string_format_flags,
+int libfdata_stream_get_segment_by_index(
+     libfdata_stream_t *stream,
+     int segment_index,
+     int *segment_file_index,
+     off64_t *segment_offset,
+     size64_t *segment_size,
+     uint32_t *segment_flags,
      libfdata_error_t **error );
 
-/* Copies the identifier to an UTF-8 encoded string
- * The string size should include the end of string character
+/* Sets a specific segment
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_to_utf8_string(
-     libfdata_identifier_t *identifier,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
-     uint32_t string_format_flags,
+int libfdata_stream_set_segment_by_index(
+     libfdata_stream_t *stream,
+     int segment_index,
+     int segment_file_index,
+     off64_t segment_offset,
+     size64_t segment_size,
+     uint32_t segment_flags,
      libfdata_error_t **error );
 
-/* Copies the identifier to an UTF-8 encoded string
- * The string size should include the end of string character
+/* Appends a segment
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_to_utf8_string_with_index(
-     libfdata_identifier_t *identifier,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
-     size_t *utf8_string_index,
-     uint32_t string_format_flags,
+int libfdata_stream_append_segment(
+     libfdata_stream_t *stream,
+     int *segment_index,
+     int segment_file_index,
+     off64_t segment_offset,
+     size64_t segment_size,
+     uint32_t segment_flags,
      libfdata_error_t **error );
 
-/* Copies the identifier from an UTF-16 encoded string
+/* Retrieves the segment index for a specific offset
+ * The segment_data_offset value is set to the offset relative to the start of the segment
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_from_utf16_string(
-     libfdata_identifier_t *identifier,
-     const uint16_t *utf16_string,
-     size_t utf16_string_length,
-     uint32_t string_format_flags,
+int libfdata_stream_get_segment_index_at_offset(
+     libfdata_stream_t *stream,
+     off64_t data_offset,
+     int *segment_index,
+     off64_t *segment_data_offset,
      libfdata_error_t **error );
 
-/* Copies the identifier from an UTF-16 encoded string
+/* Reads data from the current offset into a buffer
+ * Returns the number of bytes read or -1 on error
+ */
+LIBFDATA_EXTERN \
+ssize_t libfdata_stream_read_buffer(
+         libfdata_stream_t *stream,
+         intptr_t *file_io_handle,
+         uint8_t *buffer,
+         size_t buffer_size,
+         uint8_t read_flags,
+         libfdata_error_t **error );
+
+/* Writes data in the buffer to the current offset
+ * Returns the number of bytes written or -1 on error
+ */
+LIBFDATA_EXTERN \
+ssize_t libfdata_stream_write_buffer(
+         libfdata_stream_t *stream,
+         intptr_t *file_io_handle,
+         const uint8_t *buffer,
+         size_t buffer_size,
+         uint8_t write_flags,
+         libfdata_error_t **error );
+
+/* Seeks a certain offset of the data
+ * Returns the offset if seek is successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+off64_t libfdata_stream_seek_offset(
+         libfdata_stream_t *stream,
+         off64_t offset,
+         int whence,
+         libfdata_error_t **error );
+
+/* Retrieves the offset
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_from_utf16_string_with_index(
-     libfdata_identifier_t *identifier,
-     const uint16_t *utf16_string,
-     size_t utf16_string_length,
-     size_t *utf16_string_index,
-     uint32_t string_format_flags,
+int libfdata_stream_get_offset(
+     libfdata_stream_t *stream,
+     off64_t *offset,
      libfdata_error_t **error );
 
-/* Copies the identifier to an UTF-16 encoded string
- * The string size should include the end of string character
+/* Retrieves the size
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
-int libfdata_identifier_copy_to_utf16_string(
-     libfdata_identifier_t *identifier,
-     uint16_t *utf16_string,
-     size_t utf16_string_size,
-     uint32_t string_format_flags,
-     libfdata_error_t **error );
-
-/* Copies the identifier to an UTF-16 encoded string
- * The string size should include the end of string character
- * Returns 1 if successful or -1 on error
- */
-LIBFDATA_EXTERN \
-int libfdata_identifier_copy_to_utf16_string_with_index(
-     libfdata_identifier_t *identifier,
-     uint16_t *utf16_string,
-     size_t utf16_string_size,
-     size_t *utf16_string_index,
-     uint32_t string_format_flags,
-     libfdata_error_t **error );
-
-/* Copies the identifier from an UTF-32 encoded string
- * Returns 1 if successful or -1 on error
- */
-LIBFDATA_EXTERN \
-int libfdata_identifier_copy_from_utf32_string(
-     libfdata_identifier_t *identifier,
-     const uint32_t *utf32_string,
-     size_t utf32_string_length,
-     uint32_t string_format_flags,
-     libfdata_error_t **error );
-
-/* Copies the identifier from an UTF-32 encoded string
- * Returns 1 if successful or -1 on error
- */
-LIBFDATA_EXTERN \
-int libfdata_identifier_copy_from_utf32_string_with_index(
-     libfdata_identifier_t *identifier,
-     const uint32_t *utf32_string,
-     size_t utf32_string_length,
-     size_t *utf32_string_index,
-     uint32_t string_format_flags,
-     libfdata_error_t **error );
-
-/* Copies the identifier to an UTF-32 encoded string
- * The string size should include the end of string character
- * Returns 1 if successful or -1 on error
- */
-LIBFDATA_EXTERN \
-int libfdata_identifier_copy_to_utf32_string(
-     libfdata_identifier_t *identifier,
-     uint32_t *utf32_string,
-     size_t utf32_string_size,
-     uint32_t string_format_flags,
-     libfdata_error_t **error );
-
-/* Copies the identifier to an UTF-32 encoded string
- * The string size should include the end of string character
- * Returns 1 if successful or -1 on error
- */
-LIBFDATA_EXTERN \
-int libfdata_identifier_copy_to_utf32_string_with_index(
-     libfdata_identifier_t *identifier,
-     uint32_t *utf32_string,
-     size_t utf32_string_size,
-     size_t *utf32_string_index,
+int libfdata_stream_get_size(
+     libfdata_stream_t *stream,
+     size64_t *size,
      libfdata_error_t **error );
 
 #if defined( __cplusplus )

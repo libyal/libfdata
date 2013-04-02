@@ -686,6 +686,39 @@ int libfdata_stream_set_segment_by_index(
 	}
 	internal_stream = (libfdata_internal_stream_t *) stream;
 
+	if( segment_file_index < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment file index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_size > (size64_t) INT64_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
 	if( libcdata_array_get_entry_by_index(
 	     internal_stream->segments_array,
 	     segment_index,
@@ -875,6 +908,39 @@ int libfdata_stream_append_segment(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid segment index.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_file_index < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment file index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_size > (size64_t) INT64_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1165,20 +1231,21 @@ int libfdata_stream_calculate_mapped_ranges(
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_get_segment_index_at_offset(
-     libfdata_internal_stream_t *internal_stream,
+     libfdata_stream_t *stream,
      off64_t offset,
      int *segment_index,
      off64_t *segment_data_offset,
      libcerror_error_t **error )
 {
-	libfdata_mapped_range_t *mapped_range = NULL;
-	static char *function                 = "libfdata_stream_get_segment_index_at_offset";
-	off64_t mapped_range_offset           = 0;
-	size64_t mapped_range_size            = 0;
-	int initial_segment_index             = 0;
-	int number_of_segments                = 0;
+	libfdata_internal_stream_t *internal_stream = NULL;
+	libfdata_mapped_range_t *mapped_range       = NULL;
+	static char *function                       = "libfdata_stream_get_segment_index_at_offset";
+	off64_t mapped_range_offset                 = 0;
+	size64_t mapped_range_size                  = 0;
+	int initial_segment_index                   = 0;
+	int number_of_segments                      = 0;
 
-	if( internal_stream == NULL )
+	if( stream == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -1189,6 +1256,8 @@ int libfdata_stream_get_segment_index_at_offset(
 
 		return( -1 );
 	}
+	internal_stream = (libfdata_internal_stream_t *) stream;
+
 	if( internal_stream->size == 0 )
 	{
 		libcerror_error_set(
@@ -1588,13 +1657,13 @@ ssize_t libfdata_stream_read_buffer(
 	}
 	while( buffer_size > 0 )
 	{
-		if( buffer_size <= segment_data_size )
+		if( (size64_t) buffer_size <= segment_data_size )
 		{
 			read_size = buffer_size;
 		}
 		else
 		{
-			read_size = segment_data_size;
+			read_size = (size_t) segment_data_size;
 		}
 		if( read_size == 0 )
 		{
@@ -1635,9 +1704,9 @@ ssize_t libfdata_stream_read_buffer(
 		{
 			break;
 		}
-		if( (size64_t) internal_stream->segment_data_offset >= segment_data_size )
+		if( (size64_t) internal_stream->segment_data_offset >= segment_size )
 		{
-			if( (size64_t) internal_stream->segment_data_offset > segment_data_size )
+			if( (size64_t) internal_stream->segment_data_offset > segment_size )
 			{
 				libcerror_error_set(
 				 error,
@@ -1891,10 +1960,13 @@ ssize_t libfdata_stream_write_buffer(
 
 		segment_data_size = segment_size - internal_stream->segment_data_offset;
 	}
-	else while( (size64_t) internal_stream->current_offset > internal_stream->size )
+	else while( (size64_t) internal_stream->current_offset >= internal_stream->size )
 	{
-		internal_stream->current_segment_index += 1;
-		internal_stream->segment_data_offset    = 0;
+		if( internal_stream->current_segment_index < number_of_segments )
+		{
+			internal_stream->current_segment_index += 1;
+		}
+		internal_stream->segment_data_offset = 0;
 
 		result = internal_stream->create_segment(
 			  internal_stream->data_handle,
@@ -1978,13 +2050,13 @@ ssize_t libfdata_stream_write_buffer(
 	}
 	while( buffer_size > 0 )
 	{
-		if( buffer_size <= segment_data_size )
+		if( (size64_t) buffer_size <= segment_data_size )
 		{
 			write_size = buffer_size;
 		}
 		else
 		{
-			write_size = segment_data_size;
+			write_size = (size_t) segment_data_size;
 		}
 		if( write_size == 0 )
 		{
@@ -2021,9 +2093,9 @@ ssize_t libfdata_stream_write_buffer(
 		buffer_size                          -= write_size;
 		buffer_offset                        += write_size;
 
-		if( (size64_t) internal_stream->segment_data_offset >= segment_data_size )
+		if( (size64_t) internal_stream->segment_data_offset >= segment_size )
 		{
-			if( (size64_t) internal_stream->segment_data_offset > segment_data_size )
+			if( (size64_t) internal_stream->segment_data_offset > segment_size )
 			{
 				libcerror_error_set(
 				 error,
@@ -2243,7 +2315,7 @@ off64_t libfdata_stream_seek_offset(
 	if( offset < (off64_t) internal_stream->size )
 	{
 		if( libfdata_stream_get_segment_index_at_offset(
-		     internal_stream,
+		     stream,
 		     offset,
 		     &segment_index,
 		     &segment_data_offset,

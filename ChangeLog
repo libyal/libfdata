@@ -1,12 +1,16 @@
 TODO
 * remove clone functions ?
-* stream
-  - create callback allow for return of 0 to indicate no segment could be created?
+* range
+  - move value restrictions to data types? i.e. stream?
 * rewrite
   - update libfdata_tree_initialize
 * add tests
+* update include header
 * update manuals
 * update msvscpp files
+
+20130402
+* worked on refactor to combine fdata and mfdata
 
 20130401
 * worked on refactor to combine fdata and mfdata
