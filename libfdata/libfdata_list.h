@@ -39,9 +39,9 @@ typedef struct libfdata_internal_list libfdata_internal_list_t;
 
 struct libfdata_internal_list
 {
-	/* The (list) data size
+	/* The (list) size
 	 */
-	size64_t data_size;
+	size64_t size;
 
 	/* The (list) elements (array)
 	 */
@@ -149,7 +149,11 @@ int libfdata_list_clone_elements(
      libfdata_list_t *source_list,
      libcerror_error_t **error );
 
-/* List element functions
+int libfdata_list_set_calculate_mapped_ranges_flag(
+     libfdata_list_t *list,
+     libcerror_error_t **error );
+
+/* List elements functions
  */
 LIBFDATA_EXTERN \
 int libfdata_list_empty(
@@ -168,23 +172,21 @@ int libfdata_list_get_number_of_elements(
      int *number_of_elements,
      libcerror_error_t **error );
 
-int libfdata_list_calculate_value_offsets(
-     libfdata_internal_list_t *internal_list,
-     libcerror_error_t **error );
-
 LIBFDATA_EXTERN \
-int libfdata_list_get_element_by_index(
+int libfdata_list_get_list_element_by_index(
      libfdata_list_t *list,
      int element_index,
      libfdata_list_element_t **element,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_get_element_by_offset(
+int libfdata_list_get_element_by_index(
      libfdata_list_t *list,
-     off64_t element_data_offset,
-     int *element_index,
-     libfdata_list_element_t **element,
+     int element_index,
+     int *file_index,
+     off64_t *offset,
+     size64_t *size,
+     uint32_t *flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
@@ -213,45 +215,22 @@ int libfdata_list_is_element_set(
      int element_index,
      libcerror_error_t **error );
 
-/* Data range functions
+/* Mapped range functions
  */
-LIBFDATA_EXTERN \
-int libfdata_list_get_data_range_by_index(
-     libfdata_list_t *list,
-     int element_index,
-     int *file_index,
-     off64_t *offset,
-     size64_t *size,
-     uint32_t *flags,
+int libfdata_list_calculate_mapped_ranges(
+     libfdata_internal_list_t *internal_list,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_set_data_range_by_index(
+int libfdata_list_get_element_at_offset(
      libfdata_list_t *list,
-     int element_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     off64_t element_data_offset,
+     int *element_index,
+     libfdata_list_element_t **element,
      libcerror_error_t **error );
 
 /* List element value functions
  */
-int libfdata_list_get_element_index_at_value_offset(
-     libfdata_list_t *list,
-     off64_t value_offset,
-     int *element_index,
-     size_t *element_offset,
-     libcerror_error_t **error );
-
-int libfdata_list_get_element_index_at_value_index(
-     libfdata_list_t *list,
-     int value_index,
-     size_t value_size,
-     int *element_index,
-     size_t *element_offset,
-     libcerror_error_t **error );
-
 int libfdata_list_get_element_value(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
@@ -276,7 +255,7 @@ int libfdata_list_get_element_value_at_offset(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
-     off64_t value_offset,
+     off64_t offset,
      intptr_t **element_value,
      uint8_t read_flags,
      libcerror_error_t **error );
@@ -305,9 +284,9 @@ int libfdata_list_set_element_value_by_index(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_get_data_size(
+int libfdata_list_get_size(
      libfdata_list_t *list,
-     size64_t *data_size,
+     size64_t *size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

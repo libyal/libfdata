@@ -26,11 +26,11 @@
 
 #define LIBFDATA_VERSION						@VERSION@
 
-/* The version string
+/* The libfdata version string
  */
 #define LIBFDATA_VERSION_STRING						"@VERSION@"
 
-/* The library flags definitions
+/* The library flag definitions
  */
 enum LIBFDATA_FLAGS
 {
@@ -47,7 +47,7 @@ enum LIBFDATA_FLAGS
 	LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES				= 0x80
 };
 
-/* The buffer data flags definitions
+/* The buffer data flag definitions
  */
 enum LIBFDATA_BUFFER_DATA_FLAGS
 {
@@ -55,7 +55,7 @@ enum LIBFDATA_BUFFER_DATA_FLAGS
 	LIBFDATA_BUFFER_DATA_FLAG_MANAGED				= LIBFDATA_FLAG_DATA_HANDLE_MANAGED
 };
 
-/* The list element value flags definitions
+/* The list element value flag definitions
  */
 enum LIBFDATA_LIST_ELEMENT_VALUE_FLAGS
 {
@@ -63,7 +63,7 @@ enum LIBFDATA_LIST_ELEMENT_VALUE_FLAGS
 	LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED			= LIBFDATA_FLAG_DATA_HANDLE_MANAGED
 };
 
-/* The range flags definitions
+/* The range flag definitions
  */
 enum LIBFDATA_RANGE_FLAGS
 {
@@ -75,26 +75,22 @@ enum LIBFDATA_RANGE_FLAGS
 	 */
         LIBFDATA_RANGE_FLAG_IS_COMPRESSED				= 0x00000002UL,
 
-	/* The range is tainted (possibly corrupted)
-	 */
-        LIBFDATA_RANGE_FLAG_IS_TAINTED					= 0x00000010UL,
-
-	/* The range is corrupted
-	 */
-        LIBFDATA_RANGE_FLAG_IS_CORRUPTED				= 0x00000020UL,
-
 	/* User defined flags
 	 */
         LIBFDATA_RANGE_FLAG_USER_DEFINED_1				= 0x00000100UL,
         LIBFDATA_RANGE_FLAG_USER_DEFINED_2				= 0x00000200UL,
         LIBFDATA_RANGE_FLAG_USER_DEFINED_3				= 0x00000400UL,
         LIBFDATA_RANGE_FLAG_USER_DEFINED_4				= 0x00000800UL,
+        LIBFDATA_RANGE_FLAG_USER_DEFINED_5				= 0x00001000UL,
+        LIBFDATA_RANGE_FLAG_USER_DEFINED_6				= 0x00002000UL,
+        LIBFDATA_RANGE_FLAG_USER_DEFINED_7				= 0x00004000UL,
+        LIBFDATA_RANGE_FLAG_USER_DEFINED_8				= 0x00008000UL,
 };
 
 #define LIBFDATA_RANGE_FLAG_MAXIMUM \
-	LIBFDATA_RANGE_FLAG_USER_DEFINED_4
+	LIBFDATA_RANGE_FLAG_USER_DEFINED_8
 
-/* The read flags definitions
+/* The read flag definitions
  */
 enum LIBFDATA_READ_FLAGS
 {
@@ -111,7 +107,7 @@ enum LIBFDATA_REFERENCE_TYPES
 	LIBFDATA_REFERENCE_TYPE_STREAM					= 2
 };
 
-/* The reference flags definitions
+/* The reference flag definitions
  */
 enum LIBFDATA_REFERENCE_FLAGS
 {
@@ -119,7 +115,7 @@ enum LIBFDATA_REFERENCE_FLAGS
 	LIBFDATA_REFERENCE_FLAG_MANAGED					= LIBFDATA_FLAG_DATA_HANDLE_MANAGED
 };
 
-/* The segment data flags definitions
+/* The segment data flag definitions
  */
 enum LIBFDATA_SEGMENT_DATA_FLAGS
 {
@@ -144,7 +140,7 @@ enum LIBFDATA_TREE_NODE_COMPARE_DEFINITIONS
         LIBFDATA_TREE_NODE_COMPARE_GREATER
 };
 
-/* The tree node flags definitions
+/* The tree node flag definitions
  */
 enum LIBFDATA_TREE_NODE_FLAGS
 {
@@ -186,7 +182,7 @@ enum LIBFDATA_TREE_NODE_INSERT_FLAGS
 	LIBFDATA_TREE_NODE_INSERT_FLAG_UNIQUE_SUB_NODE_VALUES		= 0x01,
 };
 
-/* The tree node value flags definitions
+/* The tree node value flag definitions
  */
 enum LIBFDATA_TREE_NODE_VALUE_FLAGS
 {
@@ -194,7 +190,7 @@ enum LIBFDATA_TREE_NODE_VALUE_FLAGS
 	LIBFDATA_TREE_NODE_VALUE_FLAG_MANAGED				= LIBFDATA_FLAG_DATA_HANDLE_MANAGED
 };
 
-/* The vector element value flags definitions
+/* The vector element value flag definitions
  */
 enum LIBFDATA_VECTOR_ELEMENT_VALUE_FLAGS
 {

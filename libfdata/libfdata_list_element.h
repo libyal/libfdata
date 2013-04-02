@@ -28,6 +28,7 @@
 #include "libfdata_extern.h"
 #include "libfdata_libcerror.h"
 #include "libfdata_libfcache.h"
+#include "libfdata_mapped_range.h"
 #include "libfdata_range.h"
 #include "libfdata_types.h"
 
@@ -51,17 +52,13 @@ struct libfdata_internal_list_element
 	 */
 	libfdata_range_t *data_range;
 
+	/* The (element) mapped range
+	 */
+	libfdata_mapped_range_t *mapped_range;
+
 	/* The time stamp
 	 */
 	time_t timestamp;
-
-	/* The (element) value offset
-	 */
-	off64_t value_offset;
-
-	/* The (element) value size
-	 */
-	size64_t value_size;
 
 	/* The flags
 	 */
@@ -100,26 +97,6 @@ int libfdata_list_element_get_timestamp(
      time_t *timestamp,
      libcerror_error_t **error );
 
-int libfdata_list_element_get_value_offset(
-     libfdata_list_element_t *element,
-     off64_t *value_offset,
-     libcerror_error_t **error );
-
-int libfdata_list_element_set_value_offset(
-     libfdata_list_element_t *element,
-     off64_t value_offset,
-     libcerror_error_t **error );
-
-int libfdata_list_element_get_value_size(
-     libfdata_list_element_t *element,
-     size64_t *value_size,
-     libcerror_error_t **error );
-
-int libfdata_list_element_set_value_size(
-     libfdata_list_element_t *element,
-     size64_t value_size,
-     libcerror_error_t **error );
-
 /* Data range functions
  */
 int libfdata_list_element_get_data_range(
@@ -136,6 +113,32 @@ int libfdata_list_element_set_data_range(
      off64_t offset,
      size64_t size,
      uint32_t flags,
+     libcerror_error_t **error );
+
+/* Mapped range functions
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_element_get_mapped_range(
+     libfdata_list_element_t *element,
+     off64_t *offset,
+     size64_t *size,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_element_set_mapped_range(
+     libfdata_list_element_t *element,
+     off64_t offset,
+     size64_t size,
+     libcerror_error_t **error );
+
+int libfdata_list_element_is_internal_mapped_range(
+     libfdata_list_element_t *element,
+     libcerror_error_t **error );
+
+int libfdata_list_element_set_internal_mapped_range(
+     libfdata_list_element_t *element,
+     off64_t offset,
+     size64_t size,
      libcerror_error_t **error );
 
 /* Element value functions

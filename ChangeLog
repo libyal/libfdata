@@ -1,12 +1,18 @@
 TODO
-* remove clone functions ?
+* list
+  - change mapped offset to internal array and use the one in list elements
+    for the one that can be externally set
+  - reimplement libfdata_list_get_element_index_at_value_index ?
 * range
-  - move value restrictions to data types? i.e. stream?
+  - move value restrictions to data types i.e. stream?
 * rewrite
   - update libfdata_tree_initialize
 * add tests
-* update include header
-* update manuals
+* update include header and manual
+  - stream type (done)
+  - list type
+  - tree type
+  - other
 * update msvscpp files
 
 20130402
