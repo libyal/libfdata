@@ -58,10 +58,10 @@ int libfdata_list_initialize(
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
             libfcache_cache_t *cache,
-            int data_range_file_index,
-            off64_t data_range_offset,
-            size64_t data_range_size,
-            uint32_t data_range_flags,
+            int element_file_index,
+            off64_t element_offset,
+            size64_t element_size,
+            uint32_t element_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*write_element_data)(
@@ -69,10 +69,10 @@ int libfdata_list_initialize(
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
             libfcache_cache_t *cache,
-            int data_range_file_index,
-            off64_t data_range_offset,
-            size64_t data_range_size,
-            uint32_t data_range_flags,
+            int element_file_index,
+            off64_t element_offset,
+            size64_t element_size,
+            uint32_t element_flags,
             uint8_t write_flags,
             libcerror_error_t **error ),
      uint8_t flags,
@@ -749,10 +749,10 @@ int libfdata_list_get_list_element_by_index(
 int libfdata_list_get_element_by_index(
      libfdata_list_t *list,
      int element_index,
-     int *file_index,
-     off64_t *offset,
-     size64_t *size,
-     uint32_t *flags,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
@@ -790,10 +790,10 @@ int libfdata_list_get_element_by_index(
 	}
 	if( libfdata_list_element_get_data_range(
 	     list_element,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     element_file_index,
+	     element_offset,
+	     element_size,
+	     element_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -815,10 +815,10 @@ int libfdata_list_get_element_by_index(
 int libfdata_list_set_element_by_index(
      libfdata_list_t *list,
      int element_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
@@ -893,8 +893,8 @@ int libfdata_list_set_element_by_index(
 
 			return( -1 );
 		}
-		mapped_range_offset = offset;
-		mapped_range_size   = size;
+		mapped_range_offset = element_offset;
+		mapped_range_size   = element_size;
 	}
 	else
 	{
@@ -918,10 +918,10 @@ int libfdata_list_set_element_by_index(
 	}
 	if( libfdata_list_element_set_data_range(
 	     list_element,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     element_file_index,
+	     element_offset,
+	     element_size,
+	     element_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -962,10 +962,10 @@ int libfdata_list_set_element_by_index(
 int libfdata_list_append_element(
      libfdata_list_t *list,
      int *element_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
@@ -1002,10 +1002,10 @@ int libfdata_list_append_element(
 	}
 	if( libfdata_list_element_set_data_range(
 	     list_element,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     element_file_index,
+	     element_offset,
+	     element_size,
+	     element_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1020,7 +1020,7 @@ int libfdata_list_append_element(
 	if( libfdata_list_element_set_internal_mapped_range(
 	     list_element,
 	     internal_list->size,
-	     size,
+	     element_size,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1064,7 +1064,7 @@ int libfdata_list_append_element(
 
 		goto on_error;
 	}
-	internal_list->size += size;
+	internal_list->size += element_size;
 
 	return( 1 );
 
@@ -1140,11 +1140,11 @@ int libfdata_list_calculate_mapped_ranges(
 	static char *function                 = "libfdata_list_calculate_mapped_ranges";
 	off64_t mapped_offset                 = 0;
 	off64_t mapped_range_offset           = 0;
-	off64_t data_range_offset             = 0;
-	size64_t data_range_size              = 0;
+	off64_t element_offset                = 0;
+	size64_t element_size                 = 0;
 	size64_t mapped_range_size            = 0;
-	uint32_t data_range_flags             = 0;
-	int data_range_file_index             = -1;
+	uint32_t element_flags                = 0;
+	int element_file_index                = -1;
 	int element_index                     = -1;
 	int number_of_elements                = 0;
 	int result                            = 0;
@@ -1196,10 +1196,10 @@ int libfdata_list_calculate_mapped_ranges(
 		}
 		if( libfdata_list_element_get_data_range(
 		     list_element,
-		     &data_range_file_index,
-		     &data_range_offset,
-		     &data_range_size,
-		     &data_range_flags,
+		     &element_file_index,
+		     &element_offset,
+		     &element_size,
+		     &element_flags,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1230,7 +1230,7 @@ int libfdata_list_calculate_mapped_ranges(
 		}
 		else if( result != 0 )
 		{
-			mapped_range_size = data_range_size;
+			mapped_range_size = element_size;
 		}
 		else
 		{
@@ -1537,14 +1537,14 @@ int libfdata_list_get_element_value(
 	libfdata_internal_list_t *internal_list = NULL;
 	static char *function                   = "libfdata_list_get_element_value";
         off64_t cache_value_offset              = (off64_t) -1;
-	off64_t data_range_offset               = 0;
-	size64_t data_range_size                = 0;
+	off64_t element_offset                  = 0;
+	size64_t element_size                   = 0;
 	time_t cache_value_timestamp            = 0;
 	time_t element_timestamp                = 0;
-	uint32_t data_range_flags               = 0;
+	uint32_t element_flags                  = 0;
 	int cache_entry_index                   = -1;
 	int cache_value_file_index              = -1;
-	int data_range_file_index               = -1;
+	int element_file_index                  = -1;
 	int element_index                       = -1;
 	int number_of_cache_entries             = 0;
 	int result                              = 0;
@@ -1575,10 +1575,10 @@ int libfdata_list_get_element_value(
 	}
 	if( libfdata_list_element_get_data_range(
 	     element,
-	     &data_range_file_index,
-	     &data_range_offset,
-	     &data_range_size,
-	     &data_range_flags,
+	     &element_file_index,
+	     &element_offset,
+	     &element_size,
+	     &element_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1684,7 +1684,7 @@ int libfdata_list_get_element_value(
 				return( -1 );
 			}
 		}
-		if( ( data_range_offset == cache_value_offset )
+		if( ( element_offset == cache_value_offset )
 		 && ( element_timestamp == cache_value_timestamp ) )
 		{
 			result = 1;
@@ -1721,9 +1721,9 @@ int libfdata_list_get_element_value(
 			libcnotify_printf(
 			 "%s: reading element data at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIu64 "\n",
 			 function,
-			 data_range_offset,
-			 data_range_offset,
-			 data_range_size );
+			 element_offset,
+			 element_offset,
+			 element_size );
 		}
 #endif
 		if( internal_list->read_element_data(
@@ -1731,10 +1731,10 @@ int libfdata_list_get_element_value(
 		     file_io_handle,
 		     element,
 		     cache,
-		     data_range_file_index,
-		     data_range_offset,
-		     data_range_size,
-		     data_range_flags,
+		     element_file_index,
+		     element_offset,
+		     element_size,
+		     element_flags,
 		     read_flags,
 		     error ) != 1 )
 		{
@@ -1744,7 +1744,7 @@ int libfdata_list_get_element_value(
 			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read element data at offset: %" PRIi64 ".",
 			 function,
-			 data_range_offset );
+			 element_offset );
 
 			return( -1 );
 		}
@@ -1801,7 +1801,7 @@ int libfdata_list_get_element_value(
 				return( -1 );
 			}
 		}
-		if( ( data_range_offset != cache_value_offset )
+		if( ( element_offset != cache_value_offset )
 		 || ( element_timestamp != cache_value_timestamp ) )
 		{
 			libcerror_error_set(
@@ -1972,12 +1972,12 @@ int libfdata_list_set_element_value(
      libcerror_error_t **error )
 {
 	static char *function       = "libfdata_list_set_element_value";
-	off64_t data_range_offset   = 0;
-	size64_t data_range_size    = 0;
+	off64_t element_offset      = 0;
+	size64_t element_size       = 0;
 	time_t element_timestamp    = 0;
-	uint32_t data_range_flags   = 0;
+	uint32_t element_flags      = 0;
 	int cache_entry_index       = -1;
-	int data_range_file_index   = -1;
+	int element_file_index      = -1;
 	int element_index           = -1;
 	int number_of_cache_entries = 0;
 
@@ -1994,10 +1994,10 @@ int libfdata_list_set_element_value(
 	}
 	if( libfdata_list_element_get_data_range(
 	     element,
-	     &data_range_file_index,
-	     &data_range_offset,
-	     &data_range_size,
-	     &data_range_flags,
+	     &element_file_index,
+	     &element_offset,
+	     &element_size,
+	     &element_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -2070,7 +2070,7 @@ int libfdata_list_set_element_value(
 	     cache,
 	     cache_entry_index,
 	     0,
-	     data_range_offset,
+	     element_offset,
 	     element_timestamp,
 	     element_value,
 	     free_element_value,

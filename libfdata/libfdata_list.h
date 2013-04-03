@@ -75,10 +75,10 @@ struct libfdata_internal_list
 	       intptr_t *file_io_handle,
 	       libfdata_list_element_t *list_element,
 	       libfcache_cache_t *cache,
-	       int data_range_file_index,
-	       off64_t data_range_offset,
-	       size64_t data_range_size,
-	       uint32_t data_range_flags,
+	       int element_file_index,
+	       off64_t element_offset,
+	       size64_t element_size,
+	       uint32_t element_flags,
                uint8_t read_flags,
 	       libcerror_error_t **error );
 
@@ -89,10 +89,10 @@ struct libfdata_internal_list
 	       intptr_t *file_io_handle,
 	       libfdata_list_element_t *list_element,
 	       libfcache_cache_t *cache,
-	       int data_range_file_index,
-	       off64_t data_range_offset,
-	       size64_t data_range_size,
-	       uint32_t data_range_flags,
+	       int element_file_index,
+	       off64_t element_offset,
+	       size64_t element_size,
+	       uint32_t element_flags,
                uint8_t write_flags,
 	       libcerror_error_t **error );
 };
@@ -113,10 +113,10 @@ int libfdata_list_initialize(
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
             libfcache_cache_t *cache,
-            int data_range_file_index,
-            off64_t data_range_offset,
-            size64_t data_range_size,
-            uint32_t data_range_flags,
+            int element_file_index,
+            off64_t element_offset,
+            size64_t element_size,
+            uint32_t element_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*write_element_data)(
@@ -124,10 +124,10 @@ int libfdata_list_initialize(
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
             libfcache_cache_t *cache,
-            int data_range_file_index,
-            off64_t data_range_offset,
-            size64_t data_range_size,
-            uint32_t data_range_flags,
+            int element_file_index,
+            off64_t element_offset,
+            size64_t element_size,
+            uint32_t element_flags,
             uint8_t write_flags,
             libcerror_error_t **error ),
      uint8_t flags,
@@ -183,30 +183,30 @@ LIBFDATA_EXTERN \
 int libfdata_list_get_element_by_index(
      libfdata_list_t *list,
      int element_index,
-     int *file_index,
-     off64_t *offset,
-     size64_t *size,
-     uint32_t *flags,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
 int libfdata_list_set_element_by_index(
      libfdata_list_t *list,
      int element_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
 int libfdata_list_append_element(
      libfdata_list_t *list,
      int *element_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
