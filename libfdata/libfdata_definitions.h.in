@@ -209,23 +209,5 @@ enum LIBFDATA_VECTOR_ELEMENT_VALUE_FLAGS
 
 #endif
 
-/* The mapped range flag definitions
- */
-enum LIBFDATA_MAPPED_RANGE_FLAGS
-{
-	/* The mapped range is invalid and needs to be calculated
-	 */
-        LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID				= 0x00000001UL
-};
-
-/* The list element flag definitions
- */
-enum LIBFDATA_LIST_ELEMENT_FLAGS
-{
-	/* The mapped range was specified externally
-	 */
-	LIBFDATA_LIST_ELEMENT_FLAG_EXTERNAL_MAPPED_RANGE		= 0x01
-};
-
 #endif
 

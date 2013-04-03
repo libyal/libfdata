@@ -132,19 +132,6 @@ int libfdata_list_element_initialize(
 
 		goto on_error;
 	}
-	if( libfdata_mapped_range_initialize(
-	     &( internal_element->mapped_range ),
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create mapped range.",
-		 function );
-
-		goto on_error;
-	}
 	internal_element->list          = list;
 	internal_element->element_index = element_index;
 	internal_element->timestamp     = libfcache_date_time_get_timestamp();
@@ -156,12 +143,6 @@ int libfdata_list_element_initialize(
 on_error:
 	if( internal_element != NULL )
 	{
-		if( internal_element->data_range != NULL )
-		{
-			libfdata_range_free(
-			 &( internal_element->data_range ),
-			 NULL );
-		}
 		memory_free(
 		 internal_element );
 	}
@@ -208,18 +189,21 @@ int libfdata_list_element_free(
 
 			result = -1;
 		}
-		if( libfdata_mapped_range_free(
-		     &( internal_element->mapped_range ),
-		     error ) != 1 )
+		if( internal_element->mapped_range != NULL )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free mapped range.",
-			 function );
+			if( libfdata_mapped_range_free(
+			     &( internal_element->mapped_range ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free mapped range.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
 		memory_free(
 		 internal_element );
@@ -338,19 +322,22 @@ int libfdata_list_element_clone(
 
 		goto on_error;
 	}
-	if( libfdata_mapped_range_clone(
-	     &( internal_destination_element->mapped_range ),
-	     internal_source_element->mapped_range,
-	     error ) != 1 )
+	if( internal_source_element->mapped_range != NULL )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create destination mapped range.",
-		 function );
+		if( libfdata_mapped_range_clone(
+		     &( internal_destination_element->mapped_range ),
+		     internal_source_element->mapped_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create destination mapped range.",
+			 function );
 
-		goto on_error;
+			goto on_error;
+		}
 	}
 	internal_destination_element->list          = list;
 	internal_destination_element->element_index = element_index;
@@ -598,7 +585,7 @@ int libfdata_list_element_set_data_range(
  */
 
 /* Retrieves the mapped range
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not set or -1 on error
  */
 int libfdata_list_element_get_mapped_range(
      libfdata_list_element_t *element,
@@ -622,6 +609,10 @@ int libfdata_list_element_get_mapped_range(
 	}
 	internal_element = (libfdata_internal_list_element_t *) element;
 
+	if( internal_element->mapped_range == NULL )
+	{
+		return( 0 );
+	}
 	if( libfdata_mapped_range_get(
 	     internal_element->mapped_range,
 	     offset,
@@ -665,6 +656,22 @@ int libfdata_list_element_set_mapped_range(
 	}
 	internal_element = (libfdata_internal_list_element_t *) element;
 
+	if( internal_element->mapped_range == NULL )
+	{
+		if( libfdata_mapped_range_initialize(
+		     &( internal_element->mapped_range ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create mapped range.",
+			 function );
+
+			return( -1 );
+		}
+	}
 	if( libfdata_mapped_range_set(
 	     internal_element->mapped_range,
 	     offset,
@@ -680,8 +687,6 @@ int libfdata_list_element_set_mapped_range(
 
 		return( -1 );
 	}
-	internal_element->flags |= LIBFDATA_LIST_ELEMENT_FLAG_EXTERNAL_MAPPED_RANGE;
-
 	if( libfdata_list_set_calculate_mapped_ranges_flag(
 	     internal_element->list,
 	     error ) != 1 )
@@ -691,75 +696,6 @@ int libfdata_list_element_set_mapped_range(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set the calculate mapped ranges flag in list.",
-		 function );
-
-		return( -1 );
-	}
-	return( 1 );
-}
-
-/* Determines if the mapped range was defined internally
- * Returns 1 if true, 0 if not or -1 on error
- */
-int libfdata_list_element_is_internal_mapped_range(
-     libfdata_list_element_t *element,
-     libcerror_error_t **error )
-{
-	libfdata_internal_list_element_t *internal_element = NULL;
-	static char *function                              = "libfdata_list_element_is_internal_mapped_range";
-
-	if( element == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid element.",
-		 function );
-
-		return( -1 );
-	}
-	internal_element = (libfdata_internal_list_element_t *) element;
-
-	return( ( internal_element->flags & LIBFDATA_LIST_ELEMENT_FLAG_EXTERNAL_MAPPED_RANGE ) == 0 );
-}
-
-/* Sets the mapped range for internal purposes
- * Returns 1 if successful or -1 on error
- */
-int libfdata_list_element_set_internal_mapped_range(
-     libfdata_list_element_t *element,
-     off64_t offset,
-     size64_t size,
-     libcerror_error_t **error )
-{
-	libfdata_internal_list_element_t *internal_element = NULL;
-	static char *function                              = "libfdata_list_element_set_internal_mapped_range";
-
-	if( element == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid element.",
-		 function );
-
-		return( -1 );
-	}
-	internal_element = (libfdata_internal_list_element_t *) element;
-
-	if( libfdata_mapped_range_set(
-	     internal_element->mapped_range,
-	     offset,
-	     size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set mapped range.",
 		 function );
 
 		return( -1 );

@@ -43,9 +43,13 @@ struct libfdata_internal_list
 	 */
 	size64_t size;
 
-	/* The (list) elements (array)
+	/* The (list) elements array
 	 */
-	libcdata_array_t *elements;
+	libcdata_array_t *elements_array;
+
+	/* The mapped ranges array
+	 */
+	libcdata_array_t *mapped_ranges_array;
 
 	/* The flags
 	 */
@@ -167,6 +171,11 @@ int libfdata_list_resize(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
+int libfdata_list_reverse(
+     libfdata_list_t *list,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
 int libfdata_list_get_number_of_elements(
      libfdata_list_t *list,
      int *number_of_elements,
@@ -193,6 +202,15 @@ LIBFDATA_EXTERN \
 int libfdata_list_set_element_by_index(
      libfdata_list_t *list,
      int element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_prepend_element(
+     libfdata_list_t *list,
      int element_file_index,
      off64_t element_offset,
      size64_t element_size,

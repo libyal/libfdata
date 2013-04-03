@@ -42,10 +42,6 @@ struct libfdata_mapped_range
 	/* The size
 	 */
 	size64_t size;
-
-	/* The flags
-	 */
-	uint32_t flags;
 };
 
 int libfdata_mapped_range_initialize(
@@ -71,16 +67,6 @@ int libfdata_mapped_range_set(
      libfdata_mapped_range_t *mapped_range,
      off64_t offset,
      size64_t size,
-     libcerror_error_t **error );
-
-int libfdata_mapped_range_get_flags(
-     libfdata_mapped_range_t *mapped_range,
-     uint32_t *flags,
-     libcerror_error_t **error );
-
-int libfdata_mapped_range_set_flags(
-     libfdata_mapped_range_t *mapped_range,
-     uint32_t flags,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

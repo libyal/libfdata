@@ -59,10 +59,6 @@ struct libfdata_internal_list_element
 	/* The time stamp
 	 */
 	time_t timestamp;
-
-	/* The flags
-	 */
-	uint8_t flags;
 };
 
 int libfdata_list_element_initialize(
@@ -126,16 +122,6 @@ int libfdata_list_element_get_mapped_range(
 
 LIBFDATA_EXTERN \
 int libfdata_list_element_set_mapped_range(
-     libfdata_list_element_t *element,
-     off64_t offset,
-     size64_t size,
-     libcerror_error_t **error );
-
-int libfdata_list_element_is_internal_mapped_range(
-     libfdata_list_element_t *element,
-     libcerror_error_t **error );
-
-int libfdata_list_element_set_internal_mapped_range(
      libfdata_list_element_t *element,
      off64_t offset,
      size64_t size,

@@ -196,14 +196,19 @@ int libfdata_stream_clone(
 /* Segment functions
  */
 LIBFDATA_EXTERN \
-int libfdata_stream_empty_segments(
+int libfdata_stream_empty(
      libfdata_stream_t *stream,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_stream_resize_segments(
+int libfdata_stream_resize(
      libfdata_stream_t *stream,
      int number_of_segments,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_reverse(
+     libfdata_list_t *list,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
@@ -226,6 +231,15 @@ LIBFDATA_EXTERN \
 int libfdata_stream_set_segment_by_index(
      libfdata_stream_t *stream,
      int segment_index,
+     int segment_file_index,
+     off64_t segment_offset,
+     size64_t segment_size,
+     uint32_t segment_flags,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_stream_prepend_segment(
+     libfdata_stream_t *stream,
      int segment_file_index,
      off64_t segment_offset,
      size64_t segment_size,

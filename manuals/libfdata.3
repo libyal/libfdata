@@ -1,4 +1,4 @@
-.Dd April 2, 2013
+.Dd April 3, 2013
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -43,15 +43,19 @@ Stream functions
 .Ft int
 .Fn libfdata_stream_clone "libfdata_stream_t **destination_stream, libfdata_stream_t *source_stream, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_stream_empty_segments "libfdata_stream_t *stream, libfdata_error_t **error"
+.Fn libfdata_stream_empty "libfdata_stream_t *stream, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_stream_resize_segments "libfdata_stream_t *stream, int number_of_segments, libfdata_error_t **error"
+.Fn libfdata_stream_resize "libfdata_stream_t *stream, int number_of_segments, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_stream_reverse "libfdata_stream_t *stream, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_get_number_of_segments "libfdata_stream_t *stream, int *number_of_segments, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_get_segment_by_index "libfdata_stream_t *stream, int segment_index, int *segment_file_index, off64_t *segment_offset, size64_t *segment_size, uint32_t *segment_flags, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_set_segment_by_index "libfdata_stream_t *stream, int segment_index, int segment_file_index, off64_t segment_offset, size64_t segment_size, uint32_t segment_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_stream_prepend_segment "libfdata_stream_t *stream, int segment_file_index, off64_t segment_offset, size64_t segment_size, uint32_t segment_flags, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_append_segment "libfdata_stream_t *stream, int *segment_index, int segment_file_index, off64_t segment_offset, size64_t segment_size, uint32_t segment_flags, libfdata_error_t **error"
 .Ft int
