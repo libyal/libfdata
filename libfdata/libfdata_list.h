@@ -235,6 +235,22 @@ int libfdata_list_is_element_set(
 
 /* Mapped range functions
  */
+LIBFDATA_EXTERN \
+int libfdata_list_get_mapped_range_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     off64_t *offset,
+     size64_t *size,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_set_mapped_range_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     off64_t offset,
+     size64_t size,
+     libcerror_error_t **error );
+
 int libfdata_list_calculate_mapped_ranges(
      libfdata_internal_list_t *internal_list,
      libcerror_error_t **error );
@@ -242,8 +258,9 @@ int libfdata_list_calculate_mapped_ranges(
 LIBFDATA_EXTERN \
 int libfdata_list_get_element_at_offset(
      libfdata_list_t *list,
-     off64_t element_data_offset,
+     off64_t offset,
      int *element_index,
+     off64_t *element_data_offset,
      libfdata_list_element_t **element,
      libcerror_error_t **error );
 

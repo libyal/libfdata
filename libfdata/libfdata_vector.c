@@ -35,7 +35,8 @@
 #define libfdata_vector_calculate_cache_entry_index( element_index, number_of_cache_entries ) \
 	element_index % number_of_cache_entries
 
-/* Initializes the vector
+/* Creates a vector
+ * Make sure the value vector is referencing, is set to NULL
  *
  * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the vector
  * takes over management of the data handle and the data handle is freed when
@@ -181,7 +182,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the vector
+/* Frees a vector
  * Returns 1 if successful or -1 on error
  */
 int libfdata_vector_free(

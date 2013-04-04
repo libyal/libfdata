@@ -30,7 +30,8 @@
 #include "libfdata_reference.h"
 #include "libfdata_types.h"
 
-/* Initializes the reference and its values
+/* Creates a reference
+ * Make sure the value reference is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libfdata_reference_initialize(
@@ -191,7 +192,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the reference and its values
+/* Frees a reference
  * Returns 1 if successful or -1 on error
  */
 int libfdata_reference_free(

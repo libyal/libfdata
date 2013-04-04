@@ -33,7 +33,8 @@
 #include "libfdata_types.h"
 #include "libfdata_unused.h"
 
-/* Initializes the stream
+/* Creates a stream
+ * Make sure the value stream is referencing, is set to NULL
  *
  * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the stream
  * takes over management of the data handle and the data handle is freed when
@@ -206,7 +207,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the stream
+/* Frees a stream
  * Returns 1 if successful or -1 on error
  */
 int libfdata_stream_free(

@@ -33,7 +33,8 @@
 #include "libfdata_types.h"
 #include "libfdata_unused.h"
 
-/* Initializes the buffer reference and its values
+/* Creates a buffer reference
+ * Make sure the value reference is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libfdata_buffer_reference_initialize(
@@ -188,7 +189,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the buffer reference and its values
+/* Frees a buffer reference
  * Returns 1 if successful or -1 on error
  */
 int libfdata_buffer_reference_free(

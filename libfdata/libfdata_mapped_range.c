@@ -26,7 +26,8 @@
 #include "libfdata_libcerror.h"
 #include "libfdata_mapped_range.h"
 
-/* Initializes the mapped range
+/* Creates a mapped range
+ * Make sure the value mapped_range is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libfdata_mapped_range_initialize(
@@ -100,7 +101,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the mapped range
+/* Frees a mapped range
  * Returns 1 if successful or -1 on error
  */
 int libfdata_mapped_range_free(

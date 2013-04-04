@@ -82,7 +82,7 @@ int libfdata_notify_stream_close(
  * Error functions
  * ------------------------------------------------------------------------- */
 
-/* Frees the error including elements
+/* Frees an error
  */
 LIBFDATA_EXTERN \
 void libfdata_error_free(
@@ -125,10 +125,53 @@ int libfdata_error_backtrace_sprint(
      size_t size );
 
 /* -------------------------------------------------------------------------
+ * List functions
+ * ------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ * List element functions
+ * ------------------------------------------------------------------------- */
+
+LIBFDATA_EXTERN \
+int libfdata_list_element_get_mapped_range(
+     libfdata_list_element_t *element,
+     off64_t *offset,
+     size64_t *size,
+     libfdata_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_element_set_mapped_range(
+     libfdata_list_element_t *element,
+     off64_t offset,
+     size64_t size,
+     libfdata_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_element_get_element_value(
+     libfdata_list_element_t *element,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     intptr_t **element_value,
+     uint8_t read_flags,
+     libfdata_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_element_set_element_value(
+     libfdata_list_element_t *element,
+     libfcache_cache_t *cache,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libfdata_error_t **error ),
+     uint8_t flags,
+     libfdata_error_t **error );
+
+/* -------------------------------------------------------------------------
  * Stream functions
  * ------------------------------------------------------------------------- */
 
-/* Initializes the stream
+/* Creates a stream
+ * Make sure the value stream is referencing, is set to NULL
  *
  * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the stream
  * takes over management of the data handle and the data handle is freed when
@@ -186,7 +229,7 @@ int libfdata_stream_initialize(
      uint8_t flags,
      libfdata_error_t **error );
 
-/* Frees the stream
+/* Frees a stream
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \

@@ -31,7 +31,8 @@
 #include "libfdata_tree_node.h"
 #include "libfdata_types.h"
 
-/* Initializes the node
+/* Creates a node
+ * Make sure the value node is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libfdata_tree_node_initialize(
@@ -158,7 +159,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the node
+/* Frees a node
  * Returns 1 if successful or -1 on error
  */
 int libfdata_tree_node_free(
@@ -221,7 +222,7 @@ int libfdata_tree_node_free(
 	return( result );
 }
 
-/* Frees the node, but does not free its sub nodes
+/* Frees a node, but not its sub nodes
  * Returns 1 if successful or -1 on error
  */
 int libfdata_tree_node_free_single(

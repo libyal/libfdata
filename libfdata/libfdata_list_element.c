@@ -32,7 +32,8 @@
 #include "libfdata_range.h"
 #include "libfdata_types.h"
 
-/* Initializes the element
+/* Creates an element
+ * Make sure the value element is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libfdata_list_element_initialize(
@@ -149,7 +150,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the element
+/* Frees an element
  * Returns 1 if successful or -1 on error
  */
 int libfdata_list_element_free(

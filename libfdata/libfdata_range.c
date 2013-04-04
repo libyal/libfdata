@@ -26,7 +26,8 @@
 #include "libfdata_libcerror.h"
 #include "libfdata_range.h"
 
-/* Initializes the range
+/* Creates a range
+ * Make sure the value range is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libfdata_range_initialize(
@@ -101,7 +102,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the range
+/* Frees a range
  * Returns 1 if successful or -1 on error
  */
 int libfdata_range_free(

@@ -28,6 +28,7 @@
 #include "libfdata_libcerror.h"
 
 /* Creates a buffer
+ * Make sure the value buffer is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libfdata_buffer_initialize(
@@ -131,7 +132,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the buffer
+/* Frees a buffer
  * Returns 1 if successful or -1 on error
  */
 int libfdata_buffer_free(
