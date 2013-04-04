@@ -2583,20 +2583,20 @@ int libfdata_list_get_element_value_at_offset(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
      intptr_t **element_value,
      uint8_t read_flags,
      libcerror_error_t **error )
 {
 	libfdata_list_element_t *list_element = NULL;
 	static char *function                 = "libfdata_list_get_element_value_at_offset";
-	off64_t element_data_offset           = 0;
-	int element_index                     = 0;
 
 	if( libfdata_list_get_element_at_offset(
 	     list,
 	     offset,
-	     &element_index,
-	     &element_data_offset,
+	     element_index,
+	     element_data_offset,
 	     &list_element,
 	     error ) != 1 )
 	{
