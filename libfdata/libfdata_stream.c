@@ -116,6 +116,17 @@ int libfdata_stream_initialize(
 
 		return( -1 );
 	}
+	if( ( flags & 0xfe ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported flags: 0x%02" PRIx8 ".",
+		 function );
+
+		return( -1 );
+	}
 	internal_stream = memory_allocate_structure(
 	                   libfdata_internal_stream_t );
 
@@ -1558,6 +1569,15 @@ int libfdata_stream_get_segment_index_at_offset(
 			return( -1 );
 		}
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested offset: 0x%08" PRIx64 "\n",
+		 function,
+		 offset );
+	}
+#endif
 	if( internal_stream->size == 0 )
 	{
 		return( 0 );
@@ -1580,15 +1600,6 @@ int libfdata_stream_get_segment_index_at_offset(
 	 */
 	initial_segment_index = (int) ( ( number_of_segments * offset ) / internal_stream->size );
 
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: requested offset: 0x%08" PRIx64 "\n",
-		 function,
-		 offset );
-	}
-#endif
 	/* Look for the corresponding segment upwards in the array
 	 */
 	for( *segment_index = initial_segment_index;

@@ -1,4 +1,4 @@
-.Dd April 4, 2013
+.Dd April 5, 2013
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -39,9 +39,9 @@ List functions
 .Pp
 List element functions
 .Ft int
-.Fn libfdata_list_element_get_mapped_range "libfdata_list_element_t *element, off64_t *offset, size64_t *size, libfdata_error_t **error"
+.Fn libfdata_list_element_get_mapped_size "libfdata_list_element_t *element, size64_t *size, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_list_element_set_mapped_range "libfdata_list_element_t *element, off64_t offset, size64_t size, libfdata_error_t **error"
+.Fn libfdata_list_element_set_mapped_size "libfdata_list_element_t *element, size64_t size, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_element_get_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfcache_cache_t *cache, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
 .Ft int

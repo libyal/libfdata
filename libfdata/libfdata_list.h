@@ -39,6 +39,14 @@ typedef struct libfdata_internal_list libfdata_internal_list_t;
 
 struct libfdata_internal_list
 {
+	/* The current (most recently used) element index
+	 */
+	int current_element_index;
+
+	/* The mapped offset
+	 */
+	off64_t mapped_offset;
+
 	/* The (list) size
 	 */
 	size64_t size;
@@ -198,7 +206,7 @@ int libfdata_list_get_element_by_index(
      uint32_t *element_flags,
      libcerror_error_t **error );
 
-/* TODO libfdata_list_get_element_by_index_with_mapped_range */
+/* TODO libfdata_list_get_element_by_index_with_mapped_size */
 
 LIBFDATA_EXTERN \
 int libfdata_list_set_element_by_index(
@@ -210,7 +218,7 @@ int libfdata_list_set_element_by_index(
      uint32_t element_flags,
      libcerror_error_t **error );
 
-/* TODO libfdata_list_set_element_by_index_with_mapped_range */
+/* TODO libfdata_list_set_element_by_index_with_mapped_size */
 
 LIBFDATA_EXTERN \
 int libfdata_list_prepend_element(
@@ -221,7 +229,7 @@ int libfdata_list_prepend_element(
      uint32_t element_flags,
      libcerror_error_t **error );
 
-/* TODO libfdata_list_prepend_element_with_mapped_range */
+/* TODO libfdata_list_prepend_element_with_mapped_size */
 
 LIBFDATA_EXTERN \
 int libfdata_list_append_element(
@@ -234,15 +242,14 @@ int libfdata_list_append_element(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_append_element_with_mapped_range(
+int libfdata_list_append_element_with_mapped_size(
      libfdata_list_t *list,
      int *element_index,
      int element_file_index,
      off64_t element_offset,
      size64_t element_size,
      uint32_t element_flags,
-     off64_t mapped_range_offset,
-     size64_t mapped_range_size,
+     size64_t mapped_size,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
@@ -254,19 +261,29 @@ int libfdata_list_is_element_set(
 /* Mapped range functions
  */
 LIBFDATA_EXTERN \
-int libfdata_list_get_mapped_range_by_index(
+int libfdata_list_get_mapped_offset(
      libfdata_list_t *list,
-     int element_index,
-     off64_t *mapped_range_offset,
-     size64_t *mapped_range_size,
+     off64_t *mapped_offset,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_set_mapped_range_by_index(
+int libfdata_list_set_mapped_offset(
+     libfdata_list_t *list,
+     off64_t mapped_offset,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_get_mapped_size_by_index(
      libfdata_list_t *list,
      int element_index,
-     off64_t mapped_range_offset,
-     size64_t mapped_range_size,
+     size64_t *mapped_size,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_set_mapped_size_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     size64_t mapped_size,
      libcerror_error_t **error );
 
 int libfdata_list_calculate_mapped_ranges(

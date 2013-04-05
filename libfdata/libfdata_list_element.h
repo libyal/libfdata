@@ -28,7 +28,6 @@
 #include "libfdata_extern.h"
 #include "libfdata_libcerror.h"
 #include "libfdata_libfcache.h"
-#include "libfdata_mapped_range.h"
 #include "libfdata_range.h"
 #include "libfdata_types.h"
 
@@ -52,13 +51,17 @@ struct libfdata_internal_list_element
 	 */
 	libfdata_range_t *data_range;
 
-	/* The (element) mapped range
+	/* The (element) mapped size
 	 */
-	libfdata_mapped_range_t *mapped_range;
+	size64_t mapped_size;
 
 	/* The time stamp
 	 */
 	time_t timestamp;
+
+	/* The flags
+	 */
+	uint8_t flags;
 };
 
 int libfdata_list_element_initialize(
@@ -114,17 +117,15 @@ int libfdata_list_element_set_data_range(
 /* Mapped range functions
  */
 LIBFDATA_EXTERN \
-int libfdata_list_element_get_mapped_range(
+int libfdata_list_element_get_mapped_size(
      libfdata_list_element_t *element,
-     off64_t *offset,
-     size64_t *size,
+     size64_t *mapped_size,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_element_set_mapped_range(
+int libfdata_list_element_set_mapped_size(
      libfdata_list_element_t *element,
-     off64_t offset,
-     size64_t size,
+     size64_t mapped_size,
      libcerror_error_t **error );
 
 /* Element value functions

@@ -209,5 +209,19 @@ enum LIBFDATA_VECTOR_ELEMENT_VALUE_FLAGS
 
 #endif
 
+/* The list flag definitions
+ */
+enum LIBFDATA_LIST_FLAGS
+{
+	LIBFDATA_LIST_FLAG_HAS_MAPPED_OFFSET				= 0x10
+};
+
+/* The list element flag definitions
+ */
+enum LIBFDATA_LIST_ELEMENT_FLAGS
+{
+	LIBFDATA_LIST_ELEMENT_FLAG_HAS_MAPPED_SIZE			= 0x10
+};
+
 #endif
 

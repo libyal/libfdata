@@ -6,11 +6,9 @@ TODO
   - reimplement libfdata_list_get_element_index_at_value_index ?
   - preserve external set mapped offset ?
   - optimize recalculation of element index ?
-  - add flag to disable mapped offsets ?
   - add optimized append element with mapped range function ?
   - add stream like read/write buffer ?
-* range
-  - move value restrictions to data types i.e. stream?
+
 * rewrite
   - update libfdata_tree_initialize
 * mapped range
@@ -19,10 +17,11 @@ TODO
   - do they currently allow for gaps ?
 * stream
   - complete libfdata_stream_clone
+  - add mapped offset support ?
 * add tests
 * update include header and man page
   - list
-  - list element (done)
+  - list element (update)
   - stream (done)
   - tree
   - tree node

@@ -311,39 +311,6 @@ int libfdata_range_set(
 
 		return( -1 );
 	}
-	if( file_index < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid file index less than zero.",
-		 function );
-
-		return( -1 );
-	}
-	if( offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid offset value less than zero.",
-		 function );
-
-		return( -1 );
-	}
-	if( size > (size64_t) INT64_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
 	range->file_index = file_index;
 	range->offset     = offset;
 	range->size       = size;

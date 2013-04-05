@@ -133,17 +133,15 @@ int libfdata_error_backtrace_sprint(
  * ------------------------------------------------------------------------- */
 
 LIBFDATA_EXTERN \
-int libfdata_list_element_get_mapped_range(
+int libfdata_list_element_get_mapped_size(
      libfdata_list_element_t *element,
-     off64_t *offset,
-     size64_t *size,
+     size64_t *mapped_size,
      libfdata_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_element_set_mapped_range(
+int libfdata_list_element_set_mapped_size(
      libfdata_list_element_t *element,
-     off64_t offset,
-     size64_t size,
+     size64_t mapped_size,
      libfdata_error_t **error );
 
 LIBFDATA_EXTERN \
