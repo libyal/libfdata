@@ -25,6 +25,7 @@
 
 #include "libfdata_definitions.h"
 #include "libfdata_libcerror.h"
+#include "libfdata_libcnotify.h"
 #include "libfdata_libfcache.h"
 #include "libfdata_list.h"
 #include "libfdata_list_element.h"
@@ -688,6 +689,21 @@ int libfdata_list_element_set_mapped_range(
 
 		return( -1 );
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 internal_element->element_index,
+		 offset,
+		 offset + size,
+		 size );
+
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
 	if( libfdata_list_set_calculate_mapped_ranges_flag(
 	     internal_element->list,
 	     error ) != 1 )

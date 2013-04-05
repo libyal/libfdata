@@ -1,9 +1,14 @@
 TODO
+* add callback to calculate cache index ?
+  - allow to be NULL by default and fallback to default behavior
+  - separate set function
 * list
   - reimplement libfdata_list_get_element_index_at_value_index ?
   - preserve external set mapped offset ?
   - optimize recalculation of element index ?
   - add flag to disable mapped offsets ?
+  - add optimized append element with mapped range function ?
+  - add stream like read/write buffer ?
 * range
   - move value restrictions to data types i.e. stream?
 * rewrite
@@ -11,6 +16,7 @@ TODO
 * mapped range
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+  - do they currently allow for gaps ?
 * stream
   - complete libfdata_stream_clone
 * add tests
@@ -23,6 +29,9 @@ TODO
   - vector
   - other
 * update msvscpp files
+
+20130405
+* worked on refactor to combine fdata and mfdata
 
 20130404
 * updated dependencies

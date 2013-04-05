@@ -1195,7 +1195,7 @@ int libfdata_list_prepend_element(
 	libfdata_mapped_range_t *mapped_range   = NULL;
 	static char *function                   = "libfdata_list_prepend_element";
 	int element_index                       = 0;
-	int mapped_range_index                  = 0;
+	int mapped_range_index                  = -1;
 	int number_of_elements                  = 0;
 
 	if( list == NULL )
@@ -1267,12 +1267,6 @@ int libfdata_list_prepend_element(
 		 "%s: unable to create list element.",
 		 function );
 
-		libcdata_array_set_entry_by_index(
-		 internal_list->mapped_ranges_array,
-		 mapped_range_index,
-		 NULL,
-		 NULL );
-
 		goto on_error;
 	}
 	if( libfdata_list_element_set_data_range(
@@ -1290,12 +1284,6 @@ int libfdata_list_prepend_element(
 		 "%s: unable to set data range of list element.",
 		 function );
 
-		libcdata_array_set_entry_by_index(
-		 internal_list->mapped_ranges_array,
-		 mapped_range_index,
-		 NULL,
-		 NULL );
-
 		goto on_error;
 	}
 	if( libcdata_array_prepend_entry(
@@ -1310,14 +1298,11 @@ int libfdata_list_prepend_element(
 		 "%s: unable to prepend list element to elements array.",
 		 function );
 
-		libcdata_array_set_entry_by_index(
-		 internal_list->mapped_ranges_array,
-		 mapped_range_index,
-		 NULL,
-		 NULL );
-
 		goto on_error;
 	}
+	mapped_range_index = -1;
+	mapped_range       = NULL;
+
 	if( libcdata_array_get_number_of_entries(
 	     internal_list->elements_array,
 	     &number_of_elements,
@@ -1350,7 +1335,6 @@ int libfdata_list_prepend_element(
 			 function,
 			 element_index );
 
-			mapped_range = NULL;
 			list_element = NULL;
 
 			goto on_error;
@@ -1368,7 +1352,6 @@ int libfdata_list_prepend_element(
 			 function,
 			 element_index );
 
-			mapped_range = NULL;
 			list_element = NULL;
 
 			goto on_error;
@@ -1384,6 +1367,14 @@ on_error:
 	{
 		libfdata_list_element_free(
 		 &list_element,
+		 NULL );
+	}
+	if( mapped_range_index != -1 )
+	{
+		libcdata_array_set_entry_by_index(
+		 internal_list->mapped_ranges_array,
+		 mapped_range_index,
+		 NULL,
 		 NULL );
 	}
 	if( mapped_range != NULL )
@@ -1411,7 +1402,7 @@ int libfdata_list_append_element(
 	libfdata_list_element_t *list_element   = NULL;
 	libfdata_mapped_range_t *mapped_range   = NULL;
 	static char *function                   = "libfdata_list_append_element";
-	int mapped_range_index                  = 0;
+	int mapped_range_index                  = -1;
 
 	if( list == NULL )
 	{
@@ -1482,11 +1473,200 @@ int libfdata_list_append_element(
 		 "%s: unable to create list element.",
 		 function );
 
+		goto on_error;
+	}
+	if( libfdata_list_element_set_data_range(
+	     list_element,
+	     element_file_index,
+	     element_offset,
+	     element_size,
+	     element_flags,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set data range of list element.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_append_entry(
+	     internal_list->elements_array,
+	     element_index,
+	     (intptr_t *) list_element,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+		 "%s: unable to append list element to elements array.",
+		 function );
+
+		goto on_error;
+	}
+	mapped_range_index = -1;
+	mapped_range       = NULL;
+
+	if( libfdata_list_element_set_element_index(
+	     list_element,
+	     *element_index,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set list element index.",
+		 function );
+
+		list_element = NULL;
+
+		goto on_error;
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 *element_index,
+		 element_file_index,
+		 element_offset,
+		 element_offset + element_size,
+		 element_size );
+
+		libcnotify_printf(
+		 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 *element_index,
+		 internal_list->size,
+		 internal_list->size + element_size,
+		 element_size );
+
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
+	internal_list->size += element_size;
+
+	return( 1 );
+
+on_error:
+	if( list_element != NULL )
+	{
+		libfdata_list_element_free(
+		 &list_element,
+		 NULL );
+	}
+	if( mapped_range_index != -1 )
+	{
 		libcdata_array_set_entry_by_index(
 		 internal_list->mapped_ranges_array,
 		 mapped_range_index,
 		 NULL,
 		 NULL );
+	}
+	if( mapped_range != NULL )
+	{
+		libfdata_mapped_range_free(
+		 &mapped_range,
+		 NULL );
+	}
+	return( -1 );
+}
+
+/* Appends an element data range with a mapped range
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_list_append_element_with_mapped_range(
+     libfdata_list_t *list,
+     int *element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     off64_t mapped_range_offset,
+     size64_t mapped_range_size,
+     libcerror_error_t **error )
+{
+	libfdata_internal_list_t *internal_list = NULL;
+	libfdata_list_element_t *list_element   = NULL;
+	libfdata_mapped_range_t *mapped_range   = NULL;
+	static char *function                   = "libfdata_list_append_element_with_mapped_range";
+	int mapped_range_index                  = -1;
+	uint8_t list_flags                      = 0;
+
+	if( list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_list = (libfdata_internal_list_t *) list;
+
+	if( libfdata_mapped_range_initialize(
+	     &mapped_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create mapped range.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfdata_mapped_range_set(
+	     mapped_range,
+	     mapped_range_offset,
+	     mapped_range_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set mapped range values.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_append_entry(
+	     internal_list->mapped_ranges_array,
+	     &mapped_range_index,
+	     (intptr_t *) mapped_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+		 "%s: unable to append mapped range to array.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfdata_list_element_initialize(
+	     &list_element,
+	     list,
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create list element.",
+		 function );
 
 		goto on_error;
 	}
@@ -1505,13 +1685,31 @@ int libfdata_list_append_element(
 		 "%s: unable to set data range of list element.",
 		 function );
 
-		libcdata_array_set_entry_by_index(
-		 internal_list->mapped_ranges_array,
-		 mapped_range_index,
-		 NULL,
-		 NULL );
+		goto on_error;
+	}
+	list_flags = internal_list->flags;
+
+	if( libfdata_list_element_set_mapped_range(
+	     list_element,
+	     mapped_range_offset,
+	     mapped_range_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set mapped range of list element.",
+		 function );
 
 		goto on_error;
+	}
+	/* Setting the mapped range in the list element will set the calculate mapped ranges flag in the list
+	 * Reset the flag if it was not set before setting the mapped range in the list element
+	 */
+	if( ( list_flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) == 0 )
+	{
+		internal_list->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 	}
 	if( libcdata_array_append_entry(
 	     internal_list->elements_array,
@@ -1526,14 +1724,11 @@ int libfdata_list_append_element(
 		 "%s: unable to append list element to elements array.",
 		 function );
 
-		libcdata_array_set_entry_by_index(
-		 internal_list->mapped_ranges_array,
-		 mapped_range_index,
-		 NULL,
-		 NULL );
-
 		goto on_error;
 	}
+	mapped_range_index = -1;
+	mapped_range       = NULL;
+
 	if( libfdata_list_element_set_element_index(
 	     list_element,
 	     *element_index,
@@ -1546,28 +1741,35 @@ int libfdata_list_append_element(
 		 "%s: unable to set list element index.",
 		 function );
 
-		mapped_range = NULL;
 		list_element = NULL;
 
 		goto on_error;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
-		{
-			libcnotify_printf(
-			 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
-			 function,
-			 *element_index,
-			 element_file_index,
-			 element_offset,
-			 element_offset + element_size,
-			 element_size,
-			 internal_list->size,
-			 internal_list->size + element_size,
-			 element_size );
-		}
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 *element_index,
+		 element_file_index,
+		 element_offset,
+		 element_offset + element_size,
+		 element_size );
+
+		libcnotify_printf(
+		 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 *element_index,
+		 mapped_range_offset,
+		 mapped_range_offset + mapped_range_size,
+		 mapped_range_size );
+
+		libcnotify_printf(
+		 "\n" );
+	}
 #endif
-	internal_list->size += element_size;
+	internal_list->size += mapped_range_size;
 
 	return( 1 );
 
@@ -1576,6 +1778,14 @@ on_error:
 	{
 		libfdata_list_element_free(
 		 &list_element,
+		 NULL );
+	}
+	if( mapped_range_index != -1 )
+	{
+		libcdata_array_set_entry_by_index(
+		 internal_list->mapped_ranges_array,
+		 mapped_range_index,
+		 NULL,
 		 NULL );
 	}
 	if( mapped_range != NULL )
@@ -1644,8 +1854,8 @@ int libfdata_list_is_element_set(
 int libfdata_list_get_mapped_range_by_index(
      libfdata_list_t *list,
      int element_index,
-     off64_t *offset,
-     size64_t *size,
+     off64_t *mapped_range_offset,
+     size64_t *mapped_range_size,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
@@ -1684,8 +1894,8 @@ int libfdata_list_get_mapped_range_by_index(
 	}
 	result = libfdata_list_element_get_mapped_range(
 	          list_element,
-	          offset,
-	          size,
+	          mapped_range_offset,
+	          mapped_range_size,
 	          error );
 
 	if( result == -1 )
@@ -1709,8 +1919,8 @@ int libfdata_list_get_mapped_range_by_index(
 int libfdata_list_set_mapped_range_by_index(
      libfdata_list_t *list,
      int element_index,
-     off64_t offset,
-     size64_t size,
+     off64_t mapped_range_offset,
+     size64_t mapped_range_size,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
@@ -1748,8 +1958,8 @@ int libfdata_list_set_mapped_range_by_index(
 	}
 	if( libfdata_list_element_set_mapped_range(
 	     list_element,
-	     offset,
-	     size,
+	     mapped_range_offset,
+	     mapped_range_size,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1891,13 +2101,18 @@ int libfdata_list_calculate_mapped_ranges(
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 			 function,
 			 element_index,
 			 element_file_index,
 			 element_offset,
 			 element_offset + element_size,
-			 element_size,
+			 element_size );
+
+			libcnotify_printf(
+			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 element_index,
 			 mapped_offset,
 			 mapped_offset + mapped_range_size,
 			 mapped_range_size );
@@ -1925,13 +2140,20 @@ int libfdata_list_calculate_mapped_ranges(
 
 	internal_list->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
 	return( 1 );
 }
 
-/* Retrieves the element for a specific offset
- * Returns 1 if successful or -1 on error
+/* Retrieves the list element for a specific offset
+ * Returns 1 if successful, 0 if not or -1 on error
  */
-int libfdata_list_get_element_at_offset(
+int libfdata_list_get_list_element_at_offset(
      libfdata_list_t *list,
      off64_t offset,
      int *element_index,
@@ -1941,11 +2163,19 @@ int libfdata_list_get_element_at_offset(
 {
 	libfdata_internal_list_t *internal_list = NULL;
 	libfdata_mapped_range_t *mapped_range   = NULL;
-	static char *function                   = "libfdata_list_get_element_at_offset";
+	static char *function                   = "libfdata_list_get_list_element_at_offset";
 	off64_t mapped_range_offset             = 0;
 	size64_t mapped_range_size              = 0;
 	int initial_element_index               = 0;
 	int number_of_elements                  = 0;
+	int result                              = 0;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+	off64_t element_offset                  = 0;
+	size64_t element_size                   = 0;
+	uint32_t element_flags                  = 0;
+	int element_file_index                  = -1;
+#endif
 
 	if( list == NULL )
 	{
@@ -2020,6 +2250,10 @@ int libfdata_list_get_element_at_offset(
 			return( -1 );
 		}
 	}
+	if( internal_list->size == 0 )
+	{
+		return( 0 );
+	}
 	if( libcdata_array_get_number_of_entries(
 	     internal_list->mapped_ranges_array,
 	     &number_of_elements,
@@ -2034,6 +2268,15 @@ int libfdata_list_get_element_at_offset(
 
 		return( -1 );
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested offset: 0x%08" PRIx64 "\n",
+		 function,
+		 offset );
+	}
+#endif
 	/* This assumes a fairly even distribution of the sizes of the elements
 	 */
 	initial_element_index = (int) ( ( number_of_elements * offset ) / internal_list->size );
@@ -2076,6 +2319,18 @@ int libfdata_list_get_element_at_offset(
 
 			return( -1 );
 		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 *element_index,
+			 mapped_range_offset,
+			 mapped_range_offset + mapped_range_size,
+			 mapped_range_size );
+		}
+#endif
 		/* Check if the offset is in the mapped range
 		 */
 		if( ( offset >= mapped_range_offset )
@@ -2134,6 +2389,18 @@ int libfdata_list_get_element_at_offset(
 
 				return( -1 );
 			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+				 function,
+				 *element_index,
+				 mapped_range_offset,
+				 mapped_range_offset + mapped_range_size,
+				 mapped_range_size );
+			}
+#endif
 			/* Check if the offset is in the mapped range
 			 */
 			if( ( offset >= mapped_range_offset )
@@ -2153,47 +2420,152 @@ int libfdata_list_get_element_at_offset(
 			}
 		}
 	}
-	if( *element_index < 0 )
+	if( ( *element_index >= 0 )
+	 && ( *element_index < number_of_elements ) )
+	{
+		if( offset < 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid offset value out of bounds.",
+			 function );
+
+			return( -1 );
+		}
+		*element_data_offset = offset;
+
+		if( libcdata_array_get_entry_by_index(
+		     internal_list->elements_array,
+		     *element_index,
+		     (intptr_t **) element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from elements array.",
+			 function,
+			 *element_index );
+
+			return( -1 );
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			if( libfdata_list_element_get_data_range(
+			     *element,
+			     &element_file_index,
+			     &element_offset,
+			     &element_size,
+			     &element_flags,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve data range of list element: %d.",
+				 function,
+				 *element_index );
+
+				return( -1 );
+			}
+			libcnotify_printf(
+			 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 *element_index,
+			 element_file_index,
+			 element_offset,
+			 element_offset + element_size,
+			 element_size );
+		}
+#endif
+		result = 1;
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
+	return( result );
+}
+
+/* Retrieves the data range of an element at a specific offset
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libfdata_list_get_element_at_offset(
+     libfdata_list_t *list,
+     off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
+     libcerror_error_t **error )
+{
+	libfdata_list_element_t *list_element = NULL;
+	static char *function                 = "libfdata_list_get_element_at_offset";
+	int result                            = 0;
+
+	if( element_index == NULL )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid element index value out of bounds.",
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid element index.",
 		 function );
 
 		return( -1 );
 	}
-	if( offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid offset value out of bounds.",
-		 function );
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          offset,
+	          element_index,
+	          element_data_offset,
+	          &list_element,
+	          error );
 
-		return( -1 );
-	}
-	*element_data_offset = offset;
-
-	if( libcdata_array_get_entry_by_index(
-	     internal_list->elements_array,
-	     *element_index,
-	     (intptr_t **) element,
-	     error ) != 1 )
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve entry: %d from elements array.",
+		 "%s: unable to retrieve element at offset: %" PRIi64 ".",
 		 function,
-		 *element_index );
+		 offset );
 
 		return( -1 );
 	}
-	return( 1 );
+	else if( result != 0 )
+	{
+		if( libfdata_list_element_get_data_range(
+		     list_element,
+		     element_file_index,
+		     element_offset,
+		     element_size,
+		     element_flags,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve data range of list element: %d.",
+			 function,
+			 *element_index );
+
+			return( -1 );
+		}
+	}
+	return( result );
 }
 
 /* List element value functions
@@ -2576,7 +2948,7 @@ int libfdata_list_get_element_value_by_index(
 }
 
 /* Retrieves the value an element at a specific offset
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not or -1 on error
  */
 int libfdata_list_get_element_value_at_offset(
      libfdata_list_t *list,
@@ -2591,14 +2963,28 @@ int libfdata_list_get_element_value_at_offset(
 {
 	libfdata_list_element_t *list_element = NULL;
 	static char *function                 = "libfdata_list_get_element_value_at_offset";
+	int result                            = 0;
 
-	if( libfdata_list_get_element_at_offset(
-	     list,
-	     offset,
-	     element_index,
-	     element_data_offset,
-	     &list_element,
-	     error ) != 1 )
+	if( element_index == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid element index.",
+		 function );
+
+		return( -1 );
+	}
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          offset,
+	          element_index,
+	          element_data_offset,
+	          &list_element,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -2610,26 +2996,29 @@ int libfdata_list_get_element_value_at_offset(
 
 		return( -1 );
 	}
-	if( libfdata_list_get_element_value(
-	     list,
-	     file_io_handle,
-	     cache,
-	     list_element,
-	     element_value,
-	     read_flags,
-	     error ) != 1 )
+	else if( result != 0 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element: %d value.",
-		 function,
-		 element_index );
+		if( libfdata_list_get_element_value(
+		     list,
+		     file_io_handle,
+		     cache,
+		     list_element,
+		     element_value,
+		     read_flags,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve element: %d value.",
+			 function,
+			 *element_index );
 
-		return( -1 );
+			return( -1 );
+		}
 	}
-	return( 1 );
+	return( result );
 }
 
 /* Sets the value of a specific element
@@ -2841,6 +3230,76 @@ int libfdata_list_set_element_value_by_index(
 		return( -1 );
 	}
 	return( 1 );
+}
+
+/* Sets the value an element at a specific offset
+ *
+ * If the flag LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED is set the list
+ * takes over management of the value and the value is freed when
+ * no longer needed.
+ *
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libfdata_list_set_element_value_at_offset(
+     libfdata_list_t *list,
+     libfcache_cache_t *cache,
+     off64_t offset,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libcerror_error_t **error ),
+     uint8_t flags,
+     libcerror_error_t **error )
+{
+	libfdata_list_element_t *list_element = NULL;
+	static char *function                 = "libfdata_list_set_element_value_at_offset";
+	off64_t element_data_offset           = 0;
+	int element_index                     = 0;
+	int result                            = 0;
+
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          offset,
+	          &element_index,
+	          &element_data_offset,
+	          &list_element,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve element at offset: %" PRIi64 ".",
+		 function,
+		 offset );
+
+		return( -1 );
+	}
+	else if( result != 0 )
+	{
+		if( libfdata_list_set_element_value(
+		     list,
+		     cache,
+		     list_element,
+		     element_value,
+		     free_element_value,
+		     flags,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set value of element: %d.",
+			 function,
+			 element_index );
+
+			return( -1 );
+		}
+	}
+	return( result );
 }
 
 /* Retrieves the size of the list

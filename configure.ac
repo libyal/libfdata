@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libfdata],
- [20130404],
+ [20130405],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -65,6 +65,12 @@ AX_LIBCNOTIFY_CHECK_ENABLE
 
 dnl Check for enabling libfcache for file value cache support
 AX_LIBFCACHE_CHECK_ENABLE
+
+dnl Check if libewf should be build with verbose output
+AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
+
+dnl Check if libewf should be build with debug output
+AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
 
 dnl Set additional compiler flags
 CFLAGS="$CFLAGS -Wall";
@@ -136,5 +142,9 @@ Building:
    libcdata support:   $ac_cv_libcdata
    libcnotify support: $ac_cv_libcnotify
    libfcache support:  $ac_cv_libfcache
+
+Features:
+   Verbose output:     $ac_cv_enable_verbose_output
+   Debug output:       $ac_cv_enable_debug_output
 ]);
 
