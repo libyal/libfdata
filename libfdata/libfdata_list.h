@@ -156,11 +156,6 @@ int libfdata_list_clone(
      libfdata_list_t *source_list,
      libcerror_error_t **error );
 
-int libfdata_list_clone_elements(
-     libfdata_list_t *destination_list,
-     libfdata_list_t *source_list,
-     libcerror_error_t **error );
-
 int libfdata_list_set_calculate_mapped_ranges_flag(
      libfdata_list_t *list,
      libcerror_error_t **error );

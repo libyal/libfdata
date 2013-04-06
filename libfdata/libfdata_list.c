@@ -106,6 +106,17 @@ int libfdata_list_initialize(
 
 		return( -1 );
 	}
+	if( ( flags & 0xfe ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported flags: 0x%02" PRIx8 ".",
+		 function );
+
+		return( -1 );
+	}
 	internal_list = memory_allocate_structure(
 	                 libfdata_internal_list_t );
 
@@ -119,17 +130,6 @@ int libfdata_list_initialize(
 		 function );
 
 		goto on_error;
-	}
-	if( ( flags & 0xfe ) != 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported flags: 0x%02" PRIx8 ".",
-		 function );
-
-		return( -1 );
 	}
 	if( memory_set(
 	     internal_list,
@@ -302,9 +302,9 @@ int libfdata_list_clone(
      libfdata_list_t *source_list,
      libcerror_error_t **error )
 {
-	libfdata_internal_list_t *internal_source_list = NULL;
-	intptr_t *destination_data_handle              = NULL;
-	static char *function                          = "libfdata_list_clone";
+	libfdata_internal_list_t *internal_destination_list = NULL;
+	libfdata_internal_list_t *internal_source_list      = NULL;
+	static char *function                               = "libfdata_list_clone";
 
 	if( destination_list == NULL )
 	{
@@ -336,6 +336,37 @@ int libfdata_list_clone(
 	}
 	internal_source_list = (libfdata_internal_list_t *) source_list;
 
+	internal_destination_list = memory_allocate_structure(
+	                             libfdata_internal_list_t );
+
+	if( internal_destination_list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create destination list.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     internal_destination_list,
+	     0,
+	     sizeof( libfdata_internal_list_t ) ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear destination list.",
+		 function );
+
+		memory_free(
+		 internal_destination_list );
+
+		return( -1 );
+	}
 	if( internal_source_list->data_handle != NULL )
 	{
 		if( internal_source_list->free_data_handle == NULL )
@@ -361,7 +392,7 @@ int libfdata_list_clone(
 			goto on_error;
 		}
 		if( internal_source_list->clone_data_handle(
-		     &destination_data_handle,
+		     &( internal_destination_list->data_handle ),
 		     internal_source_list->data_handle,
 		     error ) != 1 )
 		{
@@ -375,37 +406,45 @@ int libfdata_list_clone(
 			goto on_error;
 		}
 	}
-	if( libfdata_list_initialize(
-	     destination_list,
-	     destination_data_handle,
-	     internal_source_list->free_data_handle,
-	     internal_source_list->clone_data_handle,
-	     internal_source_list->read_element_data,
-	     internal_source_list->write_element_data,
-	     LIBFDATA_FLAG_DATA_HANDLE_MANAGED,
+	if( libcdata_array_clone(
+	     &( internal_destination_list->elements_array ),
+	     internal_source_list->elements_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_element_free,
+	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libfdata_list_element_clone,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create destination list.",
+		 "%s: unable to create destination elements array.",
 		 function );
 
 		goto on_error;
 	}
-	if( *destination_list == NULL )
+	if( libcdata_array_clone(
+	     &( internal_destination_list->mapped_ranges_array ),
+	     internal_source_list->mapped_ranges_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_mapped_range_free,
+	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libfdata_mapped_range_clone,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing destination list.",
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create destination mapped ranges array.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
-	destination_data_handle = NULL;
+	internal_destination_list->flags              = internal_source_list->flags | LIBFDATA_FLAG_DATA_HANDLE_MANAGED;
+	internal_destination_list->free_data_handle   = internal_source_list->free_data_handle;
+	internal_destination_list->clone_data_handle  = internal_source_list->clone_data_handle;
+	internal_destination_list->read_element_data  = internal_source_list->read_element_data;
+	internal_destination_list->write_element_data = internal_source_list->write_element_data;
+
+	*destination_list == (libfdata_list_t *) internal_destination_list;
 
 	if( libfdata_list_clone_elements(
 	     *destination_list,
@@ -424,175 +463,23 @@ int libfdata_list_clone(
 	return( 1 );
 
 on_error:
-	if( *destination_list != NULL )
+	if( internal_destination_list != NULL )
 	{
-		libfdata_list_free(
-		 destination_list,
-		 NULL );
-	}
-	if( destination_data_handle != NULL )
-	{
-		internal_source_list->free_data_handle(
-		 &destination_data_handle,
-		 NULL );
-	}
-	return( -1 );
-}
-
-/* Clones (duplicates) the elements of the list
- * Returns 1 if successful or -1 on error
- */
-int libfdata_list_clone_elements(
-     libfdata_list_t *destination_list,
-     libfdata_list_t *source_list,
-     libcerror_error_t **error )
-{
-	libfdata_internal_list_t *internal_destination_list = NULL;
-	libfdata_internal_list_t *internal_source_list      = NULL;
-	libfdata_list_element_t *destination_list_element   = NULL;
-	libfdata_list_element_t *source_list_element        = NULL;
-	static char *function                               = "libfdata_list_clone_elements";
-	int element_index                                   = 0;
-	int number_of_elements                              = 0;
-
-	if( destination_list == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid destination list.",
-		 function );
-
-		return( -1 );
-	}
-	internal_destination_list = (libfdata_internal_list_t *) destination_list;
-
-	if( source_list == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid source list.",
-		 function );
-
-		return( -1 );
-	}
-	internal_source_list = (libfdata_internal_list_t *) source_list;
-
-	if( libcdata_array_get_number_of_entries(
-	     internal_source_list->elements_array,
-	     &number_of_elements,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of entries from source elements array.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_empty(
-	     internal_destination_list->elements_array,
-	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_element_free,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to empty destination elements array.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_resize(
-	     internal_destination_list->elements_array,
-	     number_of_elements,
-	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_element_free,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
-		 "%s: unable to resize destination elements array.",
-		 function );
-
-		goto on_error;
-	}
-	for( element_index = 0;
-	     element_index < number_of_elements;
-	     element_index++ )
-	{
-		if( libcdata_array_get_entry_by_index(
-		     internal_source_list->elements_array,
-		     element_index,
-		     (intptr_t **) &source_list_element,
-		     error ) != 1 )
+		if( internal_destination_list->elements_array != NULL )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve list element: %d from source elements array.",
-			 function,
-			 element_index );
-
-			goto on_error;
+			libcdata_array_free(
+			 &( internal_destination_list->elements_array ),
+			 (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_element_free,
+			 NULL );
 		}
-		if( source_list_element == NULL )
+		if( internal_destination_list->data_handle != NULL )
 		{
-			continue;
+			internal_source_list->free_data_handle(
+			 &( internal_destination_list->data_handle ),
+			 NULL );
 		}
-		if( libfdata_list_element_clone(
-		     &destination_list_element,
-		     source_list_element,
-		     destination_list,
-		     element_index,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create destination list element: %d.",
-			 function,
-			 element_index );
-
-			goto on_error;
-		}
-		if( libcdata_array_set_entry_by_index(
-		     internal_destination_list->elements_array,
-		     element_index,
-		     (intptr_t *) destination_list_element,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set list element: %d in destination elements array.",
-			 function,
-			 element_index );
-
-			goto on_error;
-		}
-		destination_list_element = NULL;
-	}
-	internal_destination_list->size = internal_source_list->size;
-
-	return( 1 );
-
-on_error:
-	if( destination_list_element != NULL )
-	{
-		libfdata_list_element_free(
-		 &destination_list_element,
-		 NULL );
+		memory_free(
+		 internal_destination_list );
 	}
 	return( -1 );
 }
@@ -1130,7 +1017,7 @@ int libfdata_list_set_element_by_index(
 
 		return( -1 );
 	}
-	/* Make sure the stream has a mapped range entry for every element
+	/* Make sure the list has a mapped range entry for every element
 	 */
 	if( libcdata_array_get_entry_by_index(
 	     internal_list->mapped_ranges_array,
@@ -2306,7 +2193,8 @@ int libfdata_list_get_list_element_at_offset(
 	libfdata_internal_list_t *internal_list = NULL;
 	libfdata_mapped_range_t *mapped_range   = NULL;
 	static char *function                   = "libfdata_list_get_list_element_at_offset";
-	off64_t mapped_range_offset             = 0;
+	off64_t mapped_range_end_offset         = 0;
+	off64_t mapped_range_start_offset       = 0;
 	size64_t mapped_range_size              = 0;
 	int initial_element_index               = 0;
 	int number_of_elements                  = 0;
@@ -2457,7 +2345,7 @@ int libfdata_list_get_list_element_at_offset(
 		}
 		if( libfdata_mapped_range_get(
 		     mapped_range,
-		     &mapped_range_offset,
+		     &mapped_range_start_offset,
 		     &mapped_range_size,
 		     error ) != 1 )
 		{
@@ -2471,6 +2359,20 @@ int libfdata_list_get_list_element_at_offset(
 
 			return( -1 );
 		}
+		mapped_range_end_offset = mapped_range_start_offset + (off64_t) mapped_range_size;
+
+		if( mapped_range_end_offset < mapped_range_start_offset )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid element: %d - mapped range value out of bounds.",
+			 function,
+			 *element_index );
+
+			return( -1 );
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
@@ -2478,23 +2380,23 @@ int libfdata_list_get_list_element_at_offset(
 			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 			 function,
 			 *element_index,
-			 mapped_range_offset,
-			 mapped_range_offset + mapped_range_size,
+			 mapped_range_start_offset,
+			 mapped_range_end_offset,
 			 mapped_range_size );
 		}
 #endif
 		/* Check if the offset is in the mapped range
 		 */
-		if( ( offset >= mapped_range_offset )
-		 && ( offset < ( mapped_range_offset + (off64_t) mapped_range_size ) ) )
+		if( ( offset >= mapped_range_start_offset )
+		 && ( offset < mapped_range_end_offset ) )
 		{
-			offset -= mapped_range_offset;
+			offset -= mapped_range_start_offset;
 
 			break;
 		}
 		/* Check if the offset is out of bounds
 		 */
-		if( offset < mapped_range_offset )
+		if( offset < mapped_range_start_offset )
 		{
 			*element_index = number_of_elements;
 
@@ -2527,7 +2429,7 @@ int libfdata_list_get_list_element_at_offset(
 			}
 			if( libfdata_mapped_range_get(
 			     mapped_range,
-			     &mapped_range_offset,
+			     &mapped_range_start_offset,
 			     &mapped_range_size,
 			     error ) != 1 )
 			{
@@ -2541,6 +2443,20 @@ int libfdata_list_get_list_element_at_offset(
 
 				return( -1 );
 			}
+			mapped_range_end_offset = mapped_range_start_offset + (off64_t) mapped_range_size;
+
+			if( mapped_range_end_offset < mapped_range_start_offset )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid element: %d - mapped range value out of bounds.",
+				 function,
+				 *element_index );
+
+				return( -1 );
+			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
@@ -2548,23 +2464,23 @@ int libfdata_list_get_list_element_at_offset(
 				 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 				 function,
 				 *element_index,
-				 mapped_range_offset,
-				 mapped_range_offset + mapped_range_size,
+				 mapped_range_start_offset,
+				 mapped_range_end_offset,
 				 mapped_range_size );
 			}
 #endif
 			/* Check if the offset is in the mapped range
 			 */
-			if( ( offset >= mapped_range_offset )
-			 && ( offset < ( mapped_range_offset + (off64_t) mapped_range_size ) ) )
+			if( ( offset >= mapped_range_start_offset )
+			 && ( offset < mapped_range_end_offset ) )
 			{
-				offset -= mapped_range_offset;
+				offset -= mapped_range_start_offset;
 
 				break;
 			}
 			/* Check if the offset is out of bounds
 			 */
-			if( offset > mapped_range_offset )
+			if( offset > mapped_range_start_offset )
 			{
 				*element_index = -1;
 

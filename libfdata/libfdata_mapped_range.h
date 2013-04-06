@@ -35,7 +35,7 @@ typedef struct libfdata_mapped_range libfdata_mapped_range_t;
 
 struct libfdata_mapped_range
 {
-	/* The offset
+	/* The (start) offset
 	 */
 	off64_t offset;
 

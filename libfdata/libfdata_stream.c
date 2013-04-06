@@ -139,10 +139,7 @@ int libfdata_stream_initialize(
 		 "%s: unable to create stream.",
 		 function );
 
-		memory_free(
-		 internal_stream );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( memory_set(
 	     internal_stream,
@@ -317,9 +314,9 @@ int libfdata_stream_clone(
      libfdata_stream_t *source_stream,
      libcerror_error_t **error )
 {
-	libfdata_internal_stream_t *internal_source_stream = NULL;
-	intptr_t *destination_data_handle                  = NULL;
-	static char *function                              = "libfdata_stream_clone";
+	libfdata_internal_stream_t *internal_destination_stream = NULL;
+	libfdata_internal_stream_t *internal_source_stream      = NULL;
+	static char *function                                   = "libfdata_stream_clone";
 
 	if( destination_stream == NULL )
 	{
@@ -351,6 +348,37 @@ int libfdata_stream_clone(
 	}
 	internal_source_stream = (libfdata_internal_stream_t *) source_stream;
 
+	internal_destination_stream = memory_allocate_structure(
+	                               libfdata_internal_stream_t );
+
+	if( internal_destination_stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create destination stream.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     internal_destination_stream,
+	     0,
+	     sizeof( libfdata_internal_stream_t ) ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear destination stream.",
+		 function );
+
+		memory_free(
+		 internal_destination_stream );
+
+		return( -1 );
+	}
 	if( internal_source_stream->data_handle != NULL )
 	{
 		if( internal_source_stream->free_data_handle == NULL )
@@ -376,7 +404,7 @@ int libfdata_stream_clone(
 			goto on_error;
 		}
 		if( internal_source_stream->clone_data_handle(
-		     &destination_data_handle,
+		     &( internal_destination_stream->data_handle ),
 		     internal_source_stream->data_handle,
 		     error ) != 1 )
 		{
@@ -390,55 +418,68 @@ int libfdata_stream_clone(
 			goto on_error;
 		}
 	}
-	if( libfdata_stream_initialize(
-	     destination_stream,
-	     destination_data_handle,
-	     internal_source_stream->free_data_handle,
-	     internal_source_stream->clone_data_handle,
-	     internal_source_stream->create_segment,
-	     internal_source_stream->read_segment_data,
-	     internal_source_stream->write_segment_data,
-	     internal_source_stream->seek_segment_offset,
-	     LIBFDATA_FLAG_DATA_HANDLE_MANAGED,
+	if( libcdata_array_clone(
+	     &( internal_destination_stream->segments_array ),
+	     internal_source_stream->segments_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_range_free,
+	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libfdata_range_clone,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create destination stream.",
+		 "%s: unable to create destination segments array.",
 		 function );
 
 		goto on_error;
 	}
-	if( *destination_stream == NULL )
+	if( libcdata_array_clone(
+	     &( internal_destination_stream->mapped_ranges_array ),
+	     internal_source_stream->mapped_ranges_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_mapped_range_free,
+	     (int (*)(intptr_t **, intptr_t *, libcerror_error_t **)) &libfdata_mapped_range_clone,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing destination stream.",
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create destination mapped ranges array.",
 		 function );
 
 		goto on_error;
 	}
-	destination_data_handle = NULL;
+	internal_destination_stream->flags               = internal_source_stream->flags | LIBFDATA_FLAG_DATA_HANDLE_MANAGED;
+	internal_destination_stream->free_data_handle    = internal_source_stream->free_data_handle;
+	internal_destination_stream->clone_data_handle   = internal_source_stream->clone_data_handle;
+	internal_destination_stream->create_segment      = internal_source_stream->create_segment;
+	internal_destination_stream->read_segment_data   = internal_source_stream->read_segment_data;
+	internal_destination_stream->write_segment_data  = internal_source_stream->write_segment_data;
+	internal_destination_stream->seek_segment_offset = internal_source_stream->seek_segment_offset;
 
-/* TODO clone data ranges and mapped offset ranges */
+	*destination_stream == (libfdata_stream_t *) internal_destination_stream;
+
 	return( 1 );
 
 on_error:
-	if( *destination_stream != NULL )
+	if( internal_destination_stream != NULL )
 	{
-		libfdata_stream_free(
-		 destination_stream,
-		 NULL );
-	}
-	if( destination_data_handle != NULL )
-	{
-		internal_source_stream->free_data_handle(
-		 &destination_data_handle,
-		 NULL );
+		if( internal_destination_stream->segments_array != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_destination_stream->segments_array ),
+			 (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_range_free,
+			 NULL );
+		}
+		if( internal_destination_stream->data_handle != NULL )
+		{
+			internal_source_stream->free_data_handle(
+			 &( internal_destination_stream->data_handle ),
+			 NULL );
+		}
+		memory_free(
+		 internal_destination_stream );
 	}
 	return( -1 );
 }
@@ -1482,7 +1523,8 @@ int libfdata_stream_get_segment_index_at_offset(
 	libfdata_internal_stream_t *internal_stream = NULL;
 	libfdata_mapped_range_t *mapped_range       = NULL;
 	static char *function                       = "libfdata_stream_get_segment_index_at_offset";
-	off64_t mapped_range_offset                 = 0;
+	off64_t mapped_range_end_offset             = 0;
+	off64_t mapped_range_start_offset           = 0;
 	size64_t mapped_range_size                  = 0;
 	int initial_segment_index                   = 0;
 	int number_of_segments                      = 0;
@@ -1624,7 +1666,7 @@ int libfdata_stream_get_segment_index_at_offset(
 		}
 		if( libfdata_mapped_range_get(
 		     mapped_range,
-		     &mapped_range_offset,
+		     &mapped_range_start_offset,
 		     &mapped_range_size,
 		     error ) != 1 )
 		{
@@ -1638,6 +1680,20 @@ int libfdata_stream_get_segment_index_at_offset(
 
 			return( -1 );
 		}
+		mapped_range_end_offset = mapped_range_start_offset + (off64_t) mapped_range_size;
+
+		if( mapped_range_end_offset < mapped_range_start_offset )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid segment: %d - mapped range value out of bounds.",
+			 function,
+			 *segment_index );
+
+			return( -1 );
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
@@ -1645,23 +1701,23 @@ int libfdata_stream_get_segment_index_at_offset(
 			 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 			 function,
 			 *segment_index,
-			 mapped_range_offset,
-			 mapped_range_offset + mapped_range_size,
+			 mapped_range_start_offset,
+			 mapped_range_end_offset,
 			 mapped_range_size );
 		}
 #endif
 		/* Check if the offset is in the mapped range
 		 */
-		if( ( offset >= mapped_range_offset )
-		 && ( offset < ( mapped_range_offset + (off64_t) mapped_range_size ) ) )
+		if( ( offset >= mapped_range_start_offset )
+		 && ( offset < mapped_range_end_offset ) )
 		{
-			offset -= mapped_range_offset;
+			offset -= mapped_range_start_offset;
 
 			break;
 		}
 		/* Check if the offset is out of bounds
 		 */
-		if( offset < mapped_range_offset )
+		if( offset < mapped_range_start_offset )
 		{
 			*segment_index = number_of_segments;
 
@@ -1694,7 +1750,7 @@ int libfdata_stream_get_segment_index_at_offset(
 			}
 			if( libfdata_mapped_range_get(
 			     mapped_range,
-			     &mapped_range_offset,
+			     &mapped_range_start_offset,
 			     &mapped_range_size,
 			     error ) != 1 )
 			{
@@ -1708,6 +1764,20 @@ int libfdata_stream_get_segment_index_at_offset(
 
 				return( -1 );
 			}
+			mapped_range_end_offset = mapped_range_start_offset + (off64_t) mapped_range_size;
+
+			if( mapped_range_end_offset < mapped_range_start_offset )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid segment: %d - mapped range value out of bounds.",
+				 function,
+				 *segment_index );
+
+				return( -1 );
+			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
@@ -1715,23 +1785,23 @@ int libfdata_stream_get_segment_index_at_offset(
 				 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 				 function,
 				 *segment_index,
-				 mapped_range_offset,
-				 mapped_range_offset + mapped_range_size,
+				 mapped_range_start_offset,
+				 mapped_range_end_offset,
 				 mapped_range_size );
 			}
 #endif
 			/* Check if the offset is in the mapped range
 			 */
-			if( ( offset >= mapped_range_offset )
-			 && ( offset < ( mapped_range_offset + (off64_t) mapped_range_size ) ) )
+			if( ( offset >= mapped_range_start_offset )
+			 && ( offset < mapped_range_end_offset ) )
 			{
-				offset -= mapped_range_offset;
+				offset -= mapped_range_start_offset;
 
 				break;
 			}
 			/* Check if the offset is out of bounds
 			 */
-			if( offset > mapped_range_offset )
+			if( offset > mapped_range_start_offset )
 			{
 				*segment_index = -1;
 

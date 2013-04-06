@@ -1,23 +1,9 @@
 TODO
+* rewrite
+  - update libfdata_tree_initialize
 * add callback to calculate cache index ?
   - allow to be NULL by default and fallback to default behavior
   - separate set function
-* list
-  - reimplement libfdata_list_get_element_index_at_value_index ?
-  - preserve external set mapped offset ?
-  - optimize recalculation of element index ?
-  - add optimized append element with mapped range function ?
-  - add stream like read/write buffer ?
-
-* rewrite
-  - update libfdata_tree_initialize
-* mapped range
-  - optimize calculations by adding flag to mapped range ?
-    LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
-  - do they currently allow for gaps ?
-* stream
-  - complete libfdata_stream_clone
-  - add mapped offset support ?
 * add tests
 * update include header and man page
   - list
@@ -28,6 +14,27 @@ TODO
   - vector
   - other
 * update msvscpp files
+
+Types:
+* list
+  - reimplement libfdata_list_get_element_index_at_value_index ?
+  - prepend: optimize recalculation of element index ?
+  - add stream like read/write buffer ?
+* range list
+  - work in progress
+* stream
+  - add mapped offset support ?
+* tree
+* tree node
+* vector
+
+Optimizations:
+* mapped ranges
+  - optimize calculations by adding flag to mapped range ?
+    LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20130406
+* worked on refactor to combine fdata and mfdata
 
 20130405
 * worked on refactor to combine fdata and mfdata

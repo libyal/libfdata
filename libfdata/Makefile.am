@@ -26,6 +26,7 @@ libfdata_la_SOURCES = \
 	libfdata_mapped_range.c libfdata_mapped_range.h \
 	libfdata_notify.c libfdata_notify.h \
 	libfdata_range.c libfdata_range.h \
+	libfdata_range_list.c libfdata_range_list.h \
 	libfdata_reference.c libfdata_reference.h \
 	libfdata_stream.c libfdata_stream.h \
 	libfdata_support.c libfdata_support.h \
