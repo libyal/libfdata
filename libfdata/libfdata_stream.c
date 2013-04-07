@@ -458,7 +458,7 @@ int libfdata_stream_clone(
 	internal_destination_stream->write_segment_data  = internal_source_stream->write_segment_data;
 	internal_destination_stream->seek_segment_offset = internal_source_stream->seek_segment_offset;
 
-	*destination_stream == (libfdata_stream_t *) internal_destination_stream;
+	*destination_stream = (libfdata_stream_t *) internal_destination_stream;
 
 	return( 1 );
 
@@ -538,6 +538,8 @@ int libfdata_stream_empty(
 
 		return( -1 );
 	}
+	internal_stream->size = 0;
+
 	return( 1 );
 }
 
@@ -595,6 +597,8 @@ int libfdata_stream_resize(
 
 		return( -1 );
 	}
+	internal_stream->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
+
 	return( 1 );
 }
 

@@ -139,6 +139,36 @@ int libfdata_range_list_clone(
      libfdata_range_list_t *source_range_list,
      libcerror_error_t **error );
 
+LIBFDATA_EXTERN \
+int libfdata_range_list_get_list_element_at_offset(
+     libfdata_range_list_t *range_list,
+     off64_t offset,
+     off64_t *element_data_offset,
+     libfdata_list_element_t **element,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_range_list_get_element_at_offset(
+     libfdata_range_list_t *range_list,
+     off64_t offset,
+     off64_t *element_data_offset,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_range_list_insert_element(
+     libfdata_range_list_t *range_list,
+     off64_t offset,
+     size64_t size,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

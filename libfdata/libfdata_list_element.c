@@ -660,7 +660,7 @@ int libfdata_list_element_set_mapped_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid size value exceeds maximum.",
+		 "%s: invalid mapped size value exceeds maximum.",
 		 function );
 
 		return( -1 );

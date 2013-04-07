@@ -8,6 +8,7 @@ TODO
 * update include header and man page
   - list
   - list element (update)
+  - range list
   - stream (done)
   - tree
   - tree node
@@ -16,25 +17,43 @@ TODO
 * update msvscpp files
 
 Types:
+* buffer
+  - refactor
 * list
   - reimplement libfdata_list_get_element_index_at_value_index ?
   - prepend: optimize recalculation of element index ?
   - add stream like read/write buffer ?
+  - add libfdata_list_set_element_by_index_with_mapped_size
+  - add libfdata_list_prepend_element_with_mapped_size
+  - add libfdata_list_set_element_at_offset
+  - write on set value ? what about create ?
+  - optimize: libfdata_list_append_list by calculating new mapped ranges ?
 * range list
   - work in progress
+* reference and buffer reference
+  - refactor
 * stream
   - add mapped offset support ?
 * tree
+  - refactor
 * tree node
+  - refactor
 * vector
+  - refactor
+  - write on set value ? what about create ?
 
 Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20130407
+* worked on refactor to combine fdata and mfdata
+* worked on range list
+
 20130406
 * worked on refactor to combine fdata and mfdata
+* worked on range list
 
 20130405
 * worked on refactor to combine fdata and mfdata
