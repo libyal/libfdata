@@ -139,6 +139,16 @@ int libfdata_range_list_clone(
      libfdata_range_list_t *source_range_list,
      libcerror_error_t **error );
 
+/* List elements functions
+ */
+LIBFDATA_EXTERN \
+int libfdata_range_list_empty(
+     libfdata_range_list_t *range_list,
+     libcerror_error_t **error );
+
+/* Mapped range functions
+ */
+
 LIBFDATA_EXTERN \
 int libfdata_range_list_get_list_element_at_offset(
      libfdata_range_list_t *range_list,
@@ -167,6 +177,20 @@ int libfdata_range_list_insert_element(
      off64_t element_offset,
      size64_t element_size,
      uint32_t element_flags,
+     libcerror_error_t **error );
+
+/* List element value functions
+ */
+
+LIBFDATA_EXTERN \
+int libfdata_range_list_get_element_value_at_offset(
+     libfdata_range_list_t *range_list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     off64_t offset,
+     off64_t *element_data_offset,
+     intptr_t **element_value,
+     uint8_t read_flags,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

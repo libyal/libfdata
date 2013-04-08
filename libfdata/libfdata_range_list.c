@@ -414,6 +414,52 @@ on_error:
 	return( -1 );
 }
 
+/* List elements functions
+ */
+
+/* Empties the range list
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_range_list_empty(
+     libfdata_range_list_t *range_list,
+     libcerror_error_t **error )
+{
+	libfdata_internal_range_list_t *internal_range_list = NULL;
+	static char *function                               = "libfdata_range_list_empty";
+
+	if( range_list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid range list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_range_list = (libfdata_internal_range_list_t *) range_list;
+
+	if( libcdata_range_list_empty(
+	     internal_range_list->elements_range_list,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_free,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
+		 "%s: unable to emtpy elements range list.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Mapped range functions
+ */
+
 /* Retrieves the list element for a specific offset
  * Returns 1 if successful, 0 if not or -1 on error
  */
@@ -883,5 +929,130 @@ int libfdata_range_list_insert_element(
 	}
 #endif
 	return( 1 );
+}
+
+/* List element value functions
+ */
+
+/* Retrieves the value an element at a specific offset
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libfdata_range_list_get_element_value_at_offset(
+     libfdata_range_list_t *range_list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     off64_t offset,
+     off64_t *element_data_offset,
+     intptr_t **element_value,
+     uint8_t read_flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_range_list_t *internal_range_list = NULL;
+	libfdata_list_t *list                               = NULL;
+	static char *function                               = "libfdata_range_list_get_element_value_at_offset";
+	off64_t mapped_range_offset                         = 0;
+	size64_t mapped_range_size                          = 0;
+	int element_index                                   = 0;
+	int result                                          = 0;
+
+	if( range_list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid range list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_range_list = (libfdata_internal_range_list_t *) range_list;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested offset: 0x%08" PRIx64 "\n",
+		 function,
+		 offset );
+	}
+#endif
+	result = libcdata_range_list_get_range_at_offset(
+	          internal_range_list->elements_range_list,
+	          (uint64_t) offset,
+	          (uint64_t *) &mapped_range_offset,
+	          (uint64_t *) &mapped_range_size,
+	          (intptr_t **) &list,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve range from elements range list for offset: %" PRIi64 ".",
+		 function,
+		 offset );
+
+		return( -1 );
+	}
+	else if( result != 0 )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: mapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 mapped_range_offset,
+			 mapped_range_offset + mapped_range_size,
+			 mapped_range_size );
+		}
+#endif
+		result = libfdata_list_get_element_value_at_offset(
+		          list,
+		          file_io_handle,
+		          cache,
+		          offset,
+		          &element_index,
+		          element_data_offset,
+		          element_value,
+		          read_flags,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve element value from list for offset: %" PRIi64 ".",
+			 function,
+			 offset );
+
+			return( -1 );
+		}
+		else if( result == 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid list - element value missing for offset: %" PRIi64 ".",
+			 function,
+			 offset );
+
+			return( -1 );
+		}
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
+	return( result );
 }
 

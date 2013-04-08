@@ -59,6 +59,16 @@ struct libfdata_internal_list
 	 */
 	libcdata_array_t *mapped_ranges_array;
 
+	/* The calculate cache entry index value
+	 */
+	int (*calculate_cache_entry_index)(
+	       int element_index,
+	       int element_file_index,
+	       off64_t element_offset,
+	       size64_t element_size,
+	       uint32_t element_flags,
+               int number_of_cache_entries );
+
 	/* The flags
 	 */
 	uint8_t flags;
@@ -202,17 +212,6 @@ int libfdata_list_get_element_by_index(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_get_element_by_index_with_mapped_size(
-     libfdata_list_t *list,
-     int element_index,
-     int *element_file_index,
-     off64_t *element_offset,
-     size64_t *element_size,
-     uint32_t *element_flags,
-     size64_t *mapped_size,
-     libcerror_error_t **error );
-
-LIBFDATA_EXTERN \
 int libfdata_list_set_element_by_index(
      libfdata_list_t *list,
      int element_index,
@@ -221,8 +220,6 @@ int libfdata_list_set_element_by_index(
      size64_t element_size,
      uint32_t element_flags,
      libcerror_error_t **error );
-
-/* TODO libfdata_list_set_element_by_index_with_mapped_size */
 
 LIBFDATA_EXTERN \
 int libfdata_list_prepend_element(
@@ -233,8 +230,6 @@ int libfdata_list_prepend_element(
      uint32_t element_flags,
      libcerror_error_t **error );
 
-/* TODO libfdata_list_prepend_element_with_mapped_size */
-
 LIBFDATA_EXTERN \
 int libfdata_list_append_element(
      libfdata_list_t *list,
@@ -243,17 +238,6 @@ int libfdata_list_append_element(
      off64_t element_offset,
      size64_t element_size,
      uint32_t element_flags,
-     libcerror_error_t **error );
-
-LIBFDATA_EXTERN \
-int libfdata_list_append_element_with_mapped_size(
-     libfdata_list_t *list,
-     int *element_index,
-     int element_file_index,
-     off64_t element_offset,
-     size64_t element_size,
-     uint32_t element_flags,
-     size64_t mapped_size,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
@@ -293,6 +277,32 @@ LIBFDATA_EXTERN \
 int libfdata_list_set_mapped_size_by_index(
      libfdata_list_t *list,
      int element_index,
+     size64_t mapped_size,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_by_index_with_mapped_size(
+     libfdata_list_t *list,
+     int element_index,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
+     size64_t *mapped_size,
+     libcerror_error_t **error );
+
+/* TODO libfdata_list_set_element_by_index_with_mapped_size */
+
+/* TODO libfdata_list_prepend_element_with_mapped_size */
+
+LIBFDATA_EXTERN \
+int libfdata_list_append_element_with_mapped_size(
+     libfdata_list_t *list,
+     int *element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
      size64_t mapped_size,
      libcerror_error_t **error );
 
