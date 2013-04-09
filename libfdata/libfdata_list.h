@@ -59,6 +59,10 @@ struct libfdata_internal_list
 	 */
 	libcdata_array_t *mapped_ranges_array;
 
+	/* The flags
+	 */
+	uint8_t flags;
+
 	/* The calculate cache entry index value
 	 */
 	int (*calculate_cache_entry_index)(
@@ -68,10 +72,6 @@ struct libfdata_internal_list
 	       size64_t element_size,
 	       uint32_t element_flags,
                int number_of_cache_entries );
-
-	/* The flags
-	 */
-	uint8_t flags;
 
 	/* The data handle
 	 */

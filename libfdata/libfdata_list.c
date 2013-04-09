@@ -1499,7 +1499,6 @@ int libfdata_list_append_list(
 	static char *function                          = "libfdata_list_append_list";
 	off64_t mapped_range_offset                    = 0;
 	size64_t mapped_range_size                     = 0;
-	size64_t new_size                              = 0;
 	int element_index                              = 0;
 	int new_number_of_elements                     = 0;
 	int number_of_elements                         = 0;
@@ -1653,8 +1652,6 @@ int libfdata_list_append_list(
 
 		goto on_error;
 	}
-	new_size = internal_list->size;
-
 	for( source_element_index = 0;
 	     source_element_index < source_number_of_elements;
 	     source_element_index++ )
@@ -1723,30 +1720,11 @@ int libfdata_list_append_list(
 
 			goto on_error;
 		}
-		if( libfdata_mapped_range_get(
-		     mapped_range,
-		     &mapped_range_offset,
-		     &mapped_range_size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to retrieve values from mapped range: %d.",
-			 function,
-			 element_index );
-
-			goto on_error;
-		}
-		new_size += mapped_range_size;
-
 		element_index++;
 	}
+	element_index          = number_of_elements;
+	number_of_elements     = new_number_of_elements;
 	new_number_of_elements = 0;
-
-	internal_list->size   = new_size;
-	internal_list->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	if( libcdata_array_empty(
 	     internal_source_list->elements_array,
@@ -1778,6 +1756,79 @@ int libfdata_list_append_list(
 	}
 	internal_source_list->size = 0;
 
+	while( element_index < number_of_elements )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_list->elements_array,
+		     element_index,
+		     (intptr_t **) &list_element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from elements array.",
+			 function,
+			 element_index );
+
+			goto on_error;
+		}
+		( (libfdata_internal_list_element_t *) list_element )->list          = list;
+		( (libfdata_internal_list_element_t *) list_element )->element_index = element_index;
+
+		if( libcdata_array_get_entry_by_index(
+		     internal_list->mapped_ranges_array,
+		     element_index,
+		     (intptr_t **) &mapped_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from mapped ranges array.",
+			 function,
+			 element_index );
+
+			goto on_error;
+		}
+		if( libfdata_mapped_range_get(
+		     mapped_range,
+		     &mapped_range_offset,
+		     &mapped_range_size,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve values from mapped range: %d.",
+			 function,
+			 element_index );
+
+			goto on_error;
+		}
+		if( libfdata_mapped_range_set(
+		     mapped_range,
+		     internal_list->size,
+		     mapped_range_size,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set values of mapped range: %d.",
+			 function,
+			 element_index );
+
+			goto on_error;
+		}
+		internal_list->size += mapped_range_size;
+
+		element_index++;
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{

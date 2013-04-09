@@ -27,7 +27,6 @@ Types:
   - add libfdata_list_prepend_element_with_mapped_size
   - add libfdata_list_set_element_at_offset
   - write on set value ? what about create ?
-  - optimize: libfdata_list_append_list by calculating new mapped ranges ?
   - add calculate_cache_entry_index support
 * range list
   - work in progress
@@ -47,6 +46,10 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20130409
+* worked on range list
+* optimized and fixed append list
 
 20130408
 * worked on range list
