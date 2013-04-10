@@ -758,12 +758,13 @@ int libfdata_list_element_get_element_value(
  */
 int libfdata_list_element_set_element_value(
      libfdata_list_element_t *element,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_element_t *internal_element = NULL;
@@ -784,11 +785,12 @@ int libfdata_list_element_set_element_value(
 
 	if( libfdata_list_set_element_value(
 	     internal_element->list,
+	     file_io_handle,
 	     cache,
 	     element,
 	     element_value,
 	     free_element_value,
-	     flags,
+	     write_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

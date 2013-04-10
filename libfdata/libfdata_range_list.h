@@ -193,6 +193,19 @@ int libfdata_range_list_get_element_value_at_offset(
      uint8_t read_flags,
      libcerror_error_t **error );
 
+LIBFDATA_EXTERN \
+int libfdata_range_list_set_element_value_at_offset(
+     libfdata_range_list_t *range_list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     off64_t offset,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libcerror_error_t **error ),
+     uint8_t write_flags,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

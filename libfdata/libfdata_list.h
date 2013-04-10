@@ -368,37 +368,40 @@ int libfdata_list_get_element_value_at_offset(
 
 int libfdata_list_set_element_value(
      libfdata_list_t *list,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      libfdata_list_element_t *element,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
 int libfdata_list_set_element_value_by_index(
      libfdata_list_t *list,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      int element_index,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
 int libfdata_list_set_element_value_at_offset(
      libfdata_list_t *list,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      off64_t offset,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \

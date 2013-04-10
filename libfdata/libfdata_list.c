@@ -3571,13 +3571,14 @@ int libfdata_list_get_element_value_at_offset(
  */
 int libfdata_list_set_element_value(
      libfdata_list_t *list,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      libfdata_list_element_t *element,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
@@ -3696,7 +3697,7 @@ int libfdata_list_set_element_value(
 	     element_timestamp,
 	     element_value,
 	     free_element_value,
-	     flags,
+	     write_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -3722,13 +3723,14 @@ int libfdata_list_set_element_value(
  */
 int libfdata_list_set_element_value_by_index(
      libfdata_list_t *list,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      int element_index,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
@@ -3766,11 +3768,12 @@ int libfdata_list_set_element_value_by_index(
 	}
 	if( libfdata_list_set_element_value(
 	     list,
+	     file_io_handle,
 	     cache,
 	     list_element,
 	     element_value,
 	     free_element_value,
-	     flags,
+	     write_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -3787,7 +3790,7 @@ int libfdata_list_set_element_value_by_index(
 	return( 1 );
 }
 
-/* Sets the value an element at a specific offset
+/* Sets the value of an element at a specific offset
  *
  * If the flag LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED is set the list
  * takes over management of the value and the value is freed when
@@ -3797,13 +3800,14 @@ int libfdata_list_set_element_value_by_index(
  */
 int libfdata_list_set_element_value_at_offset(
      libfdata_list_t *list,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      off64_t offset,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error )
 {
 	libfdata_list_element_t *list_element = NULL;
@@ -3836,11 +3840,12 @@ int libfdata_list_set_element_value_at_offset(
 	{
 		if( libfdata_list_set_element_value(
 		     list,
+		     file_io_handle,
 		     cache,
 		     list_element,
 		     element_value,
 		     free_element_value,
-		     flags,
+		     write_flags,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

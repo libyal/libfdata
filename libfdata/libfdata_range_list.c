@@ -699,6 +699,14 @@ int libfdata_range_list_insert_element(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
+		 "%s: file index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 element_file_index,
+		 element_offset,
+		 element_offset + element_size,
+		 element_size );
+
+		libcnotify_printf(
 		 "%s: requested range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 		 function,
 		 offset,
@@ -1028,6 +1036,133 @@ int libfdata_range_list_get_element_value_at_offset(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve element value from list for offset: %" PRIi64 ".",
+			 function,
+			 offset );
+
+			return( -1 );
+		}
+		else if( result == 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid list - element value missing for offset: %" PRIi64 ".",
+			 function,
+			 offset );
+
+			return( -1 );
+		}
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
+	return( result );
+}
+
+/* Sets the value of an element at a specific offset
+ *
+ * If the flag LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED is set the list
+ * takes over management of the value and the value is freed when
+ * no longer needed.
+ *
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libfdata_range_list_set_element_value_at_offset(
+     libfdata_range_list_t *range_list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     off64_t offset,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libcerror_error_t **error ),
+     uint8_t write_flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_range_list_t *internal_range_list = NULL;
+	libfdata_list_t *list                               = NULL;
+	static char *function                               = "libfdata_range_list_set_element_value_at_offset";
+	off64_t mapped_range_offset                         = 0;
+	size64_t mapped_range_size                          = 0;
+	int result                                          = 0;
+
+	if( range_list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid range list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_range_list = (libfdata_internal_range_list_t *) range_list;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested offset: 0x%08" PRIx64 "\n",
+		 function,
+		 offset );
+	}
+#endif
+	result = libcdata_range_list_get_range_at_offset(
+	          internal_range_list->elements_range_list,
+	          (uint64_t) offset,
+	          (uint64_t *) &mapped_range_offset,
+	          (uint64_t *) &mapped_range_size,
+	          (intptr_t **) &list,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve range from elements range list for offset: %" PRIi64 ".",
+		 function,
+		 offset );
+
+		return( -1 );
+	}
+	else if( result != 0 )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: mapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 mapped_range_offset,
+			 mapped_range_offset + mapped_range_size,
+			 mapped_range_size );
+		}
+#endif
+		result = libfdata_list_set_element_value_at_offset(
+		          list,
+		          file_io_handle,
+		          cache,
+		          offset,
+		          element_value,
+		          free_element_value,
+		          write_flags,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set element value in list for offset: %" PRIi64 ".",
 			 function,
 			 offset );
 

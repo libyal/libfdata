@@ -156,12 +156,13 @@ int libfdata_list_element_get_element_value(
 LIBFDATA_EXTERN \
 int libfdata_list_element_set_element_value(
      libfdata_list_element_t *element,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libfdata_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libfdata_error_t **error );
 
 /* -------------------------------------------------------------------------
