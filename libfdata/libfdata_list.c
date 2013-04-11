@@ -871,6 +871,11 @@ int libfdata_list_set_element_by_index(
 	int previous_element_file_index         = 0;
 	int result                              = 0;
 
+#if defined( HAVE_DEBUG_OUTPUT )
+	off64_t mapped_range_offset             = 0;
+	size64_t mapped_range_size              = 0;
+#endif
+
 	if( list == NULL )
 	{
 		libcerror_error_set(
@@ -937,7 +942,6 @@ int libfdata_list_set_element_by_index(
 
 			return( -1 );
 		}
-		mapped_size = element_size;
 	}
 	else
 	{
@@ -978,12 +982,6 @@ int libfdata_list_set_element_by_index(
 
 				return( -1 );
 			}
-			mapped_size          = element_size;
-			internal_list->size -= previous_element_size;
-		}
-		else
-		{
-			internal_list->size -= mapped_size;
 		}
 	}
 	if( libfdata_list_element_set_data_range(
@@ -1057,10 +1055,62 @@ int libfdata_list_set_element_by_index(
 
 			return( -1 );
 		}
+		internal_list->size  += element_size;
+		internal_list->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 	}
+	/* If the size of the element is mapped or if the element size did not change
+	 * there is no need to recalculate the mapped range
+	 */
+	else if( ( mapped_size == 0 )
+	      && ( element_size != previous_element_size ) )
+	{
+		internal_list->size  -= previous_element_size;
+		internal_list->size  -= element_size;
+		internal_list->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 function,
+		 element_index,
+		 element_file_index,
+		 element_offset,
+		 element_offset + element_size,
+		 element_size );
+
+		if( ( internal_list->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) == 0 )
+		{
+			if( libfdata_mapped_range_get(
+			     mapped_range,
+			     &mapped_range_offset,
+			     &mapped_range_size,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve values from mapped range: %d.",
+				 function,
+				 element_index );
+
+				return( -1 );
+			}
+			libcnotify_printf(
+			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 function,
+			 element_index,
+			 mapped_range_offset,
+			 mapped_range_offset + mapped_range_size,
+			 mapped_range_size );
+		}
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
 	internal_list->current_element_index = element_index;
-	internal_list->size                 += mapped_size;
-	internal_list->flags                |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	return( 1 );
 }
