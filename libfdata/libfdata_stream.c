@@ -2842,6 +2842,22 @@ int libfdata_stream_get_size(
 
 		return( -1 );
 	}
+	if( ( internal_stream->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
+	{
+		if( libfdata_stream_calculate_mapped_ranges(
+		     internal_stream,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to calculate mapped ranges.",
+			 function );
+
+			return( -1 );
+		}
+	}
 	*size = internal_stream->size;
 
 	return( 1 );

@@ -47,6 +47,9 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20130420
+* fix for stream size calculation
+
 20130411
 * worked on range list
 
