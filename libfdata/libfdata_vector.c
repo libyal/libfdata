@@ -670,7 +670,7 @@ int libfdata_vector_set_segment_by_index(
 
 			return( -1 );
 		}
-		internal_vector->data_size -= previous_segment_size;
+		internal_vector->size -= previous_segment_size;
 	}
 	if( libfdata_range_set(
 	     segment_data_range,
@@ -689,7 +689,7 @@ int libfdata_vector_set_segment_by_index(
 
 		return( -1 );
 	}
-	internal_vector->data_size += segment_size;
+	internal_vector->size += segment_size;
 
 	return( 1 );
 }
@@ -768,7 +768,7 @@ int libfdata_vector_append_segment(
 
 		goto on_error;
 	}
-	internal_vector->data_size += segment_size;
+	internal_vector->size += segment_size;
 
 	return( 1 );
 
@@ -832,8 +832,7 @@ int libfdata_vector_get_number_of_elements(
 
 		return( -1 );
 	}
-	safe_number_of_elements = internal_vector->data_size
-	                        / internal_vector->element_size;
+	safe_number_of_elements = internal_vector->size / internal_vector->element_size;
 
 	if( safe_number_of_elements > (size64_t) INT_MAX )
 	{
@@ -1099,8 +1098,8 @@ int libfdata_vector_get_element_value_by_index(
 
 		return( -1 );
 	}
-	if( ( internal_vector->data_size == 0 )
-	 || ( internal_vector->data_size > (off64_t) INT64_MAX ) )
+	if( ( internal_vector->size == 0 )
+	 || ( internal_vector->size > (off64_t) INT64_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1124,7 +1123,7 @@ int libfdata_vector_get_element_value_by_index(
 	}
 	element_data_offset = (off64_t) ( element_index * internal_vector->element_size );
 
-	if( element_data_offset > (off64_t) internal_vector->data_size )
+	if( element_data_offset > (off64_t) internal_vector->size )
 	{
 		libcerror_error_set(
 		 error,
@@ -1478,13 +1477,14 @@ int libfdata_vector_get_element_value_at_offset(
  */
 int libfdata_vector_set_element_value_by_index(
      libfdata_vector_t *vector,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      int element_index,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
             libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
@@ -1520,8 +1520,8 @@ int libfdata_vector_set_element_value_by_index(
 
 		return( -1 );
 	}
-	if( ( internal_vector->data_size == 0 )
-	 || ( internal_vector->data_size > (off64_t) INT64_MAX ) )
+	if( ( internal_vector->size == 0 )
+	 || ( internal_vector->size > (off64_t) INT64_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1670,7 +1670,7 @@ int libfdata_vector_set_element_value_by_index(
 	     internal_vector->timestamp,
 	     element_value,
 	     free_element_value,
-	     flags,
+	     write_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

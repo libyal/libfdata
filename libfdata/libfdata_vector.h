@@ -43,9 +43,9 @@ struct libfdata_internal_vector
 	 */
 	size64_t element_size;
 
-	/* The data size
+	/* The (vector) size
 	 */
-	size64_t data_size;
+	size64_t size;
 
 	/* The segments array
 	 */
@@ -246,13 +246,14 @@ int libfdata_vector_get_element_value_at_offset(
 LIBFDATA_EXTERN \
 int libfdata_vector_set_element_value_by_index(
      libfdata_vector_t *vector,
+     intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      int element_index,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
      libcerror_error_t **error ),
-     uint8_t flags,
+     uint8_t write_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
@@ -262,9 +263,9 @@ int libfdata_vector_get_element_size(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_get_data_size(
+int libfdata_vector_get_size(
      libfdata_vector_t *vector,
-     size64_t *data_size,
+     size64_t *size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )
