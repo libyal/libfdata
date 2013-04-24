@@ -404,6 +404,8 @@ int libfdata_list_set_element_value_at_offset(
      uint8_t write_flags,
      libcerror_error_t **error );
 
+/* IO functions
+ */
 LIBFDATA_EXTERN \
 int libfdata_list_get_size(
      libfdata_list_t *list,

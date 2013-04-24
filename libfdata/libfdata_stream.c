@@ -1561,7 +1561,7 @@ int libfdata_stream_get_segment_index_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid stream - data size value out of bounds.",
+		 "%s: invalid stream - size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1762,7 +1762,7 @@ int libfdata_stream_get_segment_index_at_offset(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 
+				 "%s: unable to retrieve values from mapped range: %d.",
 				 function,
 				 *segment_index );
 
