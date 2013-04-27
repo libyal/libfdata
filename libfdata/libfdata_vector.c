@@ -1850,6 +1850,7 @@ int libfdata_vector_get_element_index_at_offset(
 
 				break;
 			}
+			segment_data_offset += (off64_t) mapped_range_size;
 		}
 	}
 	if( ( segment_index >= 0 )
@@ -1866,8 +1867,6 @@ int libfdata_vector_get_element_index_at_offset(
 
 			return( -1 );
 		}
-		segment_data_offset = offset;
-
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{

@@ -1,4 +1,6 @@
 TODO
+* list and write - set is also used by read callback
+  have flag that tells function to initiate write callback ?
 * rewrite
   - update libfdata_tree_initialize
 * add callback to calculate cache index ?
@@ -46,6 +48,9 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20130427
+* worked on vector
 
 20130424
 * worked on vector
