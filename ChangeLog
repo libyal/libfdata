@@ -49,6 +49,12 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20130616
+* worked on reference
+
+20130501
+* worked on vector
+
 20130427
 * worked on vector
 

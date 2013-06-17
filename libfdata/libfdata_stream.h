@@ -282,6 +282,16 @@ ssize_t libfdata_stream_read_buffer(
          libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
+ssize_t libfdata_stream_read_buffer_at_offset(
+         libfdata_stream_t *stream,
+         intptr_t *file_io_handle,
+         uint8_t *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         uint8_t read_flags,
+         libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
 ssize_t libfdata_stream_write_buffer(
          libfdata_stream_t *stream,
          intptr_t *file_io_handle,

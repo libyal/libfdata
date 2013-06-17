@@ -23,13 +23,12 @@
 #include <memory.h>
 #include <types.h>
 
-#include "libfdata_stream.h"
-#include "libfdata_buffer.h"
 #include "libfdata_definitions.h"
 #include "libfdata_libcerror.h"
 #include "libfdata_libcnotify.h"
 #include "libfdata_mapped_range.h"
 #include "libfdata_range.h"
+#include "libfdata_stream.h"
 #include "libfdata_types.h"
 #include "libfdata_unused.h"
 
@@ -2190,6 +2189,58 @@ ssize_t libfdata_stream_read_buffer(
 		}
 	}
 	return( (ssize_t) buffer_offset );
+}
+
+/* Reads data at a specific offset into a buffer
+ * Returns the number of bytes read or -1 on error
+ */
+ssize_t libfdata_stream_read_buffer_at_offset(
+         libfdata_stream_t *stream,
+         intptr_t *file_io_handle,
+         uint8_t *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         uint8_t read_flags,
+         libcerror_error_t **error )
+{
+	static char *function = "libfdata_stream_read_buffer_at_offset";
+	ssize_t read_count    = 0;
+
+	if( libfdata_stream_seek_offset(
+	     stream,
+	     offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek offset.",
+		 function );
+
+		return( -1 );
+	}
+	read_count = libfdata_stream_read_buffer(
+	              stream,
+	              file_io_handle,
+	              buffer,
+	              buffer_size,
+	              read_flags,
+	              error );
+
+	if( read_count < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read buffer.",
+		 function );
+
+		return( -1 );
+	}
+	return( read_count );
 }
 
 /* Writes data in the buffer to the current offset
