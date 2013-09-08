@@ -402,7 +402,8 @@ int libfdata_range_list_clone(
 on_error:
 	if( internal_destination_range_list != NULL )
 	{
-		if( internal_destination_range_list->data_handle != NULL )
+		if( ( internal_destination_range_list->data_handle != NULL )
+		 && ( internal_source_range_list->free_data_handle != NULL ) )
 		{
 			internal_source_range_list->free_data_handle(
 			 &( internal_destination_range_list->data_handle ),

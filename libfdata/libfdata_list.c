@@ -455,7 +455,8 @@ on_error:
 			 (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_element_free,
 			 NULL );
 		}
-		if( internal_destination_list->data_handle != NULL )
+		if( ( internal_destination_list->data_handle != NULL )
+		 && ( internal_source_list->free_data_handle != NULL ) )
 		{
 			internal_source_list->free_data_handle(
 			 &( internal_destination_list->data_handle ),

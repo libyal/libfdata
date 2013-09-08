@@ -455,7 +455,7 @@ int libfdata_vector_clone(
 	return( 1 );
 
 on_error:
-	if( destination_data_handle != NULL )
+	if( internal_destination_vector != NULL )
 	{
 		if( internal_destination_vector->segments_array != NULL )
 		{
@@ -464,7 +464,8 @@ on_error:
 			 (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_range_free,
 			 NULL );
 		}
-		if( internal_destination_vector->data_handle != NULL )
+		if( ( internal_destination_vector->data_handle != NULL )
+		 && ( internal_source_vector->free_data_handle != NULL ) )
 		{
 			internal_source_vector->free_data_handle(
 			 &( internal_destination_vector->data_handle ),

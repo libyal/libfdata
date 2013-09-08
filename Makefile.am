@@ -5,6 +5,7 @@ SUBDIRS = \
 	common \
 	libcstring \
 	libcerror \
+	libcthreads \
 	libcdata \
 	libcnotify \
 	libfcache \
@@ -37,10 +38,7 @@ SPEC_FILES = \
 	libfdata.spec.in
 
 EXTRA_DIST = \
-	README.dll \
 	README.macosx \
-	README.mingw \
-	README.static \
 	$(DPKG_FILES) \
 	$(GETTEXT_FILES) \
 	$(PKGCONFIG_FILES) \
@@ -63,6 +61,7 @@ library:
 	(cd $(srcdir)/common && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcstring && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcerror && $(MAKE) $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libcthreads && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcdata && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcnotify && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfcache && $(MAKE) $(AM_MAKEFLAGS))
@@ -84,6 +83,7 @@ distclean: clean
 splint:
 	(cd $(srcdir)/libcstring && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcerror && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libcthreads && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcdata && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcnotify && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfcache && $(MAKE) splint $(AM_MAKEFLAGS))

@@ -471,7 +471,8 @@ on_error:
 			 (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_range_free,
 			 NULL );
 		}
-		if( internal_destination_stream->data_handle != NULL )
+		if( ( internal_destination_stream->data_handle != NULL )
+		 && ( internal_source_stream->free_data_handle != NULL ) )
 		{
 			internal_source_stream->free_data_handle(
 			 &( internal_destination_stream->data_handle ),

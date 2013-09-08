@@ -106,5 +106,7 @@ stamp-h1
 /libcdata
 /libcerror
 /libcnotify
+/libcstring
+/libcsystem
 /libcthreads
 /libfcache

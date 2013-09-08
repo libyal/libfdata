@@ -16,11 +16,8 @@ TODO
   - tree node
   - vector
   - other
-* update msvscpp files
 
 Types:
-* buffer
-  - refactor
 * list
   - reimplement libfdata_list_get_element_index_at_value_index ?
   - prepend: optimize recalculation of element index ?
@@ -31,10 +28,10 @@ Types:
   - write on set value ? what about create ?
   - add calculate_cache_entry_index support
   - implement libfdata_list_read_buffer and libfdata_list_seek_offset ?
+  - add a function to look for data range offset instead of relative list offset
+    libfdata_list_get_element_value_at_offset ?
 * range list
   - work in progress
-* reference and buffer reference
-  - refactor
 * stream
   - add mapped offset support ?
 * tree
@@ -49,6 +46,12 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20130908
+* updated dependencies
+* fixed memory leak in error path
+* updated msvscpp files
+* added libcthreads build support
 
 20130718
 * remove unnecessary restriction in library include headers
