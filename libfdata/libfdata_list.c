@@ -653,6 +653,20 @@ int libfdata_list_reverse(
 
 		return( -1 );
 	}
+	if( libcdata_array_get_number_of_entries(
+	     internal_list->elements_array,
+	     &number_of_elements,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of elements from elements array.",
+		 function );
+
+		return( -1 );
+	}
 	for( element_index = 0;
 	     element_index < number_of_elements;
 	     element_index++ )
