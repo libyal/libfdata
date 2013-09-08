@@ -308,7 +308,6 @@ int libfdata_vector_clone(
 {
 	libfdata_internal_vector_t *internal_destination_vector = NULL;
 	libfdata_internal_vector_t *internal_source_vector      = NULL;
-	intptr_t *destination_data_handle                       = NULL;
 	static char *function                                   = "libfdata_vector_clone";
 
 	if( destination_vector == NULL )
