@@ -1,7 +1,7 @@
 /*
  * The list functions
  *
- * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -531,7 +531,7 @@ int libfdata_list_empty(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
-		 "%s: unable to emtpy elements array.",
+		 "%s: unable to empty elements array.",
 		 function );
 
 		return( -1 );

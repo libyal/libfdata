@@ -24,7 +24,7 @@ BEGIN
       VALUE "FileDescription",		"Library to provide generic file data functions\0"
       VALUE "FileVersion",		"@VERSION@" "\0"
       VALUE "InternalName",		"libfdata.dll\0"
-      VALUE "LegalCopyright",		"(c) 2010-2013 Joachim Metz <joachim.metz@gmail.com>\0"
+      VALUE "LegalCopyright",		"(c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>\0"
       VALUE "OriginalFilename",		"libfdata.dll\0"
       VALUE "ProductName",		"libfdata\0"
       VALUE "ProductVersion",		"@VERSION@" "\0"

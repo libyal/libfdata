@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20130831
+# Version: 20130922
 
 # Generic auto-generated build files
 *~
@@ -100,7 +100,7 @@ stamp-h1
 /include/libfdata/features.h
 /include/libfdata/types.h
 /libfdata/libfdata.rc
-/libfdata/libfdata.h
+/libfdata/libfdata_definitions.h
 
 # Local library dependencies specific files
 /libcdata

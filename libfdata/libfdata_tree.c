@@ -1,7 +1,7 @@
 /*
  * The tree functions
  *
- * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -50,15 +50,15 @@ int libfdata_tree_initialize(
             intptr_t **destination_data_handle,
             intptr_t *source_data_handle,
             libcerror_error_t **error ),
-     int (*read_node_data)(
+     int (*read_node)(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
             libfcache_cache_t *cache,
-            int node_data_file_index,
-            off64_t node_data_offset,
-            size64_t node_data_size,
-            uint32_t node_data_flags,
+            int node_file_index,
+            off64_t node_offset,
+            size64_t node_size,
+            uint32_t node_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*read_sub_nodes)(
@@ -66,10 +66,10 @@ int libfdata_tree_initialize(
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
             libfcache_cache_t *cache,
-            int sub_nodes_data_file_index,
-            off64_t sub_nodes_data_offset,
-            size64_t sub_nodes_data_size,
-            uint32_t sub_nodes_data_flags,
+            int sub_nodes_file_index,
+            off64_t sub_nodes_offset,
+            size64_t sub_nodes_size,
+            uint32_t sub_nodes_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      uint8_t flags,
@@ -100,13 +100,13 @@ int libfdata_tree_initialize(
 
 		return( -1 );
 	}
-	if( read_node_data == NULL )
+	if( read_node == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid read node data function.",
+		 "%s: invalid read node function.",
 		 function );
 
 		return( -1 );
@@ -154,7 +154,7 @@ int libfdata_tree_initialize(
 	internal_tree->data_handle       = data_handle;
 	internal_tree->free_data_handle  = free_data_handle;
 	internal_tree->clone_data_handle = clone_data_handle;
-	internal_tree->read_node_data    = read_node_data;
+	internal_tree->read_node         = read_node;
 	internal_tree->read_sub_nodes    = read_sub_nodes;
 
 	*tree = (libfdata_tree_t *) internal_tree;
@@ -261,10 +261,10 @@ int libfdata_tree_clone(
 	libfdata_tree_node_t *source_tree_root_node    = NULL;
 	intptr_t *destination_data_handle              = NULL;
 	static char *function                          = "libfdata_tree_clone";
-	off64_t node_data_offset                       = 0;
-	size64_t node_data_size                        = 0;
-	uint32_t node_data_flags                       = 0;
-	int node_data_file_index                       = -1;
+	off64_t node_offset                            = 0;
+	size64_t node_size                             = 0;
+	uint32_t node_flags                            = 0;
+	int node_file_index                            = -1;
 
 	if( destination_tree == NULL )
 	{
@@ -340,7 +340,7 @@ int libfdata_tree_clone(
 	     destination_data_handle,
 	     internal_source_tree->free_data_handle,
 	     internal_source_tree->clone_data_handle,
-	     internal_source_tree->read_node_data,
+	     internal_source_tree->read_node,
 	     internal_source_tree->read_sub_nodes,
 	     LIBFDATA_FLAG_DATA_HANDLE_MANAGED,
 	     error ) != 1 )
@@ -372,10 +372,10 @@ int libfdata_tree_clone(
 	}
 	if( libfdata_tree_node_get_data_range(
 	     source_tree_root_node,
-	     &node_data_file_index,
-	     &node_data_offset,
-	     &node_data_size,
-	     &node_data_flags,
+	     &node_file_index,
+	     &node_offset,
+	     &node_size,
+	     &node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -389,10 +389,10 @@ int libfdata_tree_clone(
 	}
 	if( libfdata_tree_set_root_node(
 	     *destination_tree,
-	     node_data_file_index,
-	     node_data_offset,
-	     node_data_size,
-	     node_data_flags,
+	     node_file_index,
+	     node_offset,
+	     node_size,
+	     node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -440,15 +440,15 @@ int libfdata_tree_get_node_value(
 	libfdata_internal_tree_t *internal_tree = NULL;
 	static char *function                   = "libfdata_tree_get_node_value";
 	off64_t cache_value_offset              = (off64_t) -1;
-	off64_t node_data_offset                = 0;
-	size64_t node_data_size                 = 0;
+	off64_t node_offset                     = 0;
+	size64_t node_size                      = 0;
 	time_t cache_value_timestamp            = 0;
 	time_t node_timestamp                   = 0;
-	uint32_t node_data_flags                = 0;
+	uint32_t node_flags                     = 0;
 	int cache_entry_index                   = -1;
 	int cache_value_file_index              = -1;
 	int number_of_cache_entries             = 0;
-	int node_data_file_index                = -1;
+	int node_file_index                     = -1;
 	int result                              = 0;
 
 	if( tree == NULL )
@@ -464,23 +464,23 @@ int libfdata_tree_get_node_value(
 	}
 	internal_tree = (libfdata_internal_tree_t *) tree;
 
-	if( internal_tree->read_node_data == NULL )
+	if( internal_tree->read_node == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree - missing read node data function.",
+		 "%s: invalid tree - missing read node function.",
 		 function );
 
 		return( -1 );
 	}
 	if( libfdata_tree_node_get_data_range(
 	     node,
-	     &node_data_file_index,
-	     &node_data_offset,
-	     &node_data_size,
-	     &node_data_flags,
+	     &node_file_index,
+	     &node_offset,
+	     &node_size,
+	     &node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -523,13 +523,13 @@ int libfdata_tree_get_node_value(
 		 && ( ( ( (libfdata_internal_tree_node_t *) node )->flags & LIBFDATA_TREE_NODE_FLAG_IS_LEAF ) != 0 ) )
 		{
 			cache_entry_index = libfdata_tree_node_calculate_leaf_node_cache_entry_index(
-			                     node_data_offset,
+			                     node_offset,
 			                     number_of_cache_entries );
 		}
 		else
 		{
 			cache_entry_index = libfdata_tree_node_calculate_branch_node_cache_entry_index(
-			                     node_data_offset,
+			                     node_offset,
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
@@ -581,7 +581,7 @@ int libfdata_tree_get_node_value(
 				return( -1 );
 			}
 		}
-		if( ( node_data_offset == cache_value_offset )
+		if( ( node_offset == cache_value_offset )
 		 && ( node_timestamp == cache_value_timestamp ) )
 		{
 			result = 1;
@@ -596,7 +596,7 @@ int libfdata_tree_get_node_value(
 				 function,
 				 (intptr_t) cache,
 				 cache_entry_index,
-				 node_data_offset,
+				 node_offset,
 				 cache_value_offset );
 			}
 			else
@@ -616,22 +616,22 @@ int libfdata_tree_get_node_value(
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: reading node data at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIu64 "\n",
+			 "%s: reading node at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIu64 "\n",
 			 function,
-			 node_data_offset,
-			 node_data_offset,
-			 node_data_size );
+			 node_offset,
+			 node_offset,
+			 node_size );
 		}
 #endif
-		if( internal_tree->read_node_data(
+		if( internal_tree->read_node(
 		     internal_tree->data_handle,
 		     file_io_handle,
 		     node,
 		     cache,
-		     node_data_file_index,
-		     node_data_offset,
-		     node_data_size,
-		     node_data_flags,
+		     node_file_index,
+		     node_offset,
+		     node_size,
+		     node_flags,
 		     read_flags,
 		     error ) != 1 )
 		{
@@ -639,9 +639,9 @@ int libfdata_tree_get_node_value(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read node data at offset: %" PRIi64 ".",
+			 "%s: unable to read node at offset: %" PRIi64 ".",
 			 function,
-			 node_data_offset );
+			 node_offset );
 
 			return( -1 );
 		}
@@ -649,13 +649,13 @@ int libfdata_tree_get_node_value(
 		 && ( ( ( (libfdata_internal_tree_node_t *) node )->flags & LIBFDATA_TREE_NODE_FLAG_IS_LEAF ) != 0 ) )
 		{
 			cache_entry_index = libfdata_tree_node_calculate_leaf_node_cache_entry_index(
-			                     node_data_offset,
+			                     node_offset,
 			                     number_of_cache_entries );
 		}
 		else
 		{
 			cache_entry_index = libfdata_tree_node_calculate_branch_node_cache_entry_index(
-			                     node_data_offset,
+			                     node_offset,
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
@@ -707,7 +707,7 @@ int libfdata_tree_get_node_value(
 				return( -1 );
 			}
 		}
-		if( ( node_data_offset != cache_value_offset )
+		if( ( node_offset != cache_value_offset )
 		 || ( node_timestamp != cache_value_timestamp ) )
 		{
 			libcerror_error_set(
@@ -757,12 +757,12 @@ int libfdata_tree_set_node_value(
      libcerror_error_t **error )
 {
 	static char *function       = "libfdata_tree_set_node_value";
-	off64_t node_data_offset    = 0;
-	size64_t node_data_size     = 0;
+	off64_t node_offset         = 0;
+	size64_t node_size          = 0;
 	time_t node_timestamp       = 0;
-	uint32_t node_data_flags    = 0;
+	uint32_t node_flags         = 0;
 	int cache_entry_index       = -1;
-	int node_data_file_index    = -1;
+	int node_file_index         = -1;
 	int number_of_cache_entries = 0;
 
 	if( tree == NULL )
@@ -778,10 +778,10 @@ int libfdata_tree_set_node_value(
 	}
 	if( libfdata_tree_node_get_data_range(
 	     node,
-	     &node_data_file_index,
-	     &node_data_offset,
-	     &node_data_size,
-	     &node_data_flags,
+	     &node_file_index,
+	     &node_offset,
+	     &node_size,
+	     &node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -836,20 +836,20 @@ int libfdata_tree_set_node_value(
 	 && ( ( ( (libfdata_internal_tree_node_t *) node )->flags & LIBFDATA_TREE_NODE_FLAG_IS_LEAF ) != 0 ) )
 	{
 		cache_entry_index = libfdata_tree_node_calculate_leaf_node_cache_entry_index(
-				     node_data_offset,
+				     node_offset,
 				     number_of_cache_entries );
 	}
 	else
 	{
 		cache_entry_index = libfdata_tree_node_calculate_branch_node_cache_entry_index(
-				     node_data_offset,
+				     node_offset,
 				     number_of_cache_entries );
 	}
 	if( libfcache_cache_set_value_by_index(
 	     cache,
 	     cache_entry_index,
 	     0,
-	     node_data_offset,
+	     node_offset,
 	     node_timestamp,
 	     node_value,
 	     free_node_value,
@@ -882,10 +882,10 @@ int libfdata_tree_read_sub_nodes(
 {
 	libfdata_internal_tree_t *internal_tree = NULL;
 	static char *function                   = "libfdata_tree_read_sub_nodes";
-	off64_t sub_nodes_data_offset           = 0;
-	size64_t sub_nodes_data_size            = 0;
-        uint32_t sub_nodes_data_flags           = 0;
-	int sub_nodes_data_file_index           = 0;
+	off64_t sub_nodes_offset                = 0;
+	size64_t sub_nodes_size                 = 0;
+        uint32_t sub_nodes_flags                = 0;
+	int sub_nodes_file_index                = -1;
 
 	if( tree == NULL )
 	{
@@ -911,18 +911,19 @@ int libfdata_tree_read_sub_nodes(
 
 		return( -1 );
 	}
-/* TODO set sub_nodes_data_flags and sub_nodes_data_file_index */
-	if( libfdata_tree_node_get_sub_nodes_range(
+	if( libfdata_tree_node_get_sub_nodes_data_range(
 	     node,
-	     &sub_nodes_data_offset,
-	     &sub_nodes_data_size,
+	     &sub_nodes_file_index,
+	     &sub_nodes_offset,
+	     &sub_nodes_size,
+	     &sub_nodes_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve sub nodes range.",
+		 "%s: unable to retrieve sub nodes data range.",
 		 function );
 
 		return( -1 );
@@ -932,10 +933,10 @@ int libfdata_tree_read_sub_nodes(
 	     file_io_handle,
 	     node,
 	     cache,
-	     sub_nodes_data_file_index,
-	     sub_nodes_data_offset,
-	     sub_nodes_data_size,
-	     sub_nodes_data_flags,
+	     sub_nodes_file_index,
+	     sub_nodes_offset,
+	     sub_nodes_size,
+	     sub_nodes_flags,
 	     read_flags,
 	     error ) != 1 )
 	{
@@ -945,7 +946,7 @@ int libfdata_tree_read_sub_nodes(
 		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read sub nodes at offset: %" PRIi64 ".",
 		 function,
-		 sub_nodes_data_offset );
+		 sub_nodes_offset );
 
 		return( -1 );
 	}
@@ -997,10 +998,10 @@ int libfdata_tree_get_root_node(
  */
 int libfdata_tree_set_root_node(
      libfdata_tree_t *tree,
-     int node_data_file_index,
-     off64_t node_data_offset,
-     size64_t node_data_size,
-     uint32_t node_data_flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_t *internal_tree = NULL;
@@ -1039,10 +1040,10 @@ int libfdata_tree_set_root_node(
 	}
 	if( libfdata_tree_node_set_data_range(
 	     internal_tree->root_node,
-	     node_data_file_index,
-	     node_data_offset,
-	     node_data_size,
-	     node_data_flags,
+	     node_file_index,
+	     node_offset,
+	     node_size,
+	     node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

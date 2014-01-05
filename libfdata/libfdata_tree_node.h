@@ -1,7 +1,7 @@
 /*
  * The tree node functions
  *
- * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -37,11 +37,11 @@
 extern "C" {
 #endif
 
-#define libfdata_tree_node_calculate_branch_node_cache_entry_index( node_data_offset, number_of_cache_entries ) \
-	( number_of_cache_entries > 4 ) ? ( node_data_offset % ( number_of_cache_entries / 4 ) ) : ( node_data_offset % number_of_cache_entries )
+#define libfdata_tree_node_calculate_branch_node_cache_entry_index( node_offset, number_of_cache_entries ) \
+	( number_of_cache_entries > 4 ) ? ( node_offset % ( number_of_cache_entries / 4 ) ) : ( node_offset % number_of_cache_entries )
 
-#define libfdata_tree_node_calculate_leaf_node_cache_entry_index( node_data_offset, number_of_cache_entries ) \
-	( number_of_cache_entries > 4 ) ? ( number_of_cache_entries / 4 ) + ( node_data_offset % ( ( number_of_cache_entries * 3 ) / 4 ) ) : ( node_data_offset % number_of_cache_entries )
+#define libfdata_tree_node_calculate_leaf_node_cache_entry_index( node_offset, number_of_cache_entries ) \
+	( number_of_cache_entries > 4 ) ? ( number_of_cache_entries / 4 ) + ( node_offset % ( ( number_of_cache_entries * 3 ) / 4 ) ) : ( node_offset % number_of_cache_entries )
 
 typedef struct libfdata_internal_tree_node libfdata_internal_tree_node_t;
 
@@ -55,17 +55,13 @@ struct libfdata_internal_tree_node
 	 */
 	libfdata_tree_node_t *parent_node;
 
-	/* The (element) data range
+	/* The node data range
 	 */
-	libfdata_range_t *data_range;
+	libfdata_range_t *node_data_range;
 
-	/* The sub nodes (data) offset
+	/* The sub nodes data range
 	 */
-	off64_t sub_nodes_offset;
-
-	/* The sub nodes (data) size
-	 */
-	size64_t sub_nodes_size;
+	libfdata_range_t *sub_nodes_data_range;
 
 	/* The time stamp
 	 */
@@ -115,6 +111,7 @@ int libfdata_tree_node_set_parent_node(
      libfdata_tree_node_t *parent_node,
      libcerror_error_t **error );
 
+LIBFDATA_EXTERN \
 int libfdata_tree_node_is_root(
      libfdata_tree_node_t *node,
      libcerror_error_t **error );
@@ -122,33 +119,42 @@ int libfdata_tree_node_is_root(
 LIBFDATA_EXTERN \
 int libfdata_tree_node_get_data_range(
      libfdata_tree_node_t *node,
-     int *file_index,
-     off64_t *offset,
-     size64_t *size,
-     uint32_t *flags,
+     int *node_file_index,
+     off64_t *node_offset,
+     size64_t *node_size,
+     uint32_t *node_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
 int libfdata_tree_node_set_data_range(
      libfdata_tree_node_t *node,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_tree_node_get_sub_nodes_range(
+int libfdata_tree_node_sub_nodes_data_range_is_set(
      libfdata_tree_node_t *node,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_tree_node_get_sub_nodes_data_range(
+     libfdata_tree_node_t *node,
+     int *sub_nodes_file_index,
      off64_t *sub_nodes_offset,
      size64_t *sub_nodes_size,
+     uint32_t *sub_nodes_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_tree_node_set_sub_nodes_range(
+int libfdata_tree_node_set_sub_nodes_data_range(
      libfdata_tree_node_t *node,
+     int sub_nodes_file_index,
      off64_t sub_nodes_offset,
      size64_t sub_nodes_size,
+     uint32_t sub_nodes_flags,
      libcerror_error_t **error );
 
 int libfdata_tree_node_get_timestamp(
@@ -221,20 +227,20 @@ LIBFDATA_EXTERN \
 int libfdata_tree_node_set_sub_node_by_index(
      libfdata_tree_node_t *node,
      int sub_node_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
 int libfdata_tree_node_append_sub_node(
      libfdata_tree_node_t *node,
      int *sub_node_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
@@ -243,10 +249,10 @@ int libfdata_tree_node_insert_sub_node(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      int *sub_node_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      int (*node_value_compare_function)(
             intptr_t *first_node_value,
             intptr_t *second_node_value,

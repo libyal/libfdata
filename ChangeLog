@@ -36,8 +36,11 @@ Types:
   - add mapped offset support ?
 * tree
   - refactor
+  - add mapped offset support ?
 * tree node
   - refactor
+  - add mapped offset support ?
+  - allow to invalidate sub nodes data range?
 * vector
   - refactor
   - write on set value ? what about create ?
@@ -46,6 +49,20 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20140105
+* 2014 update
+* updated dependencies
+
+20130929
+* worked on tree and tree node
+* updated dependencies
+
+20130922
+* worked on tree and tree node
+
+20130915
+* worked on tree and tree node
 
 20130908
 * updated dependencies

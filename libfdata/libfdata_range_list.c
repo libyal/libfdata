@@ -1,7 +1,7 @@
 /*
  * The range list functions
  *
- * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -450,7 +450,7 @@ int libfdata_range_list_empty(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
-		 "%s: unable to emtpy elements range list.",
+		 "%s: unable to empty elements range list.",
 		 function );
 
 		return( -1 );

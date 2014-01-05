@@ -1,7 +1,7 @@
 /*
  * The node functions
  *
- * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -109,14 +109,27 @@ int libfdata_tree_node_initialize(
 		return( -1 );
 	}
 	if( libfdata_range_initialize(
-	     &( internal_tree_node->data_range ),
+	     &( internal_tree_node->node_data_range ),
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create data range.",
+		 "%s: unable to create node data range.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfdata_range_initialize(
+	     &( internal_tree_node->sub_nodes_data_range ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create sub nodes data range.",
 		 function );
 
 		goto on_error;
@@ -147,10 +160,16 @@ int libfdata_tree_node_initialize(
 on_error:
 	if( internal_tree_node != NULL )
 	{
-		if( internal_tree_node->data_range != NULL )
+		if( internal_tree_node->sub_nodes_data_range != NULL )
 		{
 			libfdata_range_free(
-			 &( internal_tree_node->data_range ),
+			 &( internal_tree_node->sub_nodes_data_range ),
+			 NULL );
+		}
+		if( internal_tree_node->node_data_range != NULL )
+		{
+			libfdata_range_free(
+			 &( internal_tree_node->node_data_range ),
 			 NULL );
 		}
 		memory_free(
@@ -186,17 +205,33 @@ int libfdata_tree_node_free(
 		internal_tree_node = (libfdata_internal_tree_node_t *) *node;
 		*node              = NULL;
 
-		if( internal_tree_node->data_range != NULL )
+		if( internal_tree_node->node_data_range != NULL )
 		{
 			if( libfdata_range_free(
-			     &( internal_tree_node->data_range ),
+			     &( internal_tree_node->node_data_range ),
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free data range.",
+				 "%s: unable to free node data range.",
+				 function );
+
+				result = -1;
+			}
+		}
+		if( internal_tree_node->sub_nodes_data_range != NULL )
+		{
+			if( libfdata_range_free(
+			     &( internal_tree_node->sub_nodes_data_range ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free sub nodes data range.",
 				 function );
 
 				result = -1;
@@ -333,10 +368,10 @@ int libfdata_tree_node_is_root(
  */
 int libfdata_tree_node_get_data_range(
      libfdata_tree_node_t *node,
-     int *file_index,
-     off64_t *offset,
-     size64_t *size,
-     uint32_t *flags,
+     int *node_file_index,
+     off64_t *node_offset,
+     size64_t *node_size,
+     uint32_t *node_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;
@@ -356,18 +391,18 @@ int libfdata_tree_node_get_data_range(
 	internal_tree_node = (libfdata_internal_tree_node_t *) node;
 
 	if( libfdata_range_get(
-	     internal_tree_node->data_range,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     internal_tree_node->node_data_range,
+	     node_file_index,
+	     node_offset,
+	     node_size,
+	     node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve data range.",
+		 "%s: unable to retrieve node data range.",
 		 function );
 
 		return( -1 );
@@ -380,10 +415,10 @@ int libfdata_tree_node_get_data_range(
  */
 int libfdata_tree_node_set_data_range(
      libfdata_tree_node_t *node,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;
@@ -414,18 +449,18 @@ int libfdata_tree_node_set_data_range(
 		return( -1 );
 	}
 	if( libfdata_range_set(
-	     internal_tree_node->data_range,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     internal_tree_node->node_data_range,
+	     node_file_index,
+	     node_offset,
+	     node_size,
+	     node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data range.",
+		 "%s: unable to set node data range.",
 		 function );
 
 		return( -1 );
@@ -435,17 +470,15 @@ int libfdata_tree_node_set_data_range(
 	return( 1 );
 }
 
-/* Retrieves the sub nodes offset and size
- * Returns 1 if successful or -1 on error
+/* Determines if the sub nodes data range has been set
+ * Returns 1 if sub nodes have been set, 0 if not or -1 on error
  */
-int libfdata_tree_node_get_sub_nodes_range(
+int libfdata_tree_node_sub_nodes_data_range_is_set(
      libfdata_tree_node_t *node,
-     off64_t *sub_nodes_offset,
-     size64_t *sub_nodes_size,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;
-	static char *function                             = "libfdata_tree_node_get_sub_nodes_range";
+	static char *function                             = "libfdata_tree_node_sub_nodes_data_range_is_set";
 
 	if( node == NULL )
 	{
@@ -460,7 +493,41 @@ int libfdata_tree_node_get_sub_nodes_range(
 	}
 	internal_tree_node = (libfdata_internal_tree_node_t *) node;
 
-	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET ) == 0 )
+	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) != 0 )
+	{
+		return( 1 );
+	}
+	return( 0 );
+}
+
+/* Retrieves the sub nodes data range
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_tree_node_get_sub_nodes_data_range(
+     libfdata_tree_node_t *node,
+     int *sub_nodes_file_index,
+     off64_t *sub_nodes_offset,
+     size64_t *sub_nodes_size,
+     uint32_t *sub_nodes_flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_tree_node_t *internal_tree_node = NULL;
+	static char *function                             = "libfdata_tree_node_get_sub_nodes_data_range";
+
+	if( node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid node.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree_node = (libfdata_internal_tree_node_t *) node;
+
+	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) == 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -471,47 +538,40 @@ int libfdata_tree_node_get_sub_nodes_range(
 
 		return( -1 );
 	}
-	if( sub_nodes_offset == NULL )
+	if( libfdata_range_get(
+	     internal_tree_node->sub_nodes_data_range,
+	     sub_nodes_file_index,
+	     sub_nodes_offset,
+	     sub_nodes_size,
+	     sub_nodes_flags,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid sub nodes offset.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve sub nodes data range.",
 		 function );
 
 		return( -1 );
 	}
-	if( sub_nodes_size == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid sub nodes size.",
-		 function );
-
-		return( -1 );
-	}
-	*sub_nodes_offset = internal_tree_node->sub_nodes_offset;
-	*sub_nodes_size   = internal_tree_node->sub_nodes_size;
-
 	return( 1 );
 }
 
-/* Sets the sub nodes offset and size
- * The sub nodes range cannot be set after the sub nodes have been read,
- * unless the range has not changed
+/* Sets the sub nodes data range
+ * The sub nodes data range cannot be set after the sub nodes have been read
  * Returns 1 if successful or -1 on error
  */
-int libfdata_tree_node_set_sub_nodes_range(
+int libfdata_tree_node_set_sub_nodes_data_range(
      libfdata_tree_node_t *node,
+     int sub_nodes_file_index,
      off64_t sub_nodes_offset,
      size64_t sub_nodes_size,
+     uint32_t sub_nodes_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;
-	static char *function                             = "libfdata_tree_node_set_sub_nodes_range";
+	static char *function                             = "libfdata_tree_node_set_sub_nodes_data_range";
 
 	if( node == NULL )
 	{
@@ -549,49 +609,36 @@ int libfdata_tree_node_set_sub_nodes_range(
 
 		return( -1 );
 	}
-	if( sub_nodes_offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid sub nodes offset value less than zero.",
-		 function );
-
-		return( -1 );
-	}
-	if( sub_nodes_size > (size64_t) INT64_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid sub nodes size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
 	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_READ ) != 0 )
 	{
-		if( ( internal_tree_node->sub_nodes_offset != sub_nodes_offset )
-		 || ( internal_tree_node->sub_nodes_size != sub_nodes_size ) )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: invalid tree node - sub nodes range has already been read.",
-			 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid tree node - sub nodes range has already been read.",
+		 function );
 
-			return( -1 );
-		}
+		return( -1 );
 	}
-	else
+	if( libfdata_range_set(
+	     internal_tree_node->sub_nodes_data_range,
+	     sub_nodes_file_index,
+	     sub_nodes_offset,
+	     sub_nodes_size,
+	     sub_nodes_flags,
+	     error ) != 1 )
 	{
-		internal_tree_node->sub_nodes_offset = sub_nodes_offset;
-		internal_tree_node->sub_nodes_size   = sub_nodes_size;
-		internal_tree_node->flags           |= LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET;
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set sub nodes data range.",
+		 function );
+
+		return( -1 );
 	}
+	internal_tree_node->flags |= LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET;
+
 	return( 1 );
 }
 
@@ -955,7 +1002,7 @@ int libfdata_tree_node_get_number_of_sub_nodes(
 			}
 			internal_tree_node->flags |= LIBFDATA_TREE_NODE_FLAG_NOTE_DATA_READ;
 		}
-		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET ) != 0 )
+		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) != 0 )
 		{
 			if( libfdata_tree_read_sub_nodes(
 			     internal_tree_node->tree,
@@ -1062,7 +1109,7 @@ int libfdata_tree_node_get_sub_node_by_index(
 			}
 			internal_tree_node->flags |= LIBFDATA_TREE_NODE_FLAG_NOTE_DATA_READ;
 		}
-		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET ) != 0 )
+		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) != 0 )
 		{
 			if( libfdata_tree_read_sub_nodes(
 			     internal_tree_node->tree,
@@ -1109,19 +1156,19 @@ int libfdata_tree_node_get_sub_node_by_index(
 int libfdata_tree_node_set_sub_node_by_index(
      libfdata_tree_node_t *node,
      int sub_node_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;
 	libfdata_tree_node_t *sub_node                    = NULL;
 	static char *function                             = "libfdata_tree_node_set_sub_node_by_index";
-	off64_t node_data_offset                          = 0;
-	size64_t node_data_size                           = 0;
-	uint32_t node_data_flags                          = 0;
-	int node_data_file_index                          = -1;
+	off64_t previous_node_offset                      = 0;
+	size64_t previous_node_size                       = 0;
+	uint32_t previous_node_flags                      = 0;
+	int previous_node_file_index                      = -1;
 
 	if( node == NULL )
 	{
@@ -1206,10 +1253,10 @@ int libfdata_tree_node_set_sub_node_by_index(
 	{
 		if( libfdata_tree_node_get_data_range(
 		     sub_node,
-		     &node_data_file_index,
-		     &node_data_offset,
-		     &node_data_size,
-		     &node_data_flags,
+		     &previous_node_file_index,
+		     &previous_node_offset,
+		     &previous_node_size,
+		     &previous_node_flags,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1225,17 +1272,17 @@ int libfdata_tree_node_set_sub_node_by_index(
 	}
 	if( libfdata_tree_node_set_data_range(
 	     sub_node,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     node_file_index,
+	     node_offset,
+	     node_size,
+	     node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data range of sub node: %d.",
+		 "%s: unable to set sub node: %d data range.",
 		 function,
 		 sub_node_index );
 
@@ -1250,10 +1297,10 @@ int libfdata_tree_node_set_sub_node_by_index(
 int libfdata_tree_node_append_sub_node(
      libfdata_tree_node_t *node,
      int *sub_node_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;
@@ -1302,17 +1349,17 @@ int libfdata_tree_node_append_sub_node(
 	}
 	if( libfdata_tree_node_set_data_range(
 	     sub_node,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     node_file_index,
+	     node_offset,
+	     node_size,
+	     node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data range of sub node.",
+		 "%s: unable to set sub node data range.",
 		 function );
 
 		goto on_error;
@@ -1360,10 +1407,10 @@ int libfdata_tree_node_insert_sub_node(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      int *sub_node_index,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      int (*node_value_compare_function)(
             intptr_t *first_node_value,
             intptr_t *second_node_value,
@@ -1459,17 +1506,17 @@ int libfdata_tree_node_insert_sub_node(
 	}
 	if( libfdata_tree_node_set_data_range(
 	     insert_sub_node,
-	     file_index,
-	     offset,
-	     size,
-	     flags,
+	     node_file_index,
+	     node_offset,
+	     node_size,
+	     node_flags,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data range of insert_sub node.",
+		 "%s: unable to set insert sub node data range.",
 		 function );
 
 		goto on_error;
@@ -2006,13 +2053,13 @@ int libfdata_tree_node_split_sub_nodes(
 
 					break;
 				}
-				if( ( (libfdata_internal_tree_node_t *) sub_node )->data_range == NULL )
+				if( ( (libfdata_internal_tree_node_t *) sub_node )->node_data_range == NULL )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-					 "%s: invalid sub node: %d - missing data range.",
+					 "%s: invalid sub node: %d - missing node data range.",
 					 function,
 					 sub_node_index );
 
@@ -2025,21 +2072,21 @@ int libfdata_tree_node_split_sub_nodes(
 
 					break;
 				}
-				/* The data range of a virtual node cannot be set by the set_data_range function
+				/* The node data range of a virtual node cannot be set by the set_data_range function
 				 */
 				if( libfdata_tree_node_get_data_range(
 			             sub_node,
-			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->data_range->file_index ),
-			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->data_range->offset ),
-			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->data_range->size ),
-			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->data_range->flags ),
+			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->node_data_range->file_index ),
+			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->node_data_range->offset ),
+			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->node_data_range->size ),
+			             &( ( (libfdata_internal_tree_node_t *) virtual_sub_node )->node_data_range->flags ),
 			             error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-					 "%s: unable to set data range in virtual sub node.",
+					 "%s: unable to set virtual sub node data range.",
 					 function );
 
 					libcdata_array_free(
@@ -2219,7 +2266,7 @@ int libfdata_tree_node_set_deleted(
 	internal_tree_node = (libfdata_internal_tree_node_t *) node;
 
 /* TODO add deleted branch node support */
-	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET ) != 0 )
+	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) != 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -2422,7 +2469,7 @@ int libfdata_tree_node_read_leaf_node_values(
 			}
 			internal_tree_node->flags |= LIBFDATA_TREE_NODE_FLAG_NOTE_DATA_READ;
 		}
-		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET ) != 0 )
+		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) != 0 )
 		{
 			if( libfdata_tree_read_sub_nodes(
 			     internal_tree_node->tree,
@@ -2648,7 +2695,7 @@ int libfdata_tree_node_is_leaf(
 			}
 			internal_tree_node->flags |= LIBFDATA_TREE_NODE_FLAG_NOTE_DATA_READ;
 		}
-		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET ) != 0 )
+		if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) != 0 )
 		{
 			if( libfdata_tree_read_sub_nodes(
 			     internal_tree_node->tree,
@@ -2701,7 +2748,7 @@ int libfdata_tree_node_set_leaf(
 	}
 	internal_tree_node = (libfdata_internal_tree_node_t *) node;
 
-	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_RANGE_SET ) != 0 )
+	if( ( internal_tree_node->flags & LIBFDATA_TREE_NODE_FLAG_SUB_NODES_DATA_RANGE_SET ) != 0 )
 	{
 		libcerror_error_set(
 		 error,

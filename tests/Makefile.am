@@ -6,7 +6,8 @@ AM_CPPFLAGS = \
 
 TESTS =
 
-check_SCRIPTS =
+check_SCRIPTS = \
+	test_runner.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)

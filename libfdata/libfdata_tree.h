@@ -1,7 +1,7 @@
 /*
  * The tree functions
  *
- * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -46,6 +46,16 @@ struct libfdata_internal_tree
 	 */
 	uint8_t flags;
 
+	/* The calculate cache entry index value
+	 */
+	int (*calculate_cache_entry_index)(
+	       int node_index,
+	       int node_file_index,
+	       off64_t node_offset,
+	       size64_t node_size,
+	       uint32_t node_flags,
+               int number_of_cache_entries );
+
 	/* The data handle
 	 */
 	intptr_t *data_handle;
@@ -63,17 +73,17 @@ struct libfdata_internal_tree
 	       intptr_t *source_data_handle,
 	       libcerror_error_t **error );
 
-	/* The read node data function
+	/* The read node function
 	 */
-	int (*read_node_data)(
+	int (*read_node)(
 	       intptr_t *data_handle,
 	       intptr_t *file_io_handle,
 	       libfdata_tree_node_t *node,
 	       libfcache_cache_t *cache,
-	       int node_data_file_index,
-	       off64_t node_data_offset,
-	       size64_t node_data_size,
-	       uint32_t node_data_flags,
+	       int node_file_index,
+	       off64_t node_offset,
+	       size64_t node_size,
+	       uint32_t node_flags,
                uint8_t read_flags,
 	       libcerror_error_t **error );
 
@@ -84,10 +94,10 @@ struct libfdata_internal_tree
 	       intptr_t *file_io_handle,
 	       libfdata_tree_node_t *node,
 	       libfcache_cache_t *cache,
-	       int sub_nodes_data_file_index,
-	       off64_t sub_nodes_data_offset,
-	       size64_t sub_nodes_data_size,
-	       uint32_t sub_nodes_data_flags,
+	       int sub_nodes_file_index,
+	       off64_t sub_nodes_offset,
+	       size64_t sub_nodes_size,
+	       uint32_t sub_nodes_flags,
                uint8_t read_flags,
 	       libcerror_error_t **error );
 };
@@ -103,15 +113,15 @@ int libfdata_tree_initialize(
             intptr_t **destination_data_handle,
             intptr_t *source_data_handle,
             libcerror_error_t **error ),
-     int (*read_node_data)(
+     int (*read_node)(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
             libfcache_cache_t *cache,
-            int node_data_file_index,
-            off64_t node_data_offset,
-            size64_t node_data_size,
-            uint32_t node_data_flags,
+            int node_file_index,
+            off64_t node_offset,
+            size64_t node_size,
+            uint32_t node_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*read_sub_nodes)(
@@ -119,10 +129,10 @@ int libfdata_tree_initialize(
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
             libfcache_cache_t *cache,
-            int sub_nodes_data_file_index,
-            off64_t sub_nodes_data_offset,
-            size64_t sub_nodes_data_size,
-            uint32_t sub_nodes_data_flags,
+            int sub_nodes_file_index,
+            off64_t sub_nodes_offset,
+            size64_t sub_nodes_size,
+            uint32_t sub_nodes_flags,
             uint8_t read_flags,
             libcerror_error_t **error ),
      uint8_t flags,
@@ -182,10 +192,10 @@ int libfdata_tree_get_root_node(
 LIBFDATA_EXTERN \
 int libfdata_tree_set_root_node(
      libfdata_tree_t *tree,
-     int node_data_file_index,
-     off64_t node_data_offset,
-     size64_t node_data_size,
-     uint32_t node_data_flags,
+     int node_file_index,
+     off64_t node_offset,
+     size64_t node_size,
+     uint32_t node_flags,
      libcerror_error_t **error );
 
 /* Leaf node functions
