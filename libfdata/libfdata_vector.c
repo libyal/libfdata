@@ -1969,6 +1969,7 @@ int libfdata_vector_get_element_value_by_index(
 	time_t cache_value_timestamp                = 0;
 	int cache_entry_index                       = -1;
 	int cache_value_file_index                  = -1;
+	int element_file_index                      = -1;
 	int number_of_cache_entries                 = 0;
 	int number_of_segments                      = 0;
 	int result                                  = 0;
@@ -2109,6 +2110,7 @@ int libfdata_vector_get_element_value_by_index(
 
 			break;
 		}
+		element_file_index   = segment_data_range->file_index;
 		element_data_offset -= segment_data_range->size;
 	}
 	if( segment_index >= number_of_segments )
@@ -2188,7 +2190,8 @@ int libfdata_vector_get_element_value_by_index(
 				return( -1 );
 			}
 		}
-		if( ( element_data_offset == cache_value_offset )
+		if( ( element_file_index == cache_value_file_index )
+		 && ( element_data_offset == cache_value_offset )
 		 && ( internal_vector->timestamp == cache_value_timestamp ) )
 		{
 			result = 1;
@@ -2293,7 +2296,8 @@ int libfdata_vector_get_element_value_by_index(
 				return( -1 );
 			}
 		}
-		if( ( element_data_offset != cache_value_offset )
+		if( ( element_file_index != cache_value_file_index )
+		 || ( element_data_offset != cache_value_offset )
 		 || ( internal_vector->timestamp != cache_value_timestamp ) )
 		{
 			libcerror_error_set(
@@ -2403,6 +2407,7 @@ int libfdata_vector_set_element_value_by_index(
 	static char *function                       = "libfdata_vector_set_element_value_by_index";
 	off64_t element_data_offset                 = 0;
 	int cache_entry_index                       = -1;
+	int element_file_index                      = -1;
 	int number_of_cache_entries                 = 0;
 	int number_of_segments                      = 0;
 	int segment_index                           = 0;
@@ -2531,6 +2536,7 @@ int libfdata_vector_set_element_value_by_index(
 
 			break;
 		}
+		element_file_index   = segment_data_range->file_index;
 		element_data_offset -= segment_data_range->size;
 	}
 	if( segment_index >= number_of_segments )
@@ -2576,7 +2582,7 @@ int libfdata_vector_set_element_value_by_index(
 	if( libfcache_cache_set_value_by_index(
 	     cache,
 	     cache_entry_index,
-	     0,
+	     element_file_index,
 	     element_data_offset,
 	     internal_vector->timestamp,
 	     element_value,

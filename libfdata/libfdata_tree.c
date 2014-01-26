@@ -581,7 +581,8 @@ int libfdata_tree_get_node_value(
 				return( -1 );
 			}
 		}
-		if( ( node_offset == cache_value_offset )
+		if( ( node_file_index == cache_value_file_index )
+		 && ( node_offset == cache_value_offset )
 		 && ( node_timestamp == cache_value_timestamp ) )
 		{
 			result = 1;
@@ -707,7 +708,8 @@ int libfdata_tree_get_node_value(
 				return( -1 );
 			}
 		}
-		if( ( node_offset != cache_value_offset )
+		if( ( node_file_index != cache_value_file_index )
+		 || ( node_offset != cache_value_offset )
 		 || ( node_timestamp != cache_value_timestamp ) )
 		{
 			libcerror_error_set(
@@ -848,7 +850,7 @@ int libfdata_tree_set_node_value(
 	if( libfcache_cache_set_value_by_index(
 	     cache,
 	     cache_entry_index,
-	     0,
+	     node_file_index,
 	     node_offset,
 	     node_timestamp,
 	     node_value,
