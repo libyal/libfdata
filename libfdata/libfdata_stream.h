@@ -207,8 +207,8 @@ int libfdata_stream_resize(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_list_reverse(
-     libfdata_list_t *list,
+int libfdata_stream_reverse(
+     libfdata_stream_t *stream,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
