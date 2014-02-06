@@ -1546,7 +1546,7 @@ int libfdata_vector_get_element_index_at_offset(
      libfdata_vector_t *vector,
      off64_t offset,
      int *element_index,
-     size_t *element_data_offset,
+     off64_t *element_data_offset,
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
@@ -1754,8 +1754,6 @@ int libfdata_vector_get_element_index_at_offset(
 		if( ( offset >= mapped_range_start_offset )
 		 && ( offset < mapped_range_end_offset ) )
 		{
-			offset -= mapped_range_start_offset;
-
 			break;
 		}
 		/* Check if the offset is out of bounds
@@ -1838,8 +1836,6 @@ int libfdata_vector_get_element_index_at_offset(
 			if( ( offset >= mapped_range_start_offset )
 			 && ( offset < mapped_range_end_offset ) )
 			{
-				offset -= mapped_range_start_offset;
-
 				break;
 			}
 			/* Check if the offset is out of bounds
@@ -1856,17 +1852,6 @@ int libfdata_vector_get_element_index_at_offset(
 	if( ( segment_index >= 0 )
 	 && ( segment_index < number_of_segments ) )
 	{
-		if( offset < 0 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: invalid offset value out of bounds.",
-			 function );
-
-			return( -1 );
-		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
@@ -1914,8 +1899,7 @@ int libfdata_vector_get_element_index_at_offset(
 			 segment_size );
 		}
 #endif
-		calculated_element_index  = (uint64_t) ( segment_data_offset + offset );
-		calculated_element_index /= internal_vector->element_size;
+		calculated_element_index = (uint64_t) offset / internal_vector->element_size;
 
 		if( calculated_element_index > (uint64_t) INT_MAX )
 		{
@@ -1928,10 +1912,10 @@ int libfdata_vector_get_element_index_at_offset(
 
 			return( -1 );
 		}
-		offset -= (off64_t) ( calculated_element_index * internal_vector->element_size );
-
+		/* The element data offset is relative from the start of the vector element not the underlying segment
+		 */
 		*element_index       = (int) calculated_element_index;
-		*element_data_offset = (size_t) offset;
+		*element_data_offset = offset % internal_vector->element_size;
 
 		result = 1;
 	}
@@ -2335,19 +2319,19 @@ int libfdata_vector_get_element_value_at_offset(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      off64_t offset,
+     off64_t *element_data_offset,
      intptr_t **element_value,
      uint8_t read_flags,
      libcerror_error_t **error )
 {
 	static char *function = "libfdata_vector_get_element_value_at_offset";
-	size_t element_offset = 0;
 	int element_index     = 0;
 
 	if( libfdata_vector_get_element_index_at_offset(
 	     vector,
 	     offset,
 	     &element_index,
-	     &element_offset,
+	     element_data_offset,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

@@ -52,7 +52,7 @@ Optimizations:
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
 20140206
-* small changes
+* changes in vector
 
 20140205
 * added libfdata_list_get_element_index_at_offset

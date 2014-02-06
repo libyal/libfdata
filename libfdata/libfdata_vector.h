@@ -244,7 +244,7 @@ int libfdata_vector_get_element_index_at_offset(
      libfdata_vector_t *vector,
      off64_t offset,
      int *element_index,
-     size_t *element_data_offset,
+     off64_t *element_data_offset,
      libcerror_error_t **error );
 
 /* Vector element value functions
@@ -265,6 +265,7 @@ int libfdata_vector_get_element_value_at_offset(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      off64_t offset,
+     off64_t *element_data_offset,
      intptr_t **element_value,
      uint8_t read_flags,
      libcerror_error_t **error );
