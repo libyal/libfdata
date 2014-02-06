@@ -1372,6 +1372,10 @@ int libfdata_vector_get_number_of_elements(
 	}
 	safe_number_of_elements = internal_vector->size / internal_vector->element_size;
 
+	if( ( internal_vector->size % internal_vector->element_size ) != 0 )
+	{
+		safe_number_of_elements += 1;
+	}
 	if( safe_number_of_elements > (size64_t) INT_MAX )
 	{
 		libcerror_error_set(
