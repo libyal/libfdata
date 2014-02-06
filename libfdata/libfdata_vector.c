@@ -2251,7 +2251,7 @@ int libfdata_vector_get_element_value_by_index(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read element data at offset: %" PRIi64 ".",
+			 "%s: unable to read element data at offset: 0x%08" PRIx64 ".",
 			 function,
 			 element_data_offset );
 
@@ -2354,7 +2354,7 @@ int libfdata_vector_get_element_value_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element index at offset: %" PRIi64 ".",
+		 "%s: unable to retrieve element index at offset: 0x%08" PRIx64 ".",
 		 function,
 		 offset );
 

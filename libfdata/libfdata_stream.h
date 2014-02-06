@@ -28,6 +28,8 @@
 #include "libfdata_extern.h"
 #include "libfdata_libcdata.h"
 #include "libfdata_libcerror.h"
+#include "libfdata_mapped_range.h"
+#include "libfdata_range.h"
 #include "libfdata_types.h"
 
 #if defined( __cplusplus )
@@ -265,9 +267,21 @@ int libfdata_stream_calculate_mapped_ranges(
 LIBFDATA_EXTERN \
 int libfdata_stream_get_segment_index_at_offset(
      libfdata_stream_t *stream,
-     off64_t data_offset,
+     off64_t offset,
      int *segment_index,
      off64_t *segment_data_offset,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_stream_get_segment_at_offset(
+     libfdata_stream_t *stream,
+     off64_t offset,
+     int *segment_index,
+     off64_t *segment_data_offset,
+     int *segment_file_index,
+     off64_t *segment_offset,
+     size64_t *segment_size,
+     uint32_t *segment_flags,
      libcerror_error_t **error );
 
 /* IO functions

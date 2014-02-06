@@ -311,6 +311,14 @@ int libfdata_list_calculate_mapped_ranges(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
+int libfdata_list_get_element_index_at_offset(
+     libfdata_list_t *list,
+     off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
 int libfdata_list_get_list_element_at_offset(
      libfdata_list_t *list,
      off64_t offset,

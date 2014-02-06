@@ -1,4 +1,5 @@
 TODO
+* change "at offset" into hexadecimal value
 * list and write - set is also used by read callback
   have flag that tells function to initiate write callback ?
 * rewrite
@@ -8,7 +9,7 @@ TODO
   - separate set function
 * add tests
 * update include header and man page
-  - list
+  - list (update)
   - list element (update)
   - range list
   - stream (done)
@@ -49,6 +50,13 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20140206
+* small changes
+
+20140205
+* added libfdata_list_get_element_index_at_offset
+* added libfdata_stream_get_segment_at_offset
 
 20140130
 * small fix in stream header file

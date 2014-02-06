@@ -2691,20 +2691,20 @@ int libfdata_list_calculate_mapped_ranges(
 	return( 1 );
 }
 
-/* Retrieves the list element for a specific offset
+/* Retrieves the element index for a specific offset
+ * The element_data_offset value is set to the offset relative to the start of the element
  * Returns 1 if successful, 0 if not or -1 on error
  */
-int libfdata_list_get_list_element_at_offset(
+int libfdata_list_get_element_index_at_offset(
      libfdata_list_t *list,
      off64_t offset,
      int *element_index,
      off64_t *element_data_offset,
-     libfdata_list_element_t **element,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_t *internal_list = NULL;
 	libfdata_mapped_range_t *mapped_range   = NULL;
-	static char *function                   = "libfdata_list_get_list_element_at_offset";
+	static char *function                   = "libfdata_list_get_element_index_at_offset";
 	off64_t list_offset                     = 0;
 	off64_t mapped_range_end_offset         = 0;
 	off64_t mapped_range_start_offset       = 0;
@@ -2714,6 +2714,7 @@ int libfdata_list_get_list_element_at_offset(
 	int result                              = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
+	libfdata_list_element_t *element        = NULL;
 	off64_t element_offset                  = 0;
 	size64_t element_size                   = 0;
 	uint32_t element_flags                  = 0;
@@ -2751,17 +2752,6 @@ int libfdata_list_get_list_element_at_offset(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid element index.",
-		 function );
-
-		return( -1 );
-	}
-	if( element == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid element.",
 		 function );
 
 		return( -1 );
@@ -3017,27 +3007,27 @@ int libfdata_list_get_list_element_at_offset(
 		}
 		*element_data_offset = offset;
 
-		if( libcdata_array_get_entry_by_index(
-		     internal_list->elements_array,
-		     *element_index,
-		     (intptr_t **) element,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve entry: %d from elements array.",
-			 function,
-			 *element_index );
-
-			return( -1 );
-		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
+			if( libcdata_array_get_entry_by_index(
+			     internal_list->elements_array,
+			     *element_index,
+			     (intptr_t **) &element,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve entry: %d from elements array.",
+				 function,
+				 *element_index );
+
+				return( -1 );
+			}
 			if( libfdata_list_element_get_data_range(
-			     *element,
+			     element,
 			     &element_file_index,
 			     &element_offset,
 			     &element_size,
@@ -3078,6 +3068,110 @@ int libfdata_list_get_list_element_at_offset(
 	return( result );
 }
 
+
+/* Retrieves the list element for a specific offset
+ * The element_data_offset value is set to the offset relative to the start of the element
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libfdata_list_get_list_element_at_offset(
+     libfdata_list_t *list,
+     off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
+     libfdata_list_element_t **element,
+     libcerror_error_t **error )
+{
+	libfdata_internal_list_t *internal_list = NULL;
+	static char *function                   = "libfdata_list_get_list_element_at_offset";
+	int result                              = 0;
+
+	if( list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_list = (libfdata_internal_list_t *) list;
+
+	if( offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
+		 "%s: invalid offset value less than zero.",
+		 function );
+
+		return( -1 );
+	}
+	if( element_index == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid element index.",
+		 function );
+
+		return( -1 );
+	}
+	if( element == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid element.",
+		 function );
+
+		return( -1 );
+	}
+	result = libfdata_list_get_element_index_at_offset(
+	          list,
+	          offset,
+	          element_index,
+	          element_data_offset,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve element index at offset: 0x%08" PRIx64 ".",
+		 function,
+		 offset );
+
+		return( -1 );
+	}
+	else if( result != 0 )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_list->elements_array,
+		     *element_index,
+		     (intptr_t **) element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from elements array.",
+			 function,
+			 *element_index );
+
+			return( -1 );
+		}
+	}
+	return( result );
+}
+
 /* Retrieves the data range of an element at a specific offset
  * Returns 1 if successful, 0 if not or -1 on error
  */
@@ -3092,9 +3186,23 @@ int libfdata_list_get_element_at_offset(
      uint32_t *element_flags,
      libcerror_error_t **error )
 {
-	libfdata_list_element_t *list_element = NULL;
-	static char *function                 = "libfdata_list_get_element_at_offset";
-	int result                            = 0;
+	libfdata_internal_list_t *internal_list = NULL;
+	libfdata_list_element_t *list_element   = NULL;
+	static char *function                   = "libfdata_list_get_element_at_offset";
+	int result                              = 0;
+
+	if( list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_list = (libfdata_internal_list_t *) list;
 
 	if( element_index == NULL )
 	{
@@ -3107,12 +3215,11 @@ int libfdata_list_get_element_at_offset(
 
 		return( -1 );
 	}
-	result = libfdata_list_get_list_element_at_offset(
+	result = libfdata_list_get_element_index_at_offset(
 	          list,
 	          offset,
 	          element_index,
 	          element_data_offset,
-	          &list_element,
 	          error );
 
 	if( result == -1 )
@@ -3121,7 +3228,7 @@ int libfdata_list_get_element_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element at offset: %" PRIi64 ".",
+		 "%s: unable to retrieve element index at offset: 0x%08" PRIx64 ".",
 		 function,
 		 offset );
 
@@ -3129,6 +3236,22 @@ int libfdata_list_get_element_at_offset(
 	}
 	else if( result != 0 )
 	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_list->elements_array,
+		     *element_index,
+		     (intptr_t **) &list_element,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from elements array.",
+			 function,
+			 *element_index );
+
+			return( -1 );
+		}
 		if( libfdata_list_element_get_data_range(
 		     list_element,
 		     element_file_index,
@@ -3386,7 +3509,7 @@ int libfdata_list_get_element_value(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read element data at offset: %" PRIi64 ".",
+			 "%s: unable to read element data at offset: 0x%08" PRIx64 ".",
 			 function,
 			 element_offset );
 
@@ -3597,7 +3720,7 @@ int libfdata_list_get_element_value_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element at offset: %" PRIi64 ".",
+		 "%s: unable to retrieve element at offset: 0x%08" PRIx64 ".",
 		 function,
 		 offset );
 
@@ -3897,7 +4020,7 @@ int libfdata_list_set_element_value_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element at offset: %" PRIi64 ".",
+		 "%s: unable to retrieve element at offset: 0x%08" PRIx64 ".",
 		 function,
 		 offset );
 
