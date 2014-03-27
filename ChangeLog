@@ -1,4 +1,5 @@
 TODO
+* vector: fail on segments that are not multitudes of element size
 * change "at offset" into hexadecimal value
 * list and write - set is also used by read callback
   have flag that tells function to initiate write callback ?
@@ -38,6 +39,7 @@ Types:
 * tree
   - refactor
   - add mapped offset support ?
+  - unload parts of the tree if it becomes too large
 * tree node
   - refactor
   - add mapped offset support ?
