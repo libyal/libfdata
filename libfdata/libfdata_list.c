@@ -2510,20 +2510,24 @@ int libfdata_list_set_element_by_index_with_mapped_size(
 		internal_list->size  += mapped_size;
 		internal_list->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 	}
-	/* If the size of the element is mapped or if the element size did not change
-	 * there is no need to recalculate the mapped range
-	 */
-	else if( ( previous_mapped_size == 0 )
-	      && ( previous_element_size != element_size ) )
-	{
-		internal_list->size  -= previous_element_size;
-		internal_list->size  += element_size;
-		internal_list->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
-	}
         else if( previous_mapped_size != mapped_size )
 	{
-		internal_list->size  -= previous_mapped_size;
-		internal_list->size  += mapped_size;
+		if( previous_mapped_size != 0 )
+		{
+			internal_list->size -= previous_mapped_size;
+		}
+		else
+		{
+			internal_list->size -= previous_element_size;
+		}
+		if( mapped_size != 0 )
+		{
+			internal_list->size += mapped_size;
+		}
+		else
+		{
+			internal_list->size += element_size;
+		}
 		internal_list->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
