@@ -291,7 +291,16 @@ int libfdata_list_get_element_by_index_with_mapped_size(
      size64_t *mapped_size,
      libcerror_error_t **error );
 
-/* TODO libfdata_list_set_element_by_index_with_mapped_size */
+LIBFDATA_EXTERN \
+int libfdata_list_set_element_by_index_with_mapped_size(
+     libfdata_list_t *list,
+     int element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     size64_t mapped_size,
+     libcerror_error_t **error );
 
 /* TODO libfdata_list_prepend_element_with_mapped_size */
 

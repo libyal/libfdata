@@ -128,6 +128,382 @@ int libfdata_error_backtrace_sprint(
  * List functions
  * ------------------------------------------------------------------------- */
 
+/* Creates a list
+ * Make sure the value list is referencing, is set to NULL
+ *
+ * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the list
+ * takes over management of the data handle and the data handle is freed when
+ * no longer needed
+ *
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_initialize(
+     libfdata_list_t **list,
+     intptr_t *data_handle,
+     int (*free_data_handle)(
+            intptr_t **data_handle,
+            libdata_error_t **error ),
+     int (*clone_data_handle)(
+            intptr_t **destination_data_handle,
+            intptr_t *source_data_handle,
+            libdata_error_t **error ),
+     int (*read_element_data)(
+            intptr_t *data_handle,
+            intptr_t *file_io_handle,
+            libfdata_list_element_t *list_element,
+            libfcache_cache_t *cache,
+            int element_file_index,
+            off64_t element_offset,
+            size64_t element_size,
+            uint32_t element_flags,
+            uint8_t read_flags,
+            libdata_error_t **error ),
+     int (*write_element_data)(
+            intptr_t *data_handle,
+            intptr_t *file_io_handle,
+            libfdata_list_element_t *list_element,
+            libfcache_cache_t *cache,
+            int element_file_index,
+            off64_t element_offset,
+            size64_t element_size,
+            uint32_t element_flags,
+            uint8_t write_flags,
+            libdata_error_t **error ),
+     uint8_t flags,
+     libdata_error_t **error );
+
+/* Frees a list
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_free(
+     libfdata_list_t **list,
+     libdata_error_t **error );
+
+/* Clones (duplicates) the list
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_clone(
+     libfdata_list_t **destination_list,
+     libfdata_list_t *source_list,
+     libdata_error_t **error );
+
+/* List elements functions
+ */
+
+/* Empties the list
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_empty(
+     libfdata_list_t *list,
+     libdata_error_t **error );
+
+/* Resizes the list
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_resize(
+     libfdata_list_t *list,
+     int number_of_elements,
+     libdata_error_t **error );
+
+/* Reverses the order of the elements
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_reverse(
+     libfdata_list_t *list,
+     libdata_error_t **error );
+
+/* Retrieves the number of elements of the list
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_number_of_elements(
+     libfdata_list_t *list,
+     int *number_of_elements,
+     libdata_error_t **error );
+
+/* Retrieves a specific list element
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_list_element_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     libfdata_list_element_t **element,
+     libdata_error_t **error );
+
+/* Retrieves the data range of a specific element
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
+     libdata_error_t **error );
+
+/* Sets the data range of a specific element
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_set_element_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     libdata_error_t **error );
+
+/* Prepends an element data range
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_prepend_element(
+     libfdata_list_t *list,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     libdata_error_t **error );
+
+/* Appends an element data range
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_append_element(
+     libfdata_list_t *list,
+     int *element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     libdata_error_t **error );
+
+/* Appends the element of the source list to the list
+ * The source list is emptied if successful
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_append_list(
+     libfdata_list_t *list,
+     libfdata_list_t *source_list,
+     libdata_error_t **error );
+
+/* Determines if a specific element is set
+ * Returns 1 if element is set, 0 if not or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_is_element_set(
+     libfdata_list_t *list,
+     int element_index,
+     libdata_error_t **error );
+
+/* Mapped range functions
+ */
+
+/* Retrieves the mapped offset
+ * Returns 1 if successful, 0 if not set or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_mapped_offset(
+     libfdata_list_t *list,
+     off64_t *mapped_offset,
+     libdata_error_t **error );
+
+/* Sets the mapped offset
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_set_mapped_offset(
+     libfdata_list_t *list,
+     off64_t mapped_offset,
+     libdata_error_t **error );
+
+/* Retrieves the mapped size of a specific element
+ * Returns 1 if successful, 0 if not set or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_mapped_size_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     size64_t *mapped_size,
+     libdata_error_t **error );
+
+/* Sets the mapped size of a specific element
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_set_mapped_size_by_index(
+     libfdata_list_t *list,
+     int element_index,
+     size64_t mapped_size,
+     libdata_error_t **error );
+
+/* Retrieves the data range with its mapped size of a specific element
+ * Returns 1 if successful, 0 if the element has no mapped size or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_by_index_with_mapped_size(
+     libfdata_list_t *list,
+     int element_index,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
+     size64_t *mapped_size,
+     libdata_error_t **error );
+
+/* Sets the data range of a specific element with its mapped size
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_set_element_by_index_with_mapped_size(
+     libfdata_list_t *list,
+     int element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     size64_t mapped_size,
+     libdata_error_t **error );
+
+/* Appends an element data range with its mapped size
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_append_element_with_mapped_size(
+     libfdata_list_t *list,
+     int *element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     size64_t mapped_size,
+     libdata_error_t **error );
+
+/* Retrieves the element index for a specific offset
+ * The element_data_offset value is set to the offset relative to the start of the element
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_index_at_offset(
+     libfdata_list_t *list,
+     off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
+     libdata_error_t **error );
+
+/* Retrieves the element index for a specific offset
+ * The element_data_offset value is set to the offset relative to the start of the element
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_list_element_at_offset(
+     libfdata_list_t *list,
+     off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
+     libfdata_list_element_t **element,
+     libdata_error_t **error );
+
+/* Retrieves the data range of an element at a specific offset
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_at_offset(
+     libfdata_list_t *list,
+     off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
+     int *element_file_index,
+     off64_t *element_offset,
+     size64_t *element_size,
+     uint32_t *element_flags,
+     libdata_error_t **error );
+
+/* Retrieves the value of a specific element
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_value_by_index(
+     libfdata_list_t *list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     int element_index,
+     intptr_t **element_value,
+     uint8_t read_flags,
+     libdata_error_t **error );
+
+/* Retrieves the value an element at a specific offset
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_value_at_offset(
+     libfdata_list_t *list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     off64_t offset,
+     int *element_index,
+     off64_t *element_data_offset,
+     intptr_t **element_value,
+     uint8_t read_flags,
+     libdata_error_t **error );
+
+/* Retrieves the value of a specific element
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_set_element_value_by_index(
+     libfdata_list_t *list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     int element_index,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libdata_error_t **error ),
+     uint8_t write_flags,
+     libdata_error_t **error );
+
+/* Sets the value of an element at a specific offset
+ *
+ * If the flag LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED is set the list
+ * takes over management of the value and the value is freed when
+ * no longer needed.
+ *
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_set_element_value_at_offset(
+     libfdata_list_t *list,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     off64_t offset,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libdata_error_t **error ),
+     uint8_t write_flags,
+     libdata_error_t **error );
+
+/* Retrieves the size of the list
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_size(
+     libfdata_list_t *list,
+     size64_t *size,
+     libdata_error_t **error );
+
 /* -------------------------------------------------------------------------
  * List element functions
  * ------------------------------------------------------------------------- */
