@@ -23,6 +23,10 @@
 #include <memory.h>
 #include <types.h>
 
+#if defined( HAVE_UNISTD_H )
+#include <unistd.h>
+#endif
+
 #include "libfdata_definitions.h"
 #include "libfdata_libcerror.h"
 #include "libfdata_libcnotify.h"
