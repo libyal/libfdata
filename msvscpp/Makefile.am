@@ -5,7 +5,7 @@ MSVSCPP_FILES = \
 	libcstring/libcstring.vcproj \
 	libcthreads/libcthreads.vcproj \
 	libfcache/libfcache.vcproj \
-	libfdata_dll/libfdata_dll.vcproj \
+	libfdata/libfdata.vcproj \
 	libfdata.sln
 
 SCRIPT_FILES = \
