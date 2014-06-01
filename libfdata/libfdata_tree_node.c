@@ -148,9 +148,21 @@ int libfdata_tree_node_initialize(
 
 		goto on_error;
 	}
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_tree_node->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve cache timestamp.",
+		 function );
+
+		goto on_error;
+	}
 	internal_tree_node->tree        = tree;
 	internal_tree_node->parent_node = parent_node;
-	internal_tree_node->timestamp   = libfcache_date_time_get_timestamp();
 	internal_tree_node->flags       = LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	*node = (libfdata_tree_node_t *) internal_tree_node;
@@ -465,8 +477,19 @@ int libfdata_tree_node_set_data_range(
 
 		return( -1 );
 	}
-	internal_tree_node->timestamp = libfcache_date_time_get_timestamp();
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_tree_node->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve cache timestamp.",
+		 function );
 
+		return( -1 );
+	}
 	return( 1 );
 }
 

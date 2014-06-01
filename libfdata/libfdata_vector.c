@@ -178,8 +178,20 @@ int libfdata_vector_initialize(
 
 		goto on_error;
 	}
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_vector->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve cache timestamp.",
+		 function );
+
+		goto on_error;
+	}
 	internal_vector->element_size       = element_size;
-	internal_vector->timestamp          = libfcache_date_time_get_timestamp();
 	internal_vector->flags             |= flags;
 	internal_vector->data_handle        = data_handle;
 	internal_vector->free_data_handle   = free_data_handle;

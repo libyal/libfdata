@@ -133,9 +133,21 @@ int libfdata_list_element_initialize(
 
 		goto on_error;
 	}
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_element->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve cache timestamp.",
+		 function );
+
+		goto on_error;
+	}
 	internal_element->list          = list;
 	internal_element->element_index = element_index;
-	internal_element->timestamp     = libfcache_date_time_get_timestamp();
 
 	*element = (libfdata_list_element_t *) internal_element;
 
@@ -307,9 +319,21 @@ int libfdata_list_element_clone(
 
 		goto on_error;
 	}
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_destination_element->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve destination cache timestamp.",
+		 function );
+
+		goto on_error;
+	}
 	internal_destination_element->list          = list;
 	internal_destination_element->element_index = element_index;
-	internal_destination_element->timestamp     = libfcache_date_time_get_timestamp();
 	internal_destination_element->mapped_size   = internal_source_element->mapped_size;
 
 	*destination_element = (libfdata_list_element_t *) internal_destination_element;
@@ -578,8 +602,19 @@ int libfdata_list_element_set_data_range(
 
 		return( -1 );
 	}
-	internal_element->timestamp = libfcache_date_time_get_timestamp();
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_element->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve cache timestamp.",
+		 function );
 
+		return( -1 );
+	}
 	return( 1 );
 }
 
