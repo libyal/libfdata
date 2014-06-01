@@ -2835,7 +2835,7 @@ int libfdata_list_calculate_mapped_ranges(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid internal list.",
+		 "%s: invalid list.",
 		 function );
 
 		return( -1 );
