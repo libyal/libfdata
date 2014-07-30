@@ -33,6 +33,7 @@
 #include "libfdata_mapped_range.h"
 #include "libfdata_range.h"
 #include "libfdata_types.h"
+#include "libfdata_unused.h"
 
 /* Creates a list
  * Make sure the value list is referencing, is set to NULL
@@ -4052,7 +4053,7 @@ int libfdata_list_get_element_value_at_offset(
  */
 int libfdata_list_set_element_value(
      libfdata_list_t *list,
-     intptr_t *file_io_handle,
+     intptr_t *file_io_handle LIBFDATA_ATTRIBUTE_UNUSED,
      libfcache_cache_t *cache,
      libfdata_list_element_t *element,
      intptr_t *element_value,
@@ -4072,6 +4073,8 @@ int libfdata_list_set_element_value(
 	int element_file_index                  = -1;
 	int element_index                       = -1;
 	int number_of_cache_entries             = 0;
+
+	LIBFDATA_UNREFERENCED_PARAMETER( file_io_handle )
 
 	if( list == NULL )
 	{

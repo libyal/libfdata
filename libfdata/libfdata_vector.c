@@ -31,6 +31,7 @@
 #include "libfdata_mapped_range.h"
 #include "libfdata_range.h"
 #include "libfdata_types.h"
+#include "libfdata_unused.h"
 #include "libfdata_vector.h"
 
 #define libfdata_vector_calculate_cache_entry_index( element_index, number_of_cache_entries ) \
@@ -2392,7 +2393,7 @@ int libfdata_vector_get_element_value_at_offset(
  */
 int libfdata_vector_set_element_value_by_index(
      libfdata_vector_t *vector,
-     intptr_t *file_io_handle,
+     intptr_t *file_io_handle LIBFDATA_ATTRIBUTE_UNUSED,
      libfcache_cache_t *cache,
      int element_index,
      intptr_t *element_value,
@@ -2411,6 +2412,8 @@ int libfdata_vector_set_element_value_by_index(
 	int number_of_cache_entries                 = 0;
 	int number_of_segments                      = 0;
 	int segment_index                           = 0;
+
+	LIBFDATA_UNREFERENCED_PARAMETER( file_io_handle )
 
 	if( vector == NULL )
 	{
