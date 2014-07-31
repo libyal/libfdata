@@ -10,8 +10,16 @@ Package: libfdata
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: libfdata-dbg
 Description: Library to provide generic file data functions
  libfdata is a library to provide generic file data functions.
+
+Package: libfdata-dbg
+Architecture: any
+Section: debug
+Depends: libfdata (= ${Source-Version}), ${misc:Depends}
+Description: Debugging symbols for libfdata
+ Debugging symbols for libfdata.
 
 Package: libfdata-dev
 Section: libdevel
