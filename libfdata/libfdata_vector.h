@@ -63,6 +63,16 @@ struct libfdata_internal_vector
 	 */
 	uint8_t flags;
 
+	/* The calculate cache entry index value
+	 */
+	int (*calculate_cache_entry_index)(
+	       int element_index,
+	       int element_file_index,
+	       off64_t element_offset,
+	       size64_t element_size,
+	       uint32_t element_flags,
+               int number_of_cache_entries );
+
 	/* The data handle
 	 */
 	intptr_t *data_handle;

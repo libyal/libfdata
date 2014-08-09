@@ -34,9 +34,6 @@
 #include "libfdata_unused.h"
 #include "libfdata_vector.h"
 
-#define libfdata_vector_calculate_cache_entry_index( element_index, number_of_cache_entries ) \
-	element_index % number_of_cache_entries
-
 /* Creates a vector
  * Make sure the value vector is referencing, is set to NULL
  *
@@ -1968,6 +1965,7 @@ int libfdata_vector_get_element_value_by_index(
 	off64_t cache_value_offset                  = (off64_t) -1;
 	off64_t element_offset                      = 0;
 	time_t cache_value_timestamp                = 0;
+	uint32_t element_flags                      = 0;
 	int cache_entry_index                       = -1;
 	int cache_value_file_index                  = -1;
 	int element_file_index                      = -1;
@@ -2113,6 +2111,7 @@ int libfdata_vector_get_element_value_by_index(
 		}
 		element_file_index = segment_data_range->file_index;
 		element_offset    -= segment_data_range->size;
+		element_flags      = segment_data_range->flags;
 	}
 	if( segment_index >= number_of_segments )
 	{
@@ -2152,10 +2151,20 @@ int libfdata_vector_get_element_value_by_index(
 	}
 	if( ( read_flags & LIBFDATA_READ_FLAG_IGNORE_CACHE ) == 0 )
 	{
-		cache_entry_index = libfdata_vector_calculate_cache_entry_index(
-		                     element_index,
-		                     number_of_cache_entries );
-
+		if( internal_vector->calculate_cache_entry_index == NULL )
+		{
+			cache_entry_index = element_index % number_of_cache_entries;
+		}
+		else
+		{
+			cache_entry_index = internal_vector->calculate_cache_entry_index(
+			                     element_index,
+			                     element_file_index,
+			                     element_offset,
+			                     internal_vector->element_size,
+			                     element_flags,
+			                     number_of_cache_entries );
+		}
 		if( libfcache_cache_get_value_by_index(
 		     cache,
 		     cache_entry_index,
@@ -2234,17 +2243,16 @@ int libfdata_vector_get_element_value_by_index(
 			 internal_vector->element_size );
 		}
 #endif
-/* TODO refactor */
 		if( internal_vector->read_element_data(
 		     internal_vector->data_handle,
 		     file_io_handle,
 		     vector,
 		     cache,
 		     element_index,
-		     0,
+		     element_file_index,
 		     element_offset,
 		     internal_vector->element_size,
-		     0,
+		     element_flags,
 		     read_flags,
 		     error ) != 1 )
 		{
@@ -2258,10 +2266,20 @@ int libfdata_vector_get_element_value_by_index(
 
 			return( -1 );
 		}
-		cache_entry_index = libfdata_vector_calculate_cache_entry_index(
-		                     element_index,
-		                     number_of_cache_entries );
-
+		if( internal_vector->calculate_cache_entry_index == NULL )
+		{
+			cache_entry_index = element_index % number_of_cache_entries;
+		}
+		else
+		{
+			cache_entry_index = internal_vector->calculate_cache_entry_index(
+			                     element_index,
+			                     element_file_index,
+			                     element_offset,
+			                     internal_vector->element_size,
+			                     element_flags,
+			                     number_of_cache_entries );
+		}
 		if( libfcache_cache_get_value_by_index(
 		     cache,
 		     cache_entry_index,
@@ -2407,6 +2425,7 @@ int libfdata_vector_set_element_value_by_index(
 	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_vector_set_element_value_by_index";
 	off64_t element_offset                      = 0;
+	uint32_t element_flags                      = 0;
 	int cache_entry_index                       = -1;
 	int element_file_index                      = -1;
 	int number_of_cache_entries                 = 0;
@@ -2541,6 +2560,7 @@ int libfdata_vector_set_element_value_by_index(
 		}
 		element_file_index = segment_data_range->file_index;
 		element_offset    -= segment_data_range->size;
+		element_flags      = segment_data_range->flags;
 	}
 	if( segment_index >= number_of_segments )
 	{
@@ -2578,10 +2598,20 @@ int libfdata_vector_set_element_value_by_index(
 
 		return( -1 );
 	}
-	cache_entry_index = libfdata_vector_calculate_cache_entry_index(
-	                     element_index,
-	                     number_of_cache_entries );
-
+	if( internal_vector->calculate_cache_entry_index == NULL )
+	{
+		cache_entry_index = element_index % number_of_cache_entries;
+	}
+	else
+	{
+		cache_entry_index = internal_vector->calculate_cache_entry_index(
+		                     element_index,
+		                     element_file_index,
+		                     element_offset,
+		                     internal_vector->element_size,
+		                     element_flags,
+		                     number_of_cache_entries );
+	}
 	if( libfcache_cache_set_value_by_index(
 	     cache,
 	     cache_entry_index,
