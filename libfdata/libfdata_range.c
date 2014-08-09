@@ -171,7 +171,7 @@ int libfdata_range_clone(
 		return( 1 );
 	}
 	*destination_range = memory_allocate_structure(
-	                     libfdata_range_t );
+	                      libfdata_range_t );
 
 	if( *destination_range == NULL )
 	{
