@@ -54,6 +54,9 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20140826
+* bug fixes in include header
+
 20140809
 * worked on vector
 
