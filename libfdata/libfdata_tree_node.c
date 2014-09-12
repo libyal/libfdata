@@ -1,5 +1,5 @@
 /*
- * The node functions
+ * The tree node functions
  *
  * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -172,6 +172,13 @@ int libfdata_tree_node_initialize(
 on_error:
 	if( internal_tree_node != NULL )
 	{
+		if( internal_tree_node->sub_nodes != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_tree_node->sub_nodes ),
+			 NULL,
+			 NULL );
+		}
 		if( internal_tree_node->sub_nodes_data_range != NULL )
 		{
 			libfdata_range_free(
@@ -455,7 +462,7 @@ int libfdata_tree_node_set_data_range(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is virtual.",
+		 "%s: invalid node - node is virtual.",
 		 function );
 
 		return( -1 );
@@ -556,7 +563,7 @@ int libfdata_tree_node_get_sub_nodes_data_range(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - sub nodes range has not been set.",
+		 "%s: invalid node - sub nodes range has not been set.",
 		 function );
 
 		return( -1 );
@@ -615,7 +622,7 @@ int libfdata_tree_node_set_sub_nodes_data_range(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is virtual.",
+		 "%s: invalid node - node is virtual.",
 		 function );
 
 		return( -1 );
@@ -627,7 +634,7 @@ int libfdata_tree_node_set_sub_nodes_data_range(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is a leaf.",
+		 "%s: invalid node - node is a leaf.",
 		 function );
 
 		return( -1 );
@@ -638,7 +645,7 @@ int libfdata_tree_node_set_sub_nodes_data_range(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - sub nodes range has already been read.",
+		 "%s: invalid node - sub nodes range has already been read.",
 		 function );
 
 		return( -1 );
@@ -863,7 +870,7 @@ int libfdata_tree_node_get_node_value(
 
 /* Sets the node value
  *
- * If the flag LIBFDATA_TREE_NODE_VALUE_FLAG_MANAGED is set the tree node
+ * If the flag LIBFDATA_TREE_NODE_VALUE_FLAG_MANAGED is set the node
  * takes over management of the value and the value is freed when
  * no longer needed.
  *
@@ -947,7 +954,7 @@ int libfdata_tree_node_resize_sub_nodes(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is a leaf.",
+		 "%s: invalid node - node is a leaf.",
 		 function );
 
 		return( -1 );
@@ -1100,7 +1107,7 @@ int libfdata_tree_node_get_sub_node_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is a leaf.",
+		 "%s: invalid node - node is a leaf.",
 		 function );
 
 		return( -1 );
@@ -1213,7 +1220,7 @@ int libfdata_tree_node_set_sub_node_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is a leaf.",
+		 "%s: invalid node - node is a leaf.",
 		 function );
 
 		return( -1 );
@@ -1350,7 +1357,7 @@ int libfdata_tree_node_append_sub_node(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is a leaf.",
+		 "%s: invalid node - node is a leaf.",
 		 function );
 
 		return( -1 );
@@ -1484,7 +1491,7 @@ int libfdata_tree_node_insert_sub_node(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is a leaf.",
+		 "%s: invalid node - node is a leaf.",
 		 function );
 
 		return( -1 );
@@ -1878,7 +1885,7 @@ int libfdata_tree_node_split_sub_nodes(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - node is a leaf.",
+		 "%s: invalid node - node is a leaf.",
 		 function );
 
 		return( -1 );
@@ -2295,7 +2302,7 @@ int libfdata_tree_node_set_deleted(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: invalid tree node - currently only deleted leaf nodes are supported.",
+		 "%s: invalid node - currently only deleted leaf nodes are supported.",
 		 function );
 
 		return( -1 );
@@ -2777,7 +2784,7 @@ int libfdata_tree_node_set_leaf(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid tree node - sub nodes range was set.",
+		 "%s: invalid node - sub nodes range was set.",
 		 function );
 
 		return( -1 );

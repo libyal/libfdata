@@ -156,6 +156,12 @@ int libfdata_list_element_initialize(
 on_error:
 	if( internal_element != NULL )
 	{
+		if( internal_element->data_range != NULL )
+		{
+			libfdata_range_free(
+			 &( internal_element->data_range ),
+			 NULL );
+		}
 		memory_free(
 		 internal_element );
 	}
@@ -327,7 +333,7 @@ int libfdata_list_element_clone(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve destination cache timestamp.",
+		 "%s: unable to retrieve destination timestamp.",
 		 function );
 
 		goto on_error;

@@ -1067,7 +1067,7 @@ int libfdata_range_list_get_element_value_at_offset(
 
 /* Sets the value of an element at a specific offset
  *
- * If the flag LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED is set the list
+ * If the flag LIBFDATA_RANGE_LIST_VALUE_FLAG_MANAGED is set the list
  * takes over management of the value and the value is freed when
  * no longer needed.
  *

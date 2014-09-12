@@ -1,5 +1,5 @@
 /*
- * The internal libfcache header
+ * The libfdata header wrapper
  *
  * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,32 +19,19 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _FDATA_TEST_LIBFCACHE_H )
-#define _FDATA_TEST_LIBFCACHE_H
+#if !defined( _FDATA_TEST_LIBFDATA_H )
+#define _FDATA_TEST_LIBFDATA_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBFCACHE for local use of libfcache
- */
-#if defined( HAVE_LOCAL_LIBFCACHE )
-
-#include <libfcache_cache.h>
-#include <libfcache_date_time.h>
-#include <libfcache_definitions.h>
-#include <libfcache_types.h>
-
-#else
-
-/* If libtool DLL support is enabled set LIBFCACHE_DLL_IMPORT
- * before including libfcache.h
+/* If libtool DLL support is enabled set LIBFDATA_DLL_IMPORT
+ * before including libfdata.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBFCACHE_DLL_IMPORT
+#define LIBFDATA_DLL_IMPORT
 #endif
 
-#include <libfcache.h>
-
-#endif
+#include <libfdata.h>
 
 #endif
 

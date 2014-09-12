@@ -1,0 +1,1349 @@
+/*
+ * The balanced tree functions
+ *
+ * Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>
+ *
+ * Refer to AUTHORS for acknowledgements.
+ *
+ * This software is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <common.h>
+#include <memory.h>
+#include <types.h>
+
+#include "libfdata_btree.h"
+#include "libfdata_btree_node.h"
+#include "libfdata_btree_range.h"
+#include "libfdata_definitions.h"
+#include "libfdata_libcerror.h"
+#include "libfdata_libcnotify.h"
+#include "libfdata_libfcache.h"
+#include "libfdata_types.h"
+
+/* Creates a tree
+ * Make sure the value tree is referencing, is set to NULL
+ *
+ * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the tree
+ * takes over management of the data handle and the data handle is freed when
+ * no longer needed
+ *
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_initialize(
+     libfdata_btree_t **tree,
+     intptr_t *data_handle,
+     int (*free_data_handle)(
+            intptr_t **data_handle,
+            libcerror_error_t **error ),
+     int (*clone_data_handle)(
+            intptr_t **destination_data_handle,
+            intptr_t *source_data_handle,
+            libcerror_error_t **error ),
+     int (*read_node)(
+            intptr_t *data_handle,
+            intptr_t *file_io_handle,
+            libfdata_btree_node_t *node,
+            int node_data_file_index,
+            off64_t node_data_offset,
+            size64_t node_data_size,
+            uint32_t node_data_flags,
+            uint8_t read_flags,
+            libcerror_error_t **error ),
+     int (*write_node)(
+            intptr_t *data_handle,
+            intptr_t *file_io_handle,
+            libfdata_btree_node_t *node,
+            int node_data_file_index,
+            off64_t node_data_offset,
+            size64_t node_data_size,
+            uint32_t node_data_flags,
+            uint8_t write_flags,
+            libcerror_error_t **error ),
+     uint8_t flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_t *internal_tree = NULL;
+	static char *function                    = "libfdata_btree_initialize";
+
+	if( tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( *tree != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid tree value already set.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree = memory_allocate_structure(
+	                 libfdata_internal_btree_t );
+
+	if( internal_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create tree.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     internal_tree,
+	     0,
+	     sizeof( libfdata_internal_btree_t ) ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear tree.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfdata_btree_range_initialize(
+	     &( internal_tree->root_node_data_range ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create root node data range.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_tree->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve cache timestamp.",
+		 function );
+
+		goto on_error;
+	}
+	internal_tree->flags            |= flags;
+	internal_tree->data_handle       = data_handle;
+	internal_tree->free_data_handle  = free_data_handle;
+	internal_tree->clone_data_handle = clone_data_handle;
+	internal_tree->read_node         = read_node;
+	internal_tree->write_node        = write_node;
+
+	*tree = (libfdata_tree_t *) internal_tree;
+
+	return( 1 );
+
+on_error:
+	if( internal_tree != NULL )
+	{
+		if( internal_tree->root_node_data_range != NULL )
+		{
+			libfdata_btree_range_free(
+			 &( internal_tree->root_node_data_range ),
+			 NULL );
+		}
+		memory_free(
+		 internal_tree );
+	}
+	return( -1 );
+}
+
+/* Frees a tree
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_free(
+     libfdata_btree_t **tree,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_t *internal_tree = NULL;
+	static char *function                    = "libfdata_btree_free";
+	int result                               = 1;
+
+	if( tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( *tree != NULL )
+	{
+		internal_tree = (libfdata_internal_btree_t *) *tree;
+		*tree         = NULL;
+
+		if( libfdata_btree_range_free(
+		     &( internal_tree->root_node_data_range ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free root node data range.",
+			 function );
+
+			result = -1;
+		}
+		if( ( internal_tree->flags & LIBFDATA_FLAG_DATA_HANDLE_MANAGED ) != 0 )
+		{
+			if( internal_tree->data_handle != NULL )
+			{
+				if( internal_tree->free_data_handle == NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+					 "%s: invalid list - missing free data handle function.",
+					 function );
+
+					result = -1;
+				}
+				else if( internal_tree->free_data_handle(
+				          &( internal_tree->data_handle ),
+				          error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+					 "%s: unable to free data handle.",
+					 function );
+
+					result = -1;
+				}
+			}
+		}
+		memory_free(
+		 internal_tree );
+	}
+	return( result );
+}
+
+/* Clones (duplicates) the tree
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_clone(
+     libfdata_btree_t **destination_tree,
+     libfdata_btree_t *source_tree,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_t *internal_destination_tree = NULL;
+	libfdata_internal_btree_t *internal_source_tree      = NULL;
+	intptr_t *destination_data_handle                    = NULL;
+	static char *function                                = "libfdata_btree_clone";
+
+	if( destination_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid destination tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( *destination_tree != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid destination tree value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( source_tree == NULL )
+	{
+		*destination_tree = NULL;
+
+		return( 1 );
+	}
+	internal_source_tree = (libfdata_internal_btree_t *) source_tree;
+
+	if( internal_source_tree->data_handle != NULL )
+	{
+		if( internal_source_tree->free_data_handle == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid source tree - missing free data handle function.",
+			 function );
+
+			goto on_error;
+		}
+		if( internal_source_tree->clone_data_handle == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid source tree - missing clone data handle function.",
+			 function );
+
+			goto on_error;
+		}
+		if( internal_source_tree->clone_data_handle(
+		     &destination_data_handle,
+		     internal_source_tree->data_handle,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to clone data handle.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	internal_destination_tree = memory_allocate_structure(
+	                             libfdata_internal_btree_t );
+
+	if( internal_destination_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create destination tree.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     internal_destination_tree,
+	     0,
+	     sizeof( libfdata_internal_btree_t ) ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear destination tree.",
+		 function );
+
+		memory_free(
+		 internal_destination_tree );
+
+		return( -1 );
+	}
+	if( internal_source_tree->data_handle != NULL )
+	{
+		if( internal_source_tree->free_data_handle == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid source tree - missing free data handle function.",
+			 function );
+
+			goto on_error;
+		}
+		if( internal_source_tree->clone_data_handle == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid source tree - missing clone data handle function.",
+			 function );
+
+			goto on_error;
+		}
+		if( internal_source_tree->clone_data_handle(
+		     &( internal_destination_tree->data_handle ),
+		     internal_source_tree->data_handle,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to clone data handle.",
+			 function );
+
+			goto on_error;
+		}
+	}
+/* TODO
+	if( libfdata_btree_range_clone(
+	     &( internal_destination_tree->root_node_data_range ),
+	     internal_source_tree->root_node_data_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create destination root node data range.",
+		 function );
+
+		goto on_error;
+	}
+*/
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_destination_tree->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve destination timestamp.",
+		 function );
+
+		goto on_error;
+	}
+	*destination_tree = (libfdata_btree_t *) internal_destination_tree;
+
+	return( 1 );
+
+on_error:
+	if( internal_destination_tree != NULL )
+	{
+		if( internal_destination_tree->root_node_data_range != NULL )
+		{
+			libfdata_btree_range_free(
+			 &( internal_destination_tree->root_node_data_range ),
+			 NULL );
+		}
+		if( ( internal_destination_tree->data_handle != NULL )
+		 && ( internal_source_tree->free_data_handle != NULL ) )
+		{
+			internal_source_tree->free_data_handle(
+			 &( internal_destination_tree->data_handle ),
+			 NULL );
+		}
+		memory_free(
+		 internal_destination_tree );
+	}
+	return( -1 );
+}
+
+/* Root node functions
+ */
+
+/* Retrieves the root node
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_get_root_node(
+     libfdata_btree_t *tree,
+     int *node_data_file_index,
+     off64_t *node_data_offset,
+     size64_t *node_data_size,
+     uint32_t *node_data_flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_t *internal_tree = NULL;
+	static char *function                    = "libfdata_btree_get_root_node";
+	intptr_t *key_value                      = NULL;
+
+	if( tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree = (libfdata_internal_btree_t *) tree;
+
+	if( libfdata_btree_range_get(
+	     internal_tree->root_node_data_range,
+	     node_data_file_index,
+	     node_data_offset,
+	     node_data_size,
+	     node_data_flags,
+	     &key_value,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve root node data range.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Sets the root node
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_set_root_node(
+     libfdata_btree_t *tree,
+     int node_data_file_index,
+     off64_t node_data_offset,
+     size64_t node_data_size,
+     uint32_t node_data_flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_t *internal_tree = NULL;
+	intptr_t *key_value                      = NULL;
+	static char *function                    = "libfdata_btree_set_root_node";
+
+	if( tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree = (libfdata_internal_btree_t *) tree;
+
+	if( node_data_file_index < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
+		 "%s: invalid node data file index less than zero.",
+		 function );
+
+		return( -1 );
+	}
+	if( node_data_offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
+		 "%s: invalid node data offset value less than zero.",
+		 function );
+
+		return( -1 );
+	}
+	if( node_data_size > (size64_t) INT64_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid node data size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_btree_range_set(
+	     internal_tree->root_node_data_range,
+	     node_data_file_index,
+	     node_data_offset,
+	     node_data_size,
+	     node_data_flags,
+	     key_value,
+	     NULL,
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set root node data range.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfcache_date_time_get_timestamp(
+	     &( internal_tree->timestamp ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve cache timestamp.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Leaf value functions
+ */
+
+/* Reads the node identified by the data range
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_read_node(
+     libfdata_internal_btree_t *internal_tree,
+     libfdata_btree_range_t *node_data_range,
+     int level,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     libfdata_btree_node_t **node,
+     uint8_t read_flags,
+     libcerror_error_t **error )
+{
+	libfcache_cache_value_t *cache_value = NULL;
+	intptr_t *key_value                  = NULL;
+	static char *function                = "libfdata_btree_read_node";
+	off64_t cache_value_offset           = 0;
+	off64_t node_data_offset             = 0;
+	size64_t node_data_size              = 0;
+	time_t cache_value_timestamp         = 0;
+	uint32_t node_data_flags             = 0;
+	int cache_entry_index                = -1;
+	int cache_value_file_index           = -1;
+	int node_data_file_index             = -1;
+	int number_of_cache_entries          = 0;
+	int result                           = 0;
+
+	if( internal_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid internal tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_tree->read_node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid tree - missing read node function.",
+		 function );
+
+		return( -1 );
+	}
+	if( node_data_range == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree node data range.",
+		 function );
+
+		return( -1 );
+	}
+	if( level < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid level value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
+	if( node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid node.",
+		 function );
+
+		return( -1 );
+	}
+	*node = NULL;
+
+	if( libfdata_btree_range_get(
+	     node_data_range,
+	     &node_data_file_index,
+	     &node_data_offset,
+	     &node_data_size,
+	     &node_data_flags,
+	     &key_value,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve data range from tree node.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfcache_cache_get_number_of_entries(
+	     cache,
+	     &number_of_cache_entries,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of cache entries.",
+		 function );
+
+		goto on_error;
+	}
+	if( number_of_cache_entries <= 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of cache entries value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
+	if( ( read_flags & LIBFDATA_READ_FLAG_IGNORE_CACHE ) == 0 )
+	{
+/* TODO improve cache entry index calculation */
+		cache_entry_index = node_data_offset % number_of_cache_entries;
+
+		if( libfcache_cache_get_value_by_index(
+		     cache,
+		     cache_entry_index,
+		     &cache_value,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve cache entry: %d from cache.",
+			 function,
+			 cache_entry_index );
+
+			goto on_error;
+		}
+		if( cache_value != NULL )
+		{
+			if( libfcache_cache_value_get_identifier(
+			     cache_value,
+			     &cache_value_file_index,
+			     &cache_value_offset,
+			     &cache_value_timestamp,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve cache value identifier.",
+				 function );
+
+				goto on_error;
+			}
+		}
+		if( ( node_data_file_index == cache_value_file_index )
+		 && ( node_data_offset == cache_value_offset )
+		 && ( internal_tree->timestamp == cache_value_timestamp ) )
+		{
+			result = 1;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			if( result == 0 )
+			{
+				libcnotify_printf(
+				 "%s: cache: 0x%08" PRIjx " miss (entry: %d, want: %" PRIi64 ", got: %" PRIi64 ")\n",
+				 function,
+				 (intptr_t) cache,
+				 cache_entry_index,
+				 node_data_offset,
+				 cache_value_offset );
+			}
+			else
+			{
+				libcnotify_printf(
+				 "%s: cache: 0x%08" PRIjx " hit (entry: %d)\n",
+				 function,
+				 (intptr_t) cache,
+				 cache_entry_index );
+			}
+		}
+#endif
+	}
+	if( result == 0 )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: reading node at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIu64 "\n",
+			 function,
+			 node_data_offset,
+			 node_data_offset,
+			 node_data_size );
+		}
+#endif
+		if( libfdata_btree_node_initialize(
+		     node,
+		     level,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create node at level: %d.",
+			 function,
+			 level );
+
+			goto on_error;
+		}
+/* TODO fill node with values ? */
+
+		if( internal_tree->read_node(
+		     internal_tree->data_handle,
+		     file_io_handle,
+		     *node,
+		     node_data_file_index,
+		     node_data_offset,
+		     node_data_size,
+		     node_data_flags,
+		     read_flags,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read node at offset: %" PRIi64 ".",
+			 function,
+			 node_data_offset );
+
+			goto on_error;
+		}
+		if( ( read_flags & LIBFDATA_READ_FLAG_NO_CACHE ) == 0 )
+		{
+/* TODO improve cache entry index calculation */
+			cache_entry_index = node_data_offset % number_of_cache_entries;
+
+			if( libfcache_cache_set_value_by_index(
+			     cache,
+			     cache_entry_index,
+			     node_data_file_index,
+			     node_data_offset,
+			     internal_tree->timestamp,
+			     (intptr_t *) *node,
+			     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_btree_node_free,
+			     LIBFCACHE_CACHE_VALUE_FLAG_MANAGED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set node in cache entry: %d.",
+				 function,
+				 cache_entry_index );
+
+				goto on_error;
+			}
+		}
+	}
+	if( *node == NULL )
+	{
+		if( libfcache_cache_value_get_value(
+		     cache_value,
+		     (intptr_t **) node,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve node value from cache.",
+			 function );
+
+			*node = NULL;
+
+			goto on_error;
+		}
+		if( ( read_flags & LIBFDATA_READ_FLAG_NO_CACHE ) != 0 )
+		{
+			/* Remove the node from the cache
+			 */
+			if( libfcache_cache_value_clear(
+			     cache_value,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to clear cache entry.",
+				 function );
+
+				*node = NULL;
+
+				goto on_error;
+			}
+		}
+	}
+	return( 1 );
+
+on_error:
+	if( *node != NULL )
+	{
+		libfdata_btree_node_free(
+		 node,
+		 NULL );
+	}
+	return( -1 );
+}
+
+/* Reads the sub tree
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_read_sub_tree(
+     libfdata_internal_btree_t *internal_tree,
+     libfdata_btree_range_t *node_data_range,
+     int level,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     libfdata_btree_node_t **node,
+     uint8_t read_flags,
+     libcerror_error_t **error )
+{
+	libfdata_btree_range_t *sub_node_data_range = NULL;
+	libfdata_btree_node_t *sub_node             = NULL;
+	intptr_t *key_value                         = NULL;
+	static char *function                       = "libfdata_btree_read_sub_tree";
+	off64_t node_data_offset                    = 0;
+	size64_t node_data_size                     = 0;
+	uint32_t node_data_flags                    = 0;
+	int cache_entry_index                       = -1;
+	int node_data_file_index                    = -1;
+	int number_of_cache_entries                 = 0;
+	int number_of_sub_nodes                     = 0;
+	int result                                  = 0;
+	int sub_branch_first_leaf_value_index       = 0;
+	int sub_branch_number_of_leaf_values        = 0;
+	int sub_node_index                          = 0;
+
+	if( internal_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid internal tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing node.",
+		 function );
+
+		goto on_error;
+	}
+	/* Make sure to not have the node cached here to prevent it from
+	 * being freed during recursing the sub tree
+	 */
+	if( libfdata_btree_read_node(
+	     internal_tree,
+	     node_data_range,
+	     level,
+	     file_io_handle,
+	     cache,
+	     node,
+	     read_flags | LIBFDATA_READ_FLAG_NO_CACHE,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read node.",
+		 function );
+
+		goto on_error;
+	}
+	if( *node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing node.",
+		 function );
+
+		goto on_error;
+	}
+	if( ( ( (libfdata_internal_btree_node_t *) *node )->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
+	{
+		if( libfdata_btree_node_get_number_of_sub_nodes(
+		     *node,
+		     &number_of_sub_nodes,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of sub nodes.",
+			 function );
+
+			goto on_error;
+		}
+		( (libfdata_internal_btree_node_t *) *node )->branch_number_of_leaf_values = 0;
+
+		level += 1;
+
+		for( sub_node_index = 0;
+		     sub_node_index < number_of_sub_nodes;
+		     sub_node_index++ )
+		{
+			if( libfdata_btree_node_get_sub_node_data_range_by_index(
+			     *node,
+			     sub_node_index,
+			     &sub_node_data_range,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve sub node: %d data range.",
+				 function,
+				 sub_node_index );
+
+				goto on_error;
+			}
+			if( libfdata_btree_read_sub_tree(
+			     internal_tree,
+			     sub_node_data_range,
+			     level,
+			     file_io_handle,
+			     cache,
+			     &sub_node,
+			     read_flags,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read sub node: %d tree.",
+				 function,
+				 sub_node_index );
+
+				goto on_error;
+			}
+			result = libfdata_btree_node_is_leaf(
+				  sub_node,
+			          error );
+
+			if( result == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to determine if sub node: %s is a leaf node.",
+				 function,
+				 sub_node_index );
+
+				goto on_error;
+			}
+			else if( result != 0 )
+			{
+				if( libfdata_btree_node_get_number_of_leaf_values(
+				     sub_node,
+				     &( ( (libfdata_internal_btree_node_t *) *node )->branch_number_of_leaf_values ),
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve number of leaf values.",
+					 function );
+
+					goto on_error;
+				}
+			}
+			else
+			{
+				if( libfdata_btree_node_get_branch_leaf_values(
+				     sub_node,
+				     &sub_branch_number_of_leaf_values,
+				     &sub_branch_first_leaf_value_index,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve branch leaf values.",
+					 function );
+
+					goto on_error;
+				}
+				( (libfdata_internal_btree_node_t *) *node )->branch_number_of_leaf_values += sub_branch_number_of_leaf_values;
+			}
+		}
+		( (libfdata_internal_btree_node_t *) *node )->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
+	}
+	if( libfdata_btree_range_get(
+	     node_data_range,
+	     &node_data_file_index,
+	     &node_data_offset,
+	     &node_data_size,
+	     &node_data_flags,
+	     &key_value,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve data range from tree node.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfcache_cache_get_number_of_entries(
+	     cache,
+	     &number_of_cache_entries,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of cache entries.",
+		 function );
+
+		goto on_error;
+	}
+	if( number_of_cache_entries <= 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of cache entries value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
+/* TODO improve cache entry index calculation */
+	cache_entry_index = node_data_offset % number_of_cache_entries;
+
+	if( libfcache_cache_set_value_by_index(
+	     cache,
+	     cache_entry_index,
+	     node_data_file_index,
+	     node_data_offset,
+	     internal_tree->timestamp,
+	     (intptr_t *) *node,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_btree_node_free,
+	     LIBFCACHE_CACHE_VALUE_FLAG_MANAGED,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set node in cache entry: %d.",
+		 function,
+		 cache_entry_index );
+
+		goto on_error;
+	}
+	return( 1 );
+
+on_error:
+	if( *node != NULL )
+	{
+		libfdata_btree_node_free(
+		 node,
+		 NULL );
+	}
+	return( -1 );
+}
+
+/* Retrieves the number of leaf values in the tree
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_get_number_of_leaf_values(
+     libfdata_btree_t *tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     int *number_of_values,
+     uint8_t read_flags,
+     libcerror_error_t **error )
+{
+	libfdata_btree_node_t *node              = NULL;
+	libfdata_internal_btree_t *internal_tree = NULL;
+	static char *function                    = "libfdata_btree_get_number_of_leaf_values";
+	int first_leaf_value_index               = 0;
+
+	if( tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree = (libfdata_internal_btree_t *) tree;
+
+	if( internal_tree->root_node_data_range == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid tree - missing root node data range.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_btree_read_sub_tree(
+	     internal_tree,
+	     internal_tree->root_node_data_range,
+	     0,
+	     file_io_handle,
+	     cache,
+	     &node,
+	     read_flags,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read sub tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_btree_node_get_branch_leaf_values(
+	     node,
+	     number_of_values,
+	     &first_leaf_value_index,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve branch leaf values.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a leaf value at a specific index
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_get_leaf_value_by_index(
+     libfdata_btree_t *tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     int value_index,
+     intptr_t **value,
+     uint8_t read_flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_t *internal_tree = NULL;
+	static char *function                    = "libfdata_btree_get_leaf_value_by_index";
+
+	if( tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree = (libfdata_internal_btree_t *) tree;
+
+/* TODO
+	if( libfdata_btree_node_get_leaf_value_by_index(
+	     internal_tree->root_node,
+	     file_io_handle,
+	     cache,
+	     value_index,
+	     value,
+	     read_flags,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve leaf value: %d.",
+		 function,
+		 value_index );
+
+		return( -1 );
+	}
+*/
+	return( 1 );
+}

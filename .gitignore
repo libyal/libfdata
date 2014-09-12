@@ -101,6 +101,11 @@ stamp-h1
 /include/libfdata/types.h
 /libfdata/libfdata.rc
 /libfdata/libfdata_definitions.h
+/tests/fdata_test_btree
+/tests/fdata_test_list
+/tests/fdata_test_range_list
+/tests/fdata_test_vector
+/tests/tmp
 
 # Local library dependencies specific files
 /libcdata

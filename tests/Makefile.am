@@ -2,17 +2,105 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
 	@LIBCSTRING_CPPFLAGS@ \
-	@LIBCERROR_CPPFLAGS@
+	@LIBCERROR_CPPFLAGS@ \
+	@LIBCTHREADS_CPPFLAGS@ \
+	@LIBCDATA_CPPFLAGS@ \
+	@LIBFCACHE_CPPFLAGS@ \
+	@PTHREAD_CPPFLAGS@
 
-TESTS =
+TESTS = \
+	test_btree.sh \
+	test_list.sh \
+	test_range_list.sh \
+	test_vector.sh
 
 check_SCRIPTS = \
-	test_runner.sh
+	test_btree.sh \
+	test_list.sh \
+	test_range_list.sh \
+	test_runner.sh \
+	test_vector.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
 
-check_PROGRAMS =
+check_PROGRAMS = \
+	fdata_test_btree \
+	fdata_test_list \
+	fdata_test_range_list \
+	fdata_test_vector
+
+fdata_test_btree_SOURCES = \
+	fdata_test_btree.c \
+	fdata_test_libcerror.h \
+	fdata_test_libfcache.h \
+	fdata_test_libfdata.h \
+	fdata_test_libcstring.h \
+	fdata_test_unused.h
+
+fdata_test_btree_LDADD = \
+	../libfdata/libfdata.la \
+	@LIBFCACHE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
+
+fdata_test_list_SOURCES = \
+	fdata_test_libcerror.h \
+	fdata_test_libfcache.h \
+	fdata_test_libfdata.h \
+	fdata_test_libcstring.h \
+	fdata_test_list.c \
+	fdata_test_unused.h
+
+fdata_test_list_LDADD = \
+	../libfdata/libfdata.la \
+	@LIBFCACHE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
+
+fdata_test_range_list_SOURCES = \
+	fdata_test_libcerror.h \
+	fdata_test_libfcache.h \
+	fdata_test_libfdata.h \
+	fdata_test_libcstring.h \
+	fdata_test_range_list.c \
+	fdata_test_unused.h
+
+fdata_test_range_list_LDADD = \
+	../libfdata/libfdata.la \
+	@LIBFCACHE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
+
+fdata_test_vector_SOURCES = \
+	fdata_test_libcerror.h \
+	fdata_test_libfcache.h \
+	fdata_test_libfdata.h \
+	fdata_test_libcstring.h \
+	fdata_test_vector.c \
+	fdata_test_unused.h
+
+fdata_test_vector_LDADD = \
+	../libfdata/libfdata.la \
+	@LIBFCACHE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in
