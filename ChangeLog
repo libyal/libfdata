@@ -1,6 +1,7 @@
 TODO
-* remove dependency on libfcache and create libfdata_pool ?
-* add to libfcache include header?
+* hide cache in fdata structures do not pass to callback?
+  - pass value and free function instead?
+* add specialize btree node cache/pool?
 * vector: fail on segments that are not multitudes of element size
 * change "at offset" into hexadecimal value
 * list and write - set is also used by read callback
@@ -61,6 +62,14 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20140913
+* worked on btree
+
+20140912
+* worked on btree
+* worked on tests
+* worked on fcache integration
 
 20140911
 * worked on btree

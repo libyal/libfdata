@@ -66,6 +66,18 @@ struct libfdata_btree_range
 	/* The key value flags
 	 */
 	uint8_t key_value_flags;
+
+	/* The mapped first leaf value index
+	 */
+	int mapped_first_leaf_value_index;
+
+	/* The mapped last leaf value index
+	 */
+	int mapped_last_leaf_value_index;
+
+	/* The mapped number of leaf values
+	 */
+	int mapped_number_of_leaf_values;
 };
 
 int libfdata_btree_range_initialize(
@@ -76,23 +88,26 @@ int libfdata_btree_range_free(
      libfdata_btree_range_t **range,
      libcerror_error_t **error );
 
-/* TODO add libfdata_btree_range_clone */
+int libfdata_btree_range_clone(
+     libfdata_btree_range_t **destination_range,
+     libfdata_btree_range_t *source_range,
+     libcerror_error_t **error );
 
 int libfdata_btree_range_get(
      libfdata_btree_range_t *range,
-     int *file_index,
-     off64_t *offset,
-     size64_t *size,
-     uint32_t *flags,
+     int *data_file_index,
+     off64_t *data_offset,
+     size64_t *data_size,
+     uint32_t *data_flags,
      intptr_t **key_value,
      libcerror_error_t **error );
 
 int libfdata_btree_range_set(
      libfdata_btree_range_t *range,
-     int file_index,
-     off64_t offset,
-     size64_t size,
-     uint32_t flags,
+     int data_file_index,
+     off64_t data_offset,
+     size64_t data_size,
+     uint32_t data_flags,
      intptr_t *key_value,
      int (*free_key_value)(
             intptr_t **key_value,

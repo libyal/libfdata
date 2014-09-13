@@ -45,7 +45,7 @@
  */
 int libfdata_vector_initialize(
      libfdata_vector_t **vector,
-     size64_t element_size,
+     size64_t element_data_size,
      intptr_t *data_handle,
      int (*free_data_handle)(
             intptr_t **data_handle,
@@ -106,13 +106,13 @@ int libfdata_vector_initialize(
 
 		return( -1 );
 	}
-	if( element_size == 0 )
+	if( element_data_size == 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
-		 "%s: invalid element size value zero or less.",
+		 "%s: invalid element data size value zero or less.",
 		 function );
 
 		return( -1 );
@@ -189,7 +189,7 @@ int libfdata_vector_initialize(
 
 		goto on_error;
 	}
-	internal_vector->element_size       = element_size;
+	internal_vector->element_data_size  = element_data_size;
 	internal_vector->flags             |= flags;
 	internal_vector->data_handle        = data_handle;
 	internal_vector->free_data_handle   = free_data_handle;
@@ -452,7 +452,7 @@ int libfdata_vector_clone(
 
 		goto on_error;
 	}
-	internal_destination_vector->element_size       = internal_source_vector->element_size;
+	internal_destination_vector->element_data_size  = internal_source_vector->element_data_size;
 	internal_destination_vector->timestamp          = internal_source_vector->timestamp;
 	internal_destination_vector->flags              = internal_source_vector->flags | LIBFDATA_FLAG_DATA_HANDLE_MANAGED;
 	internal_destination_vector->data_handle        = internal_source_vector->data_handle;
@@ -1293,16 +1293,16 @@ on_error:
 /* Vector element functions
  */
 
-/* Retrieves the element size of the vector
+/* Retrieves the element data size of the vector
  * Returns 1 if successful or -1 on error
  */
-int libfdata_vector_get_element_size(
+int libfdata_vector_get_element_data_size(
      libfdata_vector_t *vector,
-     size64_t *element_size,
+     size64_t *element_data_size,
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
-	static char *function                       = "libfdata_vector_get_element_size";
+	static char *function                       = "libfdata_vector_get_element_data_size";
 
 	if( vector == NULL )
 	{
@@ -1317,18 +1317,18 @@ int libfdata_vector_get_element_size(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( element_size == NULL )
+	if( element_data_size == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid element size.",
+		 "%s: invalid element data size.",
 		 function );
 
 		return( -1 );
 	}
-	*element_size = internal_vector->element_size;
+	*element_data_size = internal_vector->element_data_size;
 
 	return( 1 );
 }
@@ -1358,13 +1358,13 @@ int libfdata_vector_get_number_of_elements(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( internal_vector->element_size == 0 )
+	if( internal_vector->element_data_size == 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid vector - element size value out of bounds.",
+		 "%s: invalid vector - element data size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1380,9 +1380,9 @@ int libfdata_vector_get_number_of_elements(
 
 		return( -1 );
 	}
-	safe_number_of_elements = internal_vector->size / internal_vector->element_size;
+	safe_number_of_elements = internal_vector->size / internal_vector->element_data_size;
 
-	if( ( internal_vector->size % internal_vector->element_size ) != 0 )
+	if( ( internal_vector->size % internal_vector->element_data_size ) != 0 )
 	{
 		safe_number_of_elements += 1;
 	}
@@ -1597,13 +1597,13 @@ int libfdata_vector_get_element_index_at_offset(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( internal_vector->element_size == 0 )
+	if( internal_vector->element_data_size == 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid vector - element size value out of bounds.",
+		 "%s: invalid vector - element data size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1913,7 +1913,7 @@ int libfdata_vector_get_element_index_at_offset(
 			 segment_size );
 		}
 #endif
-		calculated_element_index = (uint64_t) offset / internal_vector->element_size;
+		calculated_element_index = (uint64_t) offset / internal_vector->element_data_size;
 
 		if( calculated_element_index > (uint64_t) INT_MAX )
 		{
@@ -1929,7 +1929,7 @@ int libfdata_vector_get_element_index_at_offset(
 		/* The element data offset is relative from the start of the vector element not the underlying segment
 		 */
 		*element_index       = (int) calculated_element_index;
-		*element_data_offset = offset % internal_vector->element_size;
+		*element_data_offset = offset % internal_vector->element_data_size;
 
 		result = 1;
 	}
@@ -1963,12 +1963,12 @@ int libfdata_vector_get_element_value_by_index(
 	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_vector_get_element_value_by_index";
 	off64_t cache_value_offset                  = (off64_t) -1;
-	off64_t element_offset                      = 0;
+	off64_t element_data_offset                 = 0;
 	time_t cache_value_timestamp                = 0;
-	uint32_t element_flags                      = 0;
+	uint32_t element_data_flags                 = 0;
 	int cache_entry_index                       = -1;
 	int cache_value_file_index                  = -1;
-	int element_file_index                      = -1;
+	int element_data_file_index                 = -1;
 	int number_of_cache_entries                 = 0;
 	int number_of_segments                      = 0;
 	int result                                  = 0;
@@ -1998,13 +1998,13 @@ int libfdata_vector_get_element_value_by_index(
 
 		return( -1 );
 	}
-	if( internal_vector->element_size == 0 )
+	if( internal_vector->element_data_size == 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid vector - element size value out of bounds.",
+		 "%s: invalid vector - element data size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -2032,9 +2032,9 @@ int libfdata_vector_get_element_value_by_index(
 
 		return( -1 );
 	}
-	element_offset = (off64_t) ( element_index * internal_vector->element_size );
+	element_data_offset = (off64_t) ( element_index * internal_vector->element_data_size );
 
-	if( element_offset > (off64_t) internal_vector->size )
+	if( element_data_offset > (off64_t) internal_vector->size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2103,15 +2103,15 @@ int libfdata_vector_get_element_value_by_index(
 			return( -1 );
 		}
 /* TODO what about compressed data ranges */
-		if( element_offset < (off64_t) segment_data_range->size )
+		if( element_data_offset < (off64_t) segment_data_range->size )
 		{
-			element_file_index = segment_data_range->file_index;
-			element_offset    += segment_data_range->offset;
-			element_flags      = segment_data_range->flags;
+			element_data_file_index = segment_data_range->file_index;
+			element_data_offset    += segment_data_range->offset;
+			element_data_flags      = segment_data_range->flags;
 
 			break;
 		}
-		element_offset -= segment_data_range->size;
+		element_data_offset -= segment_data_range->size;
 	}
 	if( segment_index >= number_of_segments )
 	{
@@ -2159,10 +2159,10 @@ int libfdata_vector_get_element_value_by_index(
 		{
 			cache_entry_index = internal_vector->calculate_cache_entry_index(
 			                     element_index,
-			                     element_file_index,
-			                     element_offset,
-			                     internal_vector->element_size,
-			                     element_flags,
+			                     element_data_file_index,
+			                     element_data_offset,
+			                     internal_vector->element_data_size,
+			                     element_data_flags,
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
@@ -2200,8 +2200,8 @@ int libfdata_vector_get_element_value_by_index(
 				return( -1 );
 			}
 		}
-		if( ( element_file_index == cache_value_file_index )
-		 && ( element_offset == cache_value_offset )
+		if( ( element_data_file_index == cache_value_file_index )
+		 && ( element_data_offset == cache_value_offset )
 		 && ( internal_vector->timestamp == cache_value_timestamp ) )
 		{
 			result = 1;
@@ -2238,9 +2238,9 @@ int libfdata_vector_get_element_value_by_index(
 			libcnotify_printf(
 			 "%s: reading element data at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIu64 "\n",
 			 function,
-			 element_offset,
-			 element_offset,
-			 internal_vector->element_size );
+			 element_data_offset,
+			 element_data_offset,
+			 internal_vector->element_data_size );
 		}
 #endif
 		if( internal_vector->read_element_data(
@@ -2249,10 +2249,10 @@ int libfdata_vector_get_element_value_by_index(
 		     vector,
 		     cache,
 		     element_index,
-		     element_file_index,
-		     element_offset,
-		     internal_vector->element_size,
-		     element_flags,
+		     element_data_file_index,
+		     element_data_offset,
+		     internal_vector->element_data_size,
+		     element_data_flags,
 		     read_flags,
 		     error ) != 1 )
 		{
@@ -2262,7 +2262,7 @@ int libfdata_vector_get_element_value_by_index(
 			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read element data at offset: 0x%08" PRIx64 ".",
 			 function,
-			 element_offset );
+			 element_data_offset );
 
 			return( -1 );
 		}
@@ -2274,10 +2274,10 @@ int libfdata_vector_get_element_value_by_index(
 		{
 			cache_entry_index = internal_vector->calculate_cache_entry_index(
 			                     element_index,
-			                     element_file_index,
-			                     element_offset,
-			                     internal_vector->element_size,
-			                     element_flags,
+			                     element_data_file_index,
+			                     element_data_offset,
+			                     internal_vector->element_data_size,
+			                     element_data_flags,
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
@@ -2315,8 +2315,8 @@ int libfdata_vector_get_element_value_by_index(
 				return( -1 );
 			}
 		}
-		if( ( element_file_index != cache_value_file_index )
-		 || ( element_offset != cache_value_offset )
+		if( ( element_data_file_index != cache_value_file_index )
+		 || ( element_data_offset != cache_value_offset )
 		 || ( internal_vector->timestamp != cache_value_timestamp ) )
 		{
 			libcerror_error_set(
@@ -2424,10 +2424,10 @@ int libfdata_vector_set_element_value_by_index(
 	libfdata_internal_vector_t *internal_vector = NULL;
 	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_vector_set_element_value_by_index";
-	off64_t element_offset                      = 0;
-	uint32_t element_flags                      = 0;
+	off64_t element_data_offset                 = 0;
+	uint32_t element_data_flags                 = 0;
 	int cache_entry_index                       = -1;
-	int element_file_index                      = -1;
+	int element_data_file_index                 = -1;
 	int number_of_cache_entries                 = 0;
 	int number_of_segments                      = 0;
 	int segment_index                           = 0;
@@ -2447,13 +2447,13 @@ int libfdata_vector_set_element_value_by_index(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( internal_vector->element_size == 0 )
+	if( internal_vector->element_data_size == 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid vector - element size value out of bounds.",
+		 "%s: invalid vector - element data size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -2481,9 +2481,9 @@ int libfdata_vector_set_element_value_by_index(
 
 		return( -1 );
 	}
-	element_offset = (off64_t) ( element_index * internal_vector->element_size );
+	element_data_offset = (off64_t) ( element_index * internal_vector->element_data_size );
 
-	if( element_offset > (off64_t) internal_vector->size )
+	if( element_data_offset > (off64_t) internal_vector->size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2552,15 +2552,15 @@ int libfdata_vector_set_element_value_by_index(
 			return( -1 );
 		}
 /* TODO what about compressed data ranges */
-		if( element_offset < (off64_t) segment_data_range->size )
+		if( element_data_offset < (off64_t) segment_data_range->size )
 		{
-			element_file_index = segment_data_range->file_index;
-			element_offset    += segment_data_range->offset;
-			element_flags      = segment_data_range->flags;
+			element_data_file_index = segment_data_range->file_index;
+			element_data_offset    += segment_data_range->offset;
+			element_data_flags      = segment_data_range->flags;
 
 			break;
 		}
-		element_offset -= segment_data_range->size;
+		element_data_offset -= segment_data_range->size;
 	}
 	if( segment_index >= number_of_segments )
 	{
@@ -2606,17 +2606,17 @@ int libfdata_vector_set_element_value_by_index(
 	{
 		cache_entry_index = internal_vector->calculate_cache_entry_index(
 		                     element_index,
-		                     element_file_index,
-		                     element_offset,
-		                     internal_vector->element_size,
-		                     element_flags,
+		                     element_data_file_index,
+		                     element_data_offset,
+		                     internal_vector->element_data_size,
+		                     element_data_flags,
 		                     number_of_cache_entries );
 	}
 	if( libfcache_cache_set_value_by_index(
 	     cache,
 	     cache_entry_index,
-	     element_file_index,
-	     element_offset,
+	     element_data_file_index,
+	     element_data_offset,
 	     internal_vector->timestamp,
 	     element_value,
 	     free_element_value,

@@ -20,6 +20,8 @@
  */
 
 #include <common.h>
+#include <byte_stream.h>
+#include <memory.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -29,14 +31,13 @@
 
 #include "fdata_test_libcerror.h"
 #include "fdata_test_libcstring.h"
-#include "fdata_test_libfcache.h"
 #include "fdata_test_libfdata.h"
 #include "fdata_test_unused.h"
 
 #define LEAF_VALUE_DATA_SIZE			512
 #define NODE_DATA_SIZE				512
 #define MAXIMUM_NUMBER_OF_LEAF_VALUES		8
-#define MAXIMUM_NUMBER_OF_NODE_LEVELS		4
+#define MAXIMUM_NUMBER_OF_NODE_LEVELS		3
 #define MAXIMUM_NUMBER_OF_SUB_NODES		8
 
 /* Tests initializing the btree
@@ -129,32 +130,32 @@ int fdata_test_btree_initialize(
 	return( 1 );
 }
 
-/* Frees the element data
+/* Frees the leaf value data
  * Returns 1 if successful or -1 on error
  */
-int fdata_test_btree_element_data_free(
-     uint8_t **element_data,
+int fdata_test_btree_leaf_value_data_free(
+     uint8_t **leaf_value_data,
      libcerror_error_t **error )
 {
-	static char *function = "fdata_test_btree_element_data_free";
+	static char *function = "fdata_test_btree_leaf_value_data_free";
 
-	if( element_data == NULL )
+	if( leaf_value_data == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid element data.",
+		 "%s: invalid leaf value data.",
 		 function );
 
 		return( -1 );
 	}
-	if( *element_data != NULL )
+	if( *leaf_value_data != NULL )
 	{
 		memory_free(
-		 *element_data );
+		 *leaf_value_data );
 
-		*element_data = NULL;
+		*leaf_value_data = NULL;
 	}
 	return( 1 );
 }
@@ -167,10 +168,9 @@ int fdata_test_btree_read_node(
      intptr_t *data_handle FDATA_TEST_ATTRIBUTE_UNUSED,
      intptr_t *file_io_handle,
      libfdata_btree_node_t *node,
-     libfcache_cache_t *cache,
      int node_data_file_index FDATA_TEST_ATTRIBUTE_UNUSED,
      off64_t node_data_offset,
-     size64_t node_data_size,
+     size64_t node_data_size FDATA_TEST_ATTRIBUTE_UNUSED,
      uint32_t node_data_flags FDATA_TEST_ATTRIBUTE_UNUSED,
      uint8_t read_flags FDATA_TEST_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
@@ -184,6 +184,7 @@ int fdata_test_btree_read_node(
 
 	FDATA_TEST_UNREFERENCED_PARAMETER( data_handle );
 	FDATA_TEST_UNREFERENCED_PARAMETER( node_data_file_index );
+	FDATA_TEST_UNREFERENCED_PARAMETER( node_data_size );
 	FDATA_TEST_UNREFERENCED_PARAMETER( node_data_flags );
 	FDATA_TEST_UNREFERENCED_PARAMETER( read_flags );
 
@@ -215,12 +216,14 @@ int fdata_test_btree_read_node(
 	}
 	if( ( level + 1 ) < MAXIMUM_NUMBER_OF_NODE_LEVELS )
 	{
+		element_offset  = node_data_offset & 0xffffffffUL;
+		element_offset *= MAXIMUM_NUMBER_OF_SUB_NODES;
+		element_offset += (off64_t) ( level + 1 ) << 32;
+
 		for( sub_node_index = 0;
 		     sub_node_index < MAXIMUM_NUMBER_OF_SUB_NODES;
 		     sub_node_index++ )
 		{
-			element_offset = ( ( level * MAXIMUM_NUMBER_OF_SUB_NODES ) + sub_node_index + 1 ) * NODE_DATA_SIZE;
-
 			if( libfdata_btree_node_append_sub_node(
 			     node,
 			     &element_index,
@@ -242,17 +245,19 @@ int fdata_test_btree_read_node(
 
 				return( -1 );
 			}
+			element_offset += NODE_DATA_SIZE;
 		}
 	}
 	else
 	{
+		element_offset  = node_data_offset & 0xffffffffUL;
+		element_offset *= MAXIMUM_NUMBER_OF_LEAF_VALUES;
+		element_offset += (off64_t) ( level + 1 ) << 32;
+
 		for( leaf_value_index = 0;
 		     leaf_value_index < MAXIMUM_NUMBER_OF_LEAF_VALUES;
 		     leaf_value_index++ )
 		{
-/* TODO make sure leaf nodes have unique offset */
-			element_offset = ( ( level * MAXIMUM_NUMBER_OF_SUB_NODES ) + leaf_value_index + 1 ) * NODE_DATA_SIZE;
-
 			if( libfdata_btree_node_append_leaf_value(
 			     node,
 			     &element_index,
@@ -274,9 +279,103 @@ int fdata_test_btree_read_node(
 
 				return( -1 );
 			}
+			element_offset += NODE_DATA_SIZE;
 		}
 	}
 	return( 1 );
+}
+
+/* Reads a leaf value
+ * Callback function for the btree
+ * Returns 1 if successful or -1 on error
+ */
+int fdata_test_btree_read_leaf_value(
+     intptr_t *data_handle FDATA_TEST_ATTRIBUTE_UNUSED,
+     intptr_t *file_io_handle,
+     libfdata_btree_t *tree,
+     libfdata_cache_t *cache,
+     int leaf_value_index,
+     int leaf_value_data_file_index FDATA_TEST_ATTRIBUTE_UNUSED,
+     off64_t leaf_value_data_offset,
+     size64_t leaf_value_data_size,
+     uint32_t leaf_value_data_flags FDATA_TEST_ATTRIBUTE_UNUSED,
+     uint8_t read_flags FDATA_TEST_ATTRIBUTE_UNUSED,
+     libcerror_error_t **error )
+{
+	uint8_t *leaf_value_data       = NULL;
+	static char *function          = "fdata_test_btree_read_leaf_value";
+	uint32_t test_leaf_value_index = 0;
+
+	FDATA_TEST_UNREFERENCED_PARAMETER( data_handle );
+	FDATA_TEST_UNREFERENCED_PARAMETER( leaf_value_data_file_index );
+	FDATA_TEST_UNREFERENCED_PARAMETER( leaf_value_data_offset );
+	FDATA_TEST_UNREFERENCED_PARAMETER( leaf_value_data_flags );
+	FDATA_TEST_UNREFERENCED_PARAMETER( read_flags );
+
+	leaf_value_data_size = sizeof( uint8_t ) * LEAF_VALUE_DATA_SIZE;
+
+	leaf_value_data = (uint8_t *) memory_allocate(
+	                               (size_t) leaf_value_data_size );
+
+	if( leaf_value_data == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create leaf value data.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     leaf_value_data,
+	     0,
+	     (size_t) leaf_value_data_size ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear leaf value data.",
+		 function );
+
+		goto on_error;
+	}
+	test_leaf_value_index = (uint32_t) ( ( leaf_value_data_offset & 0xffffffffUL ) / LEAF_VALUE_DATA_SIZE );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 leaf_value_data,
+	 test_leaf_value_index );
+
+	if( libfdata_btree_set_leaf_value_by_index(
+	     tree,
+	     file_io_handle,
+	     cache,
+	     leaf_value_index,
+	     (intptr_t *) leaf_value_data,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_leaf_value_data_free,
+	     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set leaf value data as leaf value.",
+		 function );
+
+		goto on_error;
+	}
+	return( 1 );
+
+on_error:
+	if( leaf_value_data != NULL )
+	{
+		memory_free(
+		 leaf_value_data );
+	}
+	return( -1 );
 }
 
 /* Tests reading the btree
@@ -285,13 +384,13 @@ int fdata_test_btree_read_node(
 int fdata_test_btree_read(
     void )
 {
-	libfcache_cache_t *cache         = NULL;
-	libfdata_btree_t *btree          = NULL;
 	libcerror_error_t *error         = NULL;
-	uint8_t *element_data            = NULL;
+	libfdata_btree_t *btree          = NULL;
+	libfdata_cache_t *cache          = NULL;
+	uint8_t *leaf_value_data         = NULL;
 	static char *function            = "fdata_test_btree_read";
-	uint32_t test_element_index      = 0;
-	int element_index                = 0;
+	uint32_t test_leaf_value_index   = 0;
+	int leaf_value_index             = 0;
 	int number_of_leaf_values        = 0;
 	int level                        = 0;
 	int result                       = 0;
@@ -308,7 +407,7 @@ int fdata_test_btree_read(
 	     NULL,
 	     NULL,
 	     (int (*)(intptr_t *, intptr_t *, libfdata_btree_node_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &fdata_test_btree_read_node,
-	     NULL,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_btree_t *, libfdata_cache_t *, int, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &fdata_test_btree_read_leaf_value,
 	     0,
 	     &error ) != 1 )
 	{
@@ -338,7 +437,7 @@ int fdata_test_btree_read(
 
 		goto on_error;
 	}
-	if( libfcache_cache_initialize(
+	if( libfdata_cache_initialize(
 	     &cache,
 	     128,
 	     &error ) != 1 )
@@ -372,7 +471,7 @@ int fdata_test_btree_read(
 	result_number_of_leaf_values = 1;
 
 	for( level = 1;
-	     level < ( MAXIMUM_NUMBER_OF_NODE_LEVELS - 1 );
+	     level < MAXIMUM_NUMBER_OF_NODE_LEVELS;
 	     level++ )
 	{
 		result_number_of_leaf_values *= MAXIMUM_NUMBER_OF_SUB_NODES;
@@ -407,7 +506,70 @@ int fdata_test_btree_read(
 	 stdout,
 	 "\n" );
 
-	if( libfcache_cache_free(
+	if( result != 0 )
+	{
+		for( leaf_value_index = 0;
+		     leaf_value_index < number_of_leaf_values;
+		     leaf_value_index++ )
+		{
+			if( libfdata_btree_get_leaf_value_by_index(
+			     btree,
+			     NULL,
+			     cache,
+			     leaf_value_index,
+			     (intptr_t **) &leaf_value_data,
+			     0,
+			     &error ) != 1 )
+			{
+				libcerror_error_set(
+				 &error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to retrieve leaf value: %d.",
+				 function,
+				 leaf_value_index );
+
+				goto on_error;
+			}
+			result = 0;
+
+			if( leaf_value_data != NULL )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 leaf_value_data,
+				 test_leaf_value_index );
+
+				if( test_leaf_value_index == (uint32_t) leaf_value_index )
+				{
+					result = 1;
+				}
+			}
+			if( result == 0 )
+			{
+				break;
+			}
+		}
+		fprintf(
+		 stdout,
+		 "Testing get_leaf_value_by_index\t" );
+
+		if( result == 0 )
+		{
+			fprintf(
+			 stdout,
+			 "(FAIL)" );
+		}
+		else
+		{
+			fprintf(
+			 stdout,
+			 "(PASS)" );
+		}
+		fprintf(
+		 stdout,
+		 "\n" );
+	}
+	if( libfdata_cache_free(
 	     &cache,
 	     &error ) != 1 )
 	{
@@ -447,7 +609,7 @@ on_error:
 	}
 	if( cache != NULL )
 	{
-		libfcache_cache_free(
+		libfdata_cache_free(
 		 &cache,
 		 NULL );
 	}

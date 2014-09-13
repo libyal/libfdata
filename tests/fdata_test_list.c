@@ -31,7 +31,6 @@
 
 #include "fdata_test_libcerror.h"
 #include "fdata_test_libcstring.h"
-#include "fdata_test_libfcache.h"
 #include "fdata_test_libfdata.h"
 #include "fdata_test_unused.h"
 
@@ -166,28 +165,27 @@ int fdata_test_list_read_element_data(
      intptr_t *data_handle FDATA_TEST_ATTRIBUTE_UNUSED,
      intptr_t *file_io_handle,
      libfdata_list_element_t *list_element,
-     libfcache_cache_t *cache,
-     int element_file_index FDATA_TEST_ATTRIBUTE_UNUSED,
-     off64_t element_offset,
-     size64_t element_size,
-     uint32_t element_flags FDATA_TEST_ATTRIBUTE_UNUSED,
+     libfdata_cache_t *cache,
+     int element_data_file_index FDATA_TEST_ATTRIBUTE_UNUSED,
+     off64_t element_data_offset,
+     size64_t element_data_size,
+     uint32_t element_data_flags FDATA_TEST_ATTRIBUTE_UNUSED,
      uint8_t read_flags FDATA_TEST_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
 {
 	uint8_t *element_data       = NULL;
 	static char *function       = "fdata_test_list_read_element_data";
-	size_t element_data_size    = 0;
 	uint32_t test_element_index = 0;
 
 	FDATA_TEST_UNREFERENCED_PARAMETER( data_handle );
-	FDATA_TEST_UNREFERENCED_PARAMETER( element_file_index );
-	FDATA_TEST_UNREFERENCED_PARAMETER( element_flags );
+	FDATA_TEST_UNREFERENCED_PARAMETER( element_data_file_index );
+	FDATA_TEST_UNREFERENCED_PARAMETER( element_data_flags );
 	FDATA_TEST_UNREFERENCED_PARAMETER( read_flags );
 
 	element_data_size = sizeof( uint8_t ) * ELEMENT_DATA_SIZE;
 
 	element_data = (uint8_t *) memory_allocate(
-	                            element_data_size );
+	                            (size_t) element_data_size );
 
 	if( element_data == NULL )
 	{
@@ -203,18 +201,18 @@ int fdata_test_list_read_element_data(
 	if( memory_set(
 	     element_data,
 	     0,
-	     element_data_size ) == NULL )
+	     (size_t) element_data_size ) == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-		 "%s: unable to clear list.",
+		 "%s: unable to clear element data.",
 		 function );
 
 		goto on_error;
 	}
-	test_element_index = (uint32_t) ( element_offset / ELEMENT_DATA_SIZE );
+	test_element_index = (uint32_t) ( element_data_offset / ELEMENT_DATA_SIZE );
 
 	byte_stream_copy_from_uint32_little_endian(
 	 element_data,
@@ -255,9 +253,9 @@ on_error:
 int fdata_test_list_read(
     void )
 {
-	libfcache_cache_t *cache    = NULL;
-	libfdata_list_t *list       = NULL;
 	libcerror_error_t *error    = NULL;
+	libfdata_cache_t *cache     = NULL;
+	libfdata_list_t *list       = NULL;
 	uint8_t *element_data       = NULL;
 	static char *function       = "fdata_test_list_read";
 	off64_t element_data_offset = 0;
@@ -275,7 +273,7 @@ int fdata_test_list_read(
 	     NULL,
 	     NULL,
 	     NULL,
-	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfcache_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &fdata_test_list_read_element_data,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfdata_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &fdata_test_list_read_element_data,
 	     NULL,
 	     0,
 	     &error ) != 1 )
@@ -314,7 +312,7 @@ int fdata_test_list_read(
 		}
 		element_data_offset += ELEMENT_DATA_SIZE;
 	}
-	if( libfcache_cache_initialize(
+	if( libfdata_cache_initialize(
 	     &cache,
 	     4,
 	     &error ) != 1 )
@@ -389,7 +387,7 @@ int fdata_test_list_read(
 	 stdout,
 	 "\n" );
 
-	if( libfcache_cache_free(
+	if( libfdata_cache_free(
 	     &cache,
 	     &error ) != 1 )
 	{
@@ -429,7 +427,7 @@ on_error:
 	}
 	if( cache != NULL )
 	{
-		libfcache_cache_free(
+		libfdata_cache_free(
 		 &cache,
 		 NULL );
 	}

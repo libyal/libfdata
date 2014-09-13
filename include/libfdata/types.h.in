@@ -203,6 +203,7 @@ typedef int64_t off64_t;
  */
 typedef intptr_t libfdata_btree_t;
 typedef intptr_t libfdata_btree_node_t;
+typedef intptr_t libfdata_cache_t;
 typedef intptr_t libfdata_list_t;
 typedef intptr_t libfdata_list_element_t;
 typedef intptr_t libfdata_range_list_t;

@@ -1,4 +1,4 @@
-.Dd February 5, 2014
+.Dd September 12, 2014
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -43,9 +43,9 @@ List element functions
 .Ft int
 .Fn libfdata_list_element_set_mapped_size "libfdata_list_element_t *element, size64_t size, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_list_element_get_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfcache_cache_t *cache, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
+.Fn libfdata_list_element_get_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfdata_cache_t *cache, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_list_element_set_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfcache_cache_t *cache, intptr_t *element_value, int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error ), uint8_t write_flags, libfdata_error_t **error"
+.Fn libfdata_list_element_set_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfdata_cache_t *cache, intptr_t *element_value, int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error ), uint8_t write_flags, libfdata_error_t **error"
 .Pp
 Stream functions
 .Ft int

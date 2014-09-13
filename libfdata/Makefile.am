@@ -16,6 +16,7 @@ libfdata_la_SOURCES = \
 	libfdata_btree.c libfdata_btree.h \
 	libfdata_btree_node.c libfdata_btree_node.h \
 	libfdata_btree_range.c libfdata_btree_range.h \
+	libfdata_cache.c libfdata_cache.h \
 	libfdata_definitions.h \
 	libfdata_error.c libfdata_error.h \
 	libfdata_extern.h \

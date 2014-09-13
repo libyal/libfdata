@@ -28,6 +28,7 @@
 #include "libfdata_definitions.h"
 #include "libfdata_libcdata.h"
 #include "libfdata_libcerror.h"
+#include "libfdata_libcnotify.h"
 #include "libfdata_types.h"
 
 /* Creates a node
@@ -149,36 +150,6 @@ int libfdata_btree_node_free(
 		internal_tree_node = (libfdata_internal_btree_node_t *) *node;
 		*node              = NULL;
 
-		if( internal_tree_node->value != NULL )
-		{
-			if( ( internal_tree_node->value_flags & LIBFDATA_BTREE_NODE_VALUE_FLAG_MANAGED ) != 0 )
-			{
-				if( internal_tree_node->free_value == NULL )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-					 "%s: invalid node - missing free value function.",
-					 function );
-
-					result = -1;
-				}
-				else if( internal_tree_node->free_value(
-					  &( internal_tree_node->value ),
-					  error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-					 "%s: unable to free value.",
-					 function );
-
-					result = -1;
-				}
-			}
-		}
 		if( internal_tree_node->sub_node_ranges_array != NULL )
 		{
 			if( libcdata_array_free(
@@ -352,126 +323,6 @@ int libfdata_btree_node_is_root(
 	return( 0 );
 }
 
-/* Node value functions
- */
-
-/* Retrieves the node value
- * Returns 1 if successful or -1 on error
- */
-int libfdata_btree_node_get_value(
-     libfdata_btree_node_t *node,
-     intptr_t **value,
-     libcerror_error_t **error )
-{
-	libfdata_internal_btree_node_t *internal_tree_node = NULL;
-	static char *function                              = "libfdata_btree_node_get_value";
-
-	if( node == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid node.",
-		 function );
-
-		return( -1 );
-	}
-	internal_tree_node = (libfdata_internal_btree_node_t *) node;
-
-	if( value == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid value.",
-		 function );
-
-		return( -1 );
-	}
-	*value = internal_tree_node->value;
-
-	return( 1 );
-}
-
-/* Sets the node value
- * Returns 1 if successful or -1 on error
- */
-int libfdata_btree_node_set_value(
-     libfdata_btree_node_t *node,
-     intptr_t *value,
-     int (*free_value)(
-            intptr_t **value,
-            libcerror_error_t **error ),
-     uint8_t value_flags,
-     libcerror_error_t **error )
-{
-	libfdata_internal_btree_node_t *internal_tree_node = NULL;
-	static char *function                              = "libfdata_btree_node_set_value";
-
-	if( node == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid node.",
-		 function );
-
-		return( -1 );
-	}
-	internal_tree_node = (libfdata_internal_btree_node_t *) node;
-
-	if( free_value == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid free value function.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( internal_tree_node->value_flags & LIBFDATA_BTREE_NODE_VALUE_FLAG_MANAGED ) != 0 )
-	{
-		if( internal_tree_node->value != NULL )
-		{
-			if( internal_tree_node->free_value == NULL )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-				 "%s: invalid node - missing free value function.",
-				 function );
-
-				return( -1 );
-			}
-			if( internal_tree_node->free_value(
-			     &( internal_tree_node->value ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free value.",
-				 function );
-
-				return( -1 );
-			}
-		}
-		internal_tree_node->value_flags &= ~( LIBFDATA_BTREE_NODE_VALUE_FLAG_MANAGED );
-	}
-	internal_tree_node->value        = value;
-	internal_tree_node->free_value   = free_value;
-	internal_tree_node->value_flags |= value_flags;
-
-	return( 1 );
-}
-
 /* Sub node data range functions
  */
 
@@ -559,6 +410,17 @@ int libfdata_btree_node_get_sub_node_data_range_by_index(
 	}
 	internal_tree_node = (libfdata_internal_btree_node_t *) node;
 
+	if( internal_tree_node->sub_node_ranges_array == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid node - missing sub node ranges array.",
+		 function );
+
+		return( -1 );
+	}
 	if( libcdata_array_get_entry_by_index(
 	     internal_tree_node->sub_node_ranges_array,
 	     sub_node_index,
@@ -578,16 +440,150 @@ int libfdata_btree_node_get_sub_node_data_range_by_index(
 	return( 1 );
 }
 
+/* Retrieves a sub node data range for a specific mapped index
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_node_get_sub_node_data_range_by_mapped_index(
+     libfdata_btree_node_t *node,
+     int mapped_index,
+     libfdata_btree_range_t **sub_node_data_range,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_node_t *internal_tree_node = NULL;
+	static char *function                              = "libfdata_btree_node_get_sub_node_data_range_by_mapped_index";
+	int number_of_sub_nodes                            = 0;
+	int sub_node_index                                 = 0;
+
+	if( node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid node.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree_node = (libfdata_internal_btree_node_t *) node;
+
+	if( internal_tree_node->sub_node_ranges_array == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid node - missing sub node ranges array.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( internal_tree_node->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid node - unsupported flags calculate mapped ranges is set.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested index: %d\n",
+		 function,
+		 mapped_index );
+	}
+#endif
+	if( libcdata_array_get_number_of_entries(
+	     internal_tree_node->sub_node_ranges_array,
+	     &number_of_sub_nodes,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of entries from sub node ranges array.",
+		 function );
+
+		return( -1 );
+	}
+	for( sub_node_index = 0;
+	     sub_node_index < number_of_sub_nodes;
+	     sub_node_index++ )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_tree_node->sub_node_ranges_array,
+		     sub_node_index,
+		     (intptr_t **) sub_node_data_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from sub node ranges array.",
+			 function,
+			 sub_node_index );
+
+			return( -1 );
+		}
+		if( *sub_node_data_range == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing sub node: %d data range.",
+			 function,
+			 sub_node_index );
+
+			return( -1 );
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: mapped range: %d - %d\n",
+			 function,
+			 ( *sub_node_data_range )->mapped_first_leaf_value_index,
+			 ( *sub_node_data_range )->mapped_last_leaf_value_index );
+		}
+#endif
+		if( ( mapped_index >= ( *sub_node_data_range )->mapped_first_leaf_value_index )
+		 && ( mapped_index <= ( *sub_node_data_range )->mapped_last_leaf_value_index ) )
+		{
+			break;
+		}
+	}
+	if( sub_node_index >= number_of_sub_nodes )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve sub node data range.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 /* Retrieves a specific sub node
  * Returns 1 if successful or -1 on error
  */
 int libfdata_btree_node_get_sub_node_by_index(
      libfdata_btree_node_t *node,
      int sub_node_index,
-     int *sub_node_file_index,
-     off64_t *sub_node_offset,
-     size64_t *sub_node_size,
-     uint32_t *sub_node_flags,
+     int *sub_node_data_file_index,
+     off64_t *sub_node_data_offset,
+     size64_t *sub_node_data_size,
+     uint32_t *sub_node_data_flags,
      intptr_t **key_value,
      libcerror_error_t **error )
 {
@@ -637,10 +633,10 @@ int libfdata_btree_node_get_sub_node_by_index(
 	}
 	if( libfdata_btree_range_get(
 	     data_range,
-	     sub_node_file_index,
-	     sub_node_offset,
-	     sub_node_size,
-	     sub_node_flags,
+	     sub_node_data_file_index,
+	     sub_node_data_offset,
+	     sub_node_data_size,
+	     sub_node_data_flags,
 	     key_value,
 	     error ) != 1 )
 	{
@@ -663,10 +659,10 @@ int libfdata_btree_node_get_sub_node_by_index(
 int libfdata_btree_node_set_sub_node_by_index(
      libfdata_btree_node_t *node,
      int sub_node_index,
-     int sub_node_file_index,
-     off64_t sub_node_offset,
-     size64_t sub_node_size,
-     uint32_t sub_node_flags,
+     int sub_node_data_file_index,
+     off64_t sub_node_data_offset,
+     size64_t sub_node_data_size,
+     uint32_t sub_node_data_flags,
      intptr_t *key_value,
      int (*free_key_value)(
             intptr_t **key_value,
@@ -720,10 +716,10 @@ int libfdata_btree_node_set_sub_node_by_index(
 	}
 	if( libfdata_btree_range_set(
 	     data_range,
-	     sub_node_file_index,
-	     sub_node_offset,
-	     sub_node_size,
-	     sub_node_flags,
+	     sub_node_data_file_index,
+	     sub_node_data_offset,
+	     sub_node_data_size,
+	     sub_node_data_flags,
 	     key_value,
 	     free_key_value,
 	     key_value_flags,
@@ -748,10 +744,10 @@ int libfdata_btree_node_set_sub_node_by_index(
 int libfdata_btree_node_append_sub_node(
      libfdata_btree_node_t *node,
      int *sub_node_index,
-     int sub_node_file_index,
-     off64_t sub_node_offset,
-     size64_t sub_node_size,
-     uint32_t sub_node_flags,
+     int sub_node_data_file_index,
+     off64_t sub_node_data_offset,
+     size64_t sub_node_data_size,
+     uint32_t sub_node_data_flags,
      intptr_t *key_value,
      int (*free_key_value)(
             intptr_t **key_value,
@@ -819,10 +815,10 @@ int libfdata_btree_node_append_sub_node(
 	}
 	if( libfdata_btree_range_set(
 	     data_range,
-	     sub_node_file_index,
-	     sub_node_offset,
-	     sub_node_size,
-	     sub_node_flags,
+	     sub_node_data_file_index,
+	     sub_node_data_offset,
+	     sub_node_data_size,
+	     sub_node_data_flags,
 	     key_value,
 	     free_key_value,
 	     key_value_flags,
@@ -869,17 +865,16 @@ on_error:
 /* Branch leaf values functions
  */
 
-/* Retrieves the leaf values of the branch
+/* Retrieves the number of leaf values in the branch
  * Returns 1 if successful or -1 on error
  */
-int libfdata_btree_node_get_branch_leaf_values(
+int libfdata_btree_node_get_number_of_leaf_values_in_branch(
      libfdata_btree_node_t *node,
      int *number_of_leaf_values,
-     int *first_leaf_value_index,
      libcerror_error_t **error )
 {
 	libfdata_internal_btree_node_t *internal_tree_node = NULL;
-	static char *function                              = "libfdata_btree_node_get_branch_leaf_values";
+	static char *function                              = "libfdata_btree_node_get_number_of_leaf_values_in_branch";
 
 	if( node == NULL )
 	{
@@ -905,19 +900,7 @@ int libfdata_btree_node_get_branch_leaf_values(
 
 		return( -1 );
 	}
-	if( first_leaf_value_index == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid first leaf value index.",
-		 function );
-
-		return( -1 );
-	}
-	*number_of_leaf_values  = internal_tree_node->branch_number_of_leaf_values;
-	*first_leaf_value_index = internal_tree_node->branch_first_leaf_value_index;
+	*number_of_leaf_values = internal_tree_node->branch_number_of_leaf_values;
 
 	return( 1 );
 }
@@ -984,16 +967,204 @@ int libfdata_btree_node_get_number_of_leaf_values(
 	return( 1 );
 }
 
+/* Retrieves a specific leaf value data range
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_node_get_leaf_value_data_range_by_index(
+     libfdata_btree_node_t *node,
+     int leaf_value_index,
+     libfdata_btree_range_t **leaf_value_data_range,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_node_t *internal_tree_node = NULL;
+	static char *function                              = "libfdata_btree_node_get_leaf_value_data_range_by_index";
+
+	if( node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid node.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree_node = (libfdata_internal_btree_node_t *) node;
+
+	if( internal_tree_node->leaf_value_ranges_array == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid node - missing leaf value ranges array.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_array_get_entry_by_index(
+	     internal_tree_node->leaf_value_ranges_array,
+	     leaf_value_index,
+	     (intptr_t **) leaf_value_data_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve entry: %d from leaf value ranges array.",
+		 function,
+		 leaf_value_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a leaf value data range for a specific mapped index
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_btree_node_get_leaf_value_data_range_by_mapped_index(
+     libfdata_btree_node_t *node,
+     int mapped_index,
+     libfdata_btree_range_t **leaf_value_data_range,
+     libcerror_error_t **error )
+{
+	libfdata_internal_btree_node_t *internal_tree_node = NULL;
+	static char *function                              = "libfdata_btree_node_get_leaf_value_data_range_by_mapped_index";
+	int number_of_leaf_values                          = 0;
+	int leaf_value_index                               = 0;
+
+	if( node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid node.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree_node = (libfdata_internal_btree_node_t *) node;
+
+	if( internal_tree_node->leaf_value_ranges_array == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid node - missing leaf value ranges array.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( internal_tree_node->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid node - unsupported flags calculate mapped ranges is set.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested index: %d\n",
+		 function,
+		 mapped_index );
+	}
+#endif
+	if( libcdata_array_get_number_of_entries(
+	     internal_tree_node->leaf_value_ranges_array,
+	     &number_of_leaf_values,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of entries from leaf value ranges array.",
+		 function );
+
+		return( -1 );
+	}
+	for( leaf_value_index = 0;
+	     leaf_value_index < number_of_leaf_values;
+	     leaf_value_index++ )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_tree_node->leaf_value_ranges_array,
+		     leaf_value_index,
+		     (intptr_t **) leaf_value_data_range,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from leaf value ranges array.",
+			 function,
+			 leaf_value_index );
+
+			return( -1 );
+		}
+		if( *leaf_value_data_range == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing leaf value: %d data range.",
+			 function,
+			 leaf_value_index );
+
+			return( -1 );
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: mapped range: %d\n",
+			 function,
+			 ( *leaf_value_data_range )->mapped_first_leaf_value_index );
+		}
+#endif
+		if( ( mapped_index == ( *leaf_value_data_range )->mapped_first_leaf_value_index )
+		 && ( ( *leaf_value_data_range )->mapped_number_of_leaf_values == 1 ) )
+		{
+			break;
+		}
+	}
+	if( leaf_value_index >= number_of_leaf_values )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve leaf value data range.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 /* Retrieves a specific leaf value
  * Returns 1 if successful or -1 on error
  */
 int libfdata_btree_node_get_leaf_value_by_index(
      libfdata_btree_node_t *node,
      int leaf_value_index,
-     int *leaf_value_file_index,
-     off64_t *leaf_value_offset,
-     size64_t *leaf_value_size,
-     uint32_t *leaf_value_flags,
+     int *leaf_value_data_file_index,
+     off64_t *leaf_value_data_offset,
+     size64_t *leaf_value_data_size,
+     uint32_t *leaf_value_data_flags,
      intptr_t **key_value,
      libcerror_error_t **error )
 {
@@ -1043,10 +1214,10 @@ int libfdata_btree_node_get_leaf_value_by_index(
 	}
 	if( libfdata_btree_range_get(
 	     data_range,
-	     leaf_value_file_index,
-	     leaf_value_offset,
-	     leaf_value_size,
-	     leaf_value_flags,
+	     leaf_value_data_file_index,
+	     leaf_value_data_offset,
+	     leaf_value_data_size,
+	     leaf_value_data_flags,
 	     key_value,
 	     error ) != 1 )
 	{
@@ -1069,10 +1240,10 @@ int libfdata_btree_node_get_leaf_value_by_index(
 int libfdata_btree_node_set_leaf_value_by_index(
      libfdata_btree_node_t *node,
      int leaf_value_index,
-     int leaf_value_file_index,
-     off64_t leaf_value_offset,
-     size64_t leaf_value_size,
-     uint32_t leaf_value_flags,
+     int leaf_value_data_file_index,
+     off64_t leaf_value_data_offset,
+     size64_t leaf_value_data_size,
+     uint32_t leaf_value_data_flags,
      intptr_t *key_value,
      int (*free_key_value)(
             intptr_t **key_value,
@@ -1126,10 +1297,10 @@ int libfdata_btree_node_set_leaf_value_by_index(
 	}
 	if( libfdata_btree_range_set(
 	     data_range,
-	     leaf_value_file_index,
-	     leaf_value_offset,
-	     leaf_value_size,
-	     leaf_value_flags,
+	     leaf_value_data_file_index,
+	     leaf_value_data_offset,
+	     leaf_value_data_size,
+	     leaf_value_data_flags,
 	     key_value,
 	     free_key_value,
 	     key_value_flags,
@@ -1154,10 +1325,10 @@ int libfdata_btree_node_set_leaf_value_by_index(
 int libfdata_btree_node_append_leaf_value(
      libfdata_btree_node_t *node,
      int *leaf_value_index,
-     int leaf_value_file_index,
-     off64_t leaf_value_offset,
-     size64_t leaf_value_size,
-     uint32_t leaf_value_flags,
+     int leaf_value_data_file_index,
+     off64_t leaf_value_data_offset,
+     size64_t leaf_value_data_size,
+     uint32_t leaf_value_data_flags,
      intptr_t *key_value,
      int (*free_key_value)(
             intptr_t **key_value,
@@ -1225,10 +1396,10 @@ int libfdata_btree_node_append_leaf_value(
 	}
 	if( libfdata_btree_range_set(
 	     data_range,
-	     leaf_value_file_index,
-	     leaf_value_offset,
-	     leaf_value_size,
-	     leaf_value_flags,
+	     leaf_value_data_file_index,
+	     leaf_value_data_offset,
+	     leaf_value_data_size,
+	     leaf_value_data_flags,
 	     key_value,
 	     free_key_value,
 	     key_value_flags,

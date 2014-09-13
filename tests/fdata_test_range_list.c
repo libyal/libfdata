@@ -29,7 +29,6 @@
 
 #include "fdata_test_libcerror.h"
 #include "fdata_test_libcstring.h"
-#include "fdata_test_libfcache.h"
 #include "fdata_test_libfdata.h"
 
 /* Tests initializing the range list

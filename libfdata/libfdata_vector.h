@@ -39,9 +39,9 @@ typedef struct libfdata_internal_vector libfdata_internal_vector_t;
 
 struct libfdata_internal_vector
 {
-	/* The element size
+	/* The element data size
 	 */
-	size64_t element_size;
+	size64_t element_data_size;
 
 	/* The (vector) size
 	 */
@@ -67,10 +67,10 @@ struct libfdata_internal_vector
 	 */
 	int (*calculate_cache_entry_index)(
 	       int element_index,
-	       int element_file_index,
-	       off64_t element_offset,
-	       size64_t element_size,
-	       uint32_t element_flags,
+	       int element_data_file_index,
+	       off64_t element_data_offset,
+	       size64_t element_data_size,
+	       uint32_t element_data_flags,
                int number_of_cache_entries );
 
 	/* The data handle
@@ -124,7 +124,7 @@ struct libfdata_internal_vector
 LIBFDATA_EXTERN \
 int libfdata_vector_initialize(
      libfdata_vector_t **vector,
-     size64_t element_size,
+     size64_t element_data_size,
      intptr_t *data_handle,
      int (*free_data_handle)(
             intptr_t **data_handle,
@@ -232,9 +232,9 @@ int libfdata_vector_append_segment(
 /* Vector element functions
  */
 LIBFDATA_EXTERN \
-int libfdata_vector_get_element_size(
+int libfdata_vector_get_element_data_size(
      libfdata_vector_t *vector,
-     size64_t *element_size,
+     size64_t *element_data_size,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
