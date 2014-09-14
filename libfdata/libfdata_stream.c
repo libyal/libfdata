@@ -39,7 +39,7 @@
 /* Creates a stream
  * Make sure the value stream is referencing, is set to NULL
  *
- * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the stream
+ * If the flag LIBFDATA_DATA_HANDLE_FLAG_MANAGED is set the stream
  * takes over management of the data handle and the data handle is freed when
  * no longer needed
  *
@@ -273,7 +273,7 @@ int libfdata_stream_free(
 
 			result = -1;
 		}
-		if( ( internal_stream->flags & LIBFDATA_FLAG_DATA_HANDLE_MANAGED ) != 0 )
+		if( ( internal_stream->flags & LIBFDATA_DATA_HANDLE_FLAG_MANAGED ) != 0 )
 		{
 			if( internal_stream->data_handle != NULL )
 			{
@@ -453,7 +453,7 @@ int libfdata_stream_clone(
 
 		goto on_error;
 	}
-	internal_destination_stream->flags               = internal_source_stream->flags | LIBFDATA_FLAG_DATA_HANDLE_MANAGED;
+	internal_destination_stream->flags               = internal_source_stream->flags | LIBFDATA_DATA_HANDLE_FLAG_MANAGED;
 	internal_destination_stream->free_data_handle    = internal_source_stream->free_data_handle;
 	internal_destination_stream->clone_data_handle   = internal_source_stream->clone_data_handle;
 	internal_destination_stream->create_segment      = internal_source_stream->create_segment;

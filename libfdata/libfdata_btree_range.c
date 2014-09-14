@@ -130,7 +130,7 @@ int libfdata_btree_range_free(
 	{
 		if( ( *range )->key_value != NULL )
 		{
-			if( ( ( *range )->key_value_flags & LIBFDATA_FLAG_KEY_VALUE_MANAGED ) != 0 )
+			if( ( ( *range )->key_value_flags & LIBFDATA_KEY_VALUE_FLAG_MANAGED ) != 0 )
 			{
 				if( ( *range )->free_key_value == NULL )
 				{
@@ -367,7 +367,7 @@ int libfdata_btree_range_set(
 	}
 	if( free_key_value != NULL )
 	{
-		if( ( range->key_value_flags & LIBFDATA_FLAG_KEY_VALUE_MANAGED ) != 0 )
+		if( ( range->key_value_flags & LIBFDATA_KEY_VALUE_FLAG_MANAGED ) != 0 )
 		{
 			if( range->key_value != NULL )
 			{
@@ -396,7 +396,7 @@ int libfdata_btree_range_set(
 					return( -1 );
 				}
 			}
-			range->key_value_flags &= ~( LIBFDATA_FLAG_KEY_VALUE_MANAGED );
+			range->key_value_flags &= ~( LIBFDATA_KEY_VALUE_FLAG_MANAGED );
 		}
 	}
 	range->file_index       = data_file_index;

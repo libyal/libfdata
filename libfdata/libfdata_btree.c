@@ -36,7 +36,7 @@
 /* Creates a tree
  * Make sure the value tree is referencing, is set to NULL
  *
- * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the tree
+ * If the flag LIBFDATA_DATA_HANDLE_FLAG_MANAGED is set the tree
  * takes over management of the data handle and the data handle is freed when
  * no longer needed
  *
@@ -226,7 +226,7 @@ int libfdata_btree_free(
 
 			result = -1;
 		}
-		if( ( internal_tree->flags & LIBFDATA_FLAG_DATA_HANDLE_MANAGED ) != 0 )
+		if( ( internal_tree->flags & LIBFDATA_DATA_HANDLE_FLAG_MANAGED ) != 0 )
 		{
 			if( internal_tree->data_handle != NULL )
 			{

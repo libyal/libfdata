@@ -37,7 +37,7 @@
 /* Creates a vector
  * Make sure the value vector is referencing, is set to NULL
  *
- * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the vector
+ * If the flag LIBFDATA_DATA_HANDLE_FLAG_MANAGED is set the vector
  * takes over management of the data handle and the data handle is freed when
  * no longer needed
  *
@@ -272,7 +272,7 @@ int libfdata_vector_free(
 
 			result = -1;
 		}
-		if( ( internal_vector->flags & LIBFDATA_FLAG_DATA_HANDLE_MANAGED ) != 0 )
+		if( ( internal_vector->flags & LIBFDATA_DATA_HANDLE_FLAG_MANAGED ) != 0 )
 		{
 			if( internal_vector->data_handle != NULL )
 			{
@@ -454,7 +454,7 @@ int libfdata_vector_clone(
 	}
 	internal_destination_vector->element_data_size  = internal_source_vector->element_data_size;
 	internal_destination_vector->timestamp          = internal_source_vector->timestamp;
-	internal_destination_vector->flags              = internal_source_vector->flags | LIBFDATA_FLAG_DATA_HANDLE_MANAGED;
+	internal_destination_vector->flags              = internal_source_vector->flags | LIBFDATA_DATA_HANDLE_FLAG_MANAGED;
 	internal_destination_vector->data_handle        = internal_source_vector->data_handle;
 	internal_destination_vector->free_data_handle   = internal_source_vector->free_data_handle;
 	internal_destination_vector->clone_data_handle  = internal_source_vector->clone_data_handle;

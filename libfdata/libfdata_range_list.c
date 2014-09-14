@@ -36,7 +36,7 @@
 /* Creates a range list
  * Make sure the value range_list is referencing, is set to NULL
  *
- * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the range list
+ * If the flag LIBFDATA_DATA_HANDLE_FLAG_MANAGED is set the range list
  * takes over management of the data handle and the data handle is freed when
  * no longer needed
  *
@@ -225,7 +225,7 @@ int libfdata_range_list_free(
 
 			result = -1;
 		}
-		if( ( internal_range_list->flags & LIBFDATA_FLAG_DATA_HANDLE_MANAGED ) != 0 )
+		if( ( internal_range_list->flags & LIBFDATA_DATA_HANDLE_FLAG_MANAGED ) != 0 )
 		{
 			if( internal_range_list->data_handle != NULL )
 			{
@@ -389,7 +389,7 @@ int libfdata_range_list_clone(
 
 		goto on_error;
 	}
-	internal_destination_range_list->flags              = internal_source_range_list->flags | LIBFDATA_FLAG_DATA_HANDLE_MANAGED;
+	internal_destination_range_list->flags              = internal_source_range_list->flags | LIBFDATA_DATA_HANDLE_FLAG_MANAGED;
 	internal_destination_range_list->free_data_handle   = internal_source_range_list->free_data_handle;
 	internal_destination_range_list->clone_data_handle  = internal_source_range_list->clone_data_handle;
 	internal_destination_range_list->read_element_data  = internal_source_range_list->read_element_data;
@@ -853,7 +853,7 @@ int libfdata_range_list_insert_element(
 		     internal_range_list->clone_data_handle,
 		     internal_range_list->read_element_data,
 		     internal_range_list->write_element_data,
-		     LIBFDATA_FLAG_DATA_HANDLE_NON_MANAGED,
+		     LIBFDATA_DATA_HANDLE_FLAG_NON_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

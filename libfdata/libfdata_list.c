@@ -38,7 +38,7 @@
 /* Creates a list
  * Make sure the value list is referencing, is set to NULL
  *
- * If the flag LIBFDATA_FLAG_DATA_HANDLE_MANAGED is set the list
+ * If the flag LIBFDATA_DATA_HANDLE_FLAG_MANAGED is set the list
  * takes over management of the data handle and the data handle is freed when
  * no longer needed
  *
@@ -256,7 +256,7 @@ int libfdata_list_free(
 
 			result = -1;
 		}
-		if( ( internal_list->flags & LIBFDATA_FLAG_DATA_HANDLE_MANAGED ) != 0 )
+		if( ( internal_list->flags & LIBFDATA_DATA_HANDLE_FLAG_MANAGED ) != 0 )
 		{
 			if( internal_list->data_handle != NULL )
 			{
@@ -436,7 +436,7 @@ int libfdata_list_clone(
 
 		goto on_error;
 	}
-	internal_destination_list->flags              = internal_source_list->flags | LIBFDATA_FLAG_DATA_HANDLE_MANAGED;
+	internal_destination_list->flags              = internal_source_list->flags | LIBFDATA_DATA_HANDLE_FLAG_MANAGED;
 	internal_destination_list->free_data_handle   = internal_source_list->free_data_handle;
 	internal_destination_list->clone_data_handle  = internal_source_list->clone_data_handle;
 	internal_destination_list->read_element_data  = internal_source_list->read_element_data;
