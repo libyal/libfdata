@@ -114,6 +114,16 @@ int libfdata_btree_node_get_sub_node_data_range_by_mapped_index(
      libfdata_btree_range_t **sub_node_data_range,
      libcerror_error_t **error );
 
+int libfdata_btree_node_get_sub_node_data_range_by_key(
+     libfdata_btree_node_t *node,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     libfdata_btree_range_t **sub_node_data_range,
+     libcerror_error_t **error );
+
 LIBFDATA_EXTERN \
 int libfdata_btree_node_get_sub_node_by_index(
      libfdata_btree_node_t *node,
@@ -184,6 +194,16 @@ int libfdata_btree_node_get_leaf_value_data_range_by_mapped_index(
      libfdata_btree_range_t **leaf_value_data_range,
      libcerror_error_t **error );
 
+int libfdata_btree_node_get_leaf_value_data_range_by_key(
+     libfdata_btree_node_t *node,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     libfdata_btree_range_t **leaf_value_data_range,
+     libcerror_error_t **error );
+
 LIBFDATA_EXTERN \
 int libfdata_btree_node_get_leaf_value_by_index(
      libfdata_btree_node_t *node,
@@ -193,6 +213,20 @@ int libfdata_btree_node_get_leaf_value_by_index(
      size64_t *leaf_value_data_size,
      uint32_t *leaf_value_data_flags,
      intptr_t **key_value,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_btree_node_get_leaf_value_by_key(
+     libfdata_btree_node_t *node,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     int *leaf_value_data_file_index,
+     off64_t *leaf_value_data_offset,
+     size64_t *leaf_value_data_size,
+     uint32_t *leaf_value_data_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \

@@ -105,6 +105,7 @@ struct libfdata_internal_btree
 	       off64_t node_data_offset,
 	       size64_t node_data_size,
 	       uint32_t node_data_flags,
+	       intptr_t *key_value,
                uint8_t read_flags,
 	       libcerror_error_t **error );
 
@@ -120,6 +121,7 @@ struct libfdata_internal_btree
 	       off64_t leaf_value_data_offset,
 	       size64_t leaf_value_data_size,
 	       uint32_t leaf_value_data_flags,
+	       intptr_t *key_value,
                uint8_t read_flags,
 	       libcerror_error_t **error );
 };
@@ -143,6 +145,7 @@ int libfdata_btree_initialize(
             off64_t node_data_offset,
             size64_t node_data_size,
             uint32_t node_data_flags,
+            intptr_t *key_value,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*read_leaf_value)(
@@ -155,6 +158,7 @@ int libfdata_btree_initialize(
             off64_t leaf_value_data_offset,
             size64_t leaf_value_data_size,
             uint32_t leaf_value_data_flags,
+            intptr_t *key_value,
             uint8_t read_flags,
             libcerror_error_t **error ),
      uint8_t flags,
@@ -222,7 +226,6 @@ int libfdata_btree_read_leaf_value(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      libfdata_btree_range_t *leaf_value_data_range,
-     int leaf_value_index,
      intptr_t **leaf_value,
      uint8_t read_flags,
      libcerror_error_t **error );
@@ -259,6 +262,21 @@ int libfdata_btree_get_leaf_node_by_index(
      uint8_t read_flags,
      libcerror_error_t **error );
 
+int libfdata_btree_get_leaf_node_by_key(
+     libfdata_internal_btree_t *internal_tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     libfdata_btree_range_t *node_data_range,
+     int level,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     libfdata_btree_node_t **node,
+     uint8_t read_flags,
+     libcerror_error_t **error );
+
 LIBFDATA_EXTERN \
 int libfdata_btree_get_number_of_leaf_values(
      libfdata_btree_t *tree,
@@ -291,7 +309,19 @@ int libfdata_btree_set_leaf_value_by_index(
      uint8_t write_flags,
      libcerror_error_t **error );
 
-/* TODO add get leaf value by key function */
+LIBFDATA_EXTERN \
+int libfdata_btree_get_leaf_value_by_key(
+     libfdata_btree_t *tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     intptr_t **value,
+     uint8_t read_flags,
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

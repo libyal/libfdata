@@ -87,6 +87,39 @@ enum LIBFDATA_RANGE_LIST_VALUE_FLAGS
 	LIBFDATA_RANGE_LIST_VALUE_FLAG_MANAGED				= LIBFDATA_FLAG_DATA_MANAGED
 };
 
+/* The tree node value flag definitions
+ */
+enum LIBFDATA_TREE_NODE_VALUE_FLAGS
+{
+	LIBFDATA_TREE_NODE_VALUE_FLAG_NON_MANAGED			= LIBFDATA_FLAG_DATA_NON_MANAGED,
+	LIBFDATA_TREE_NODE_VALUE_FLAG_MANAGED				= LIBFDATA_FLAG_DATA_MANAGED
+};
+
+/* The vector element value flag definitions
+ */
+enum LIBFDATA_VECTOR_ELEMENT_VALUE_FLAGS
+{
+	LIBFDATA_VECTOR_ELEMENT_VALUE_FLAG_NON_MANAGED			= LIBFDATA_FLAG_DATA_NON_MANAGED,
+	LIBFDATA_VECTOR_ELEMENT_VALUE_FLAG_MANAGED			= LIBFDATA_FLAG_DATA_MANAGED
+};
+
+/* The comparison function definitions
+ */
+enum LIBFDATA_COMPARE_DEFINITIONS
+{
+	/* The first value is less than the second value
+	 */
+        LIBFDATA_COMPARE_LESS,
+
+	/* The first and second values are equal
+	 */
+        LIBFDATA_COMPARE_EQUAL,
+
+	/* The first value is greater than the second value
+	 */
+        LIBFDATA_COMPARE_GREATER
+};
+
 /* The range flag definitions
  */
 enum LIBFDATA_RANGE_FLAGS
@@ -125,23 +158,6 @@ enum LIBFDATA_READ_FLAGS
 	/* Internal flag to indicate data should not be cached
 	 */
         LIBFDATA_READ_FLAG_NO_CACHE					= 0x80
-};
-
-/* The tree node comparison definitions
- */
-enum LIBFDATA_TREE_NODE_COMPARE_DEFINITIONS
-{
-	/* The first node value is less than the second node value
-	 */
-        LIBFDATA_TREE_NODE_COMPARE_LESS,
-
-	/* The first and second node values are equal
-	 */
-        LIBFDATA_TREE_NODE_COMPARE_EQUAL,
-
-	/* The first node value is greater than the second node value
-	 */
-        LIBFDATA_TREE_NODE_COMPARE_GREATER
 };
 
 /* The tree node flag definitions
@@ -184,22 +200,6 @@ enum LIBFDATA_TREE_NODE_INSERT_FLAGS
 	/* Only allow unique sub node values, no duplicates
 	 */
 	LIBFDATA_TREE_NODE_INSERT_FLAG_UNIQUE_SUB_NODE_VALUES		= 0x01,
-};
-
-/* The tree node value flag definitions
- */
-enum LIBFDATA_TREE_NODE_VALUE_FLAGS
-{
-	LIBFDATA_TREE_NODE_VALUE_FLAG_NON_MANAGED			= LIBFDATA_FLAG_DATA_NON_MANAGED,
-	LIBFDATA_TREE_NODE_VALUE_FLAG_MANAGED				= LIBFDATA_FLAG_DATA_MANAGED
-};
-
-/* The vector element value flag definitions
- */
-enum LIBFDATA_VECTOR_ELEMENT_VALUE_FLAGS
-{
-	LIBFDATA_VECTOR_ELEMENT_VALUE_FLAG_NON_MANAGED			= LIBFDATA_FLAG_DATA_NON_MANAGED,
-	LIBFDATA_VECTOR_ELEMENT_VALUE_FLAG_MANAGED			= LIBFDATA_FLAG_DATA_MANAGED
 };
 
 #endif

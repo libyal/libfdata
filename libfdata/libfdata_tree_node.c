@@ -1424,8 +1424,8 @@ on_error:
 /* Inserts a sub node offset and size
  *
  * Uses the node_value_compare_function to determine the order of the sub nodes
- * The node_value_compare_function should return LIBFDATA_TREE_NODE_COMPARE_LESS,
- * LIBFDATA_TREE_NODE_COMPARE_EQUAL, LIBFDATA_TREE_NODE_COMPARE_GREATER if successful or -1 on error
+ * The node_value_compare_function should return LIBFDATA_COMPARE_LESS,
+ * LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER if successful or -1 on error
  *
  * Duplicate entries are allowed by default and inserted after the last duplicate entry.
  * Only allowing unique entries can be enforced by setting the flag LIBFDATA_TREE_NODE_INSERT_FLAG_UNIQUE_ENTRIES
@@ -1653,7 +1653,7 @@ int libfdata_tree_node_insert_sub_node(
 
 			goto on_error;
 		}
-		else if( result == LIBFDATA_TREE_NODE_COMPARE_EQUAL )
+		else if( result == LIBFDATA_COMPARE_EQUAL )
 		{
 			if( ( insert_flags & LIBFDATA_TREE_NODE_INSERT_FLAG_UNIQUE_SUB_NODE_VALUES ) != 0 )
 			{
@@ -1686,11 +1686,11 @@ int libfdata_tree_node_insert_sub_node(
 				return( 0 );
 			}
 		}
-		else if( result == LIBFDATA_TREE_NODE_COMPARE_LESS )
+		else if( result == LIBFDATA_COMPARE_LESS )
 		{
 			break;
 		}
-		else if( result != LIBFDATA_TREE_NODE_COMPARE_GREATER )
+		else if( result != LIBFDATA_COMPARE_GREATER )
 		{
 			libcerror_error_set(
 			 error,

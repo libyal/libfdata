@@ -60,6 +60,7 @@ int libfdata_btree_initialize(
             off64_t node_data_offset,
             size64_t node_data_size,
             uint32_t node_data_flags,
+            intptr_t *key_value,
             uint8_t read_flags,
             libcerror_error_t **error ),
      int (*read_leaf_value)(
@@ -72,6 +73,7 @@ int libfdata_btree_initialize(
             off64_t leaf_value_data_offset,
             size64_t leaf_value_data_size,
             uint32_t leaf_value_data_flags,
+            intptr_t *key_value,
             uint8_t read_flags,
             libcerror_error_t **error ),
      uint8_t flags,
@@ -812,7 +814,6 @@ int libfdata_btree_read_leaf_value(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      libfdata_btree_range_t *leaf_value_data_range,
-     int leaf_value_index,
      intptr_t **leaf_value,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -828,6 +829,7 @@ int libfdata_btree_read_leaf_value(
 	int cache_entry_index                = -1;
 	int cache_value_file_index           = -1;
 	int leaf_value_data_file_index       = -1;
+	int leaf_value_index                 = -1;
 	int result                           = 0;
 
 	if( internal_tree == NULL )
@@ -863,6 +865,8 @@ int libfdata_btree_read_leaf_value(
 
 		return( -1 );
 	}
+	leaf_value_index = leaf_value_data_range->mapped_first_leaf_value_index;
+
 	if( libfdata_btree_range_get(
 	     leaf_value_data_range,
 	     &leaf_value_data_file_index,
@@ -991,6 +995,7 @@ int libfdata_btree_read_leaf_value(
 		     leaf_value_data_offset,
 		     leaf_value_data_size,
 		     leaf_value_data_flags,
+		     key_value,
 		     read_flags,
 		     error ) != 1 )
 		{
@@ -1294,6 +1299,7 @@ int libfdata_btree_read_node(
 		     node_data_offset,
 		     node_data_size,
 		     node_data_flags,
+		     key_value,
 		     read_flags,
 		     error ) != 1 )
 		{
@@ -1878,8 +1884,9 @@ int libfdata_btree_get_leaf_node_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve sub node data range.",
-		 function );
+		 "%s: unable to retrieve sub node data range for leaf value: %d..",
+		 function,
+		 leaf_value_index );
 
 		return( -1 );
 	}
@@ -1907,6 +1914,177 @@ int libfdata_btree_get_leaf_node_by_index(
 		return( -1 );
 	}
 	return( 1 );
+}
+
+/* Retrieves a leaf node for a specific key value
+ *
+ * Uses the key_value_compare_function to determine the similarity of the key values
+ * The key_value_compare_function should return LIBFDATA_COMPARE_LESS,
+ * LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER if successful or -1 on error
+ *
+ * Returns 1 if successful, 0 if no such value or -1 on error
+ */
+int libfdata_btree_get_leaf_node_by_key(
+     libfdata_internal_btree_t *internal_tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     libfdata_btree_range_t *node_data_range,
+     int level,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     libfdata_btree_node_t **node,
+     uint8_t read_flags,
+     libcerror_error_t **error )
+{
+	libfdata_btree_range_t *sub_node_data_range = NULL;
+	static char *function                       = "libfdata_btree_get_leaf_node_by_key";
+	int result                                  = 0;
+
+	if( internal_tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( node_data_range == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing node data range.",
+		 function );
+
+		return( -1 );
+	}
+	if( level < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid level value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing node.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_btree_read_sub_tree(
+	     internal_tree,
+	     file_io_handle,
+	     cache,
+	     node_data_range,
+	     level,
+	     node_data_range->mapped_first_leaf_value_index,
+	     node,
+	     read_flags,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read node sub tree.",
+		 function );
+
+		return( -1 );
+	}
+	if( *node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing node.",
+		 function );
+
+		return( -1 );
+	}
+	result = libfdata_btree_node_is_leaf(
+		  *node,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine if node is a leaf node.",
+		 function );
+
+		return( -1 );
+	}
+	else if( result != 0 )
+	{
+		return( 1 );
+	}
+	result = libfdata_btree_node_get_sub_node_data_range_by_key(
+	          *node,
+	          key_value,
+	          key_value_compare_function,
+	          &sub_node_data_range,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve sub node data range by key.",
+		 function );
+
+		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
+	}
+	*node = NULL;
+
+	result = libfdata_btree_get_leaf_node_by_key(
+	          internal_tree,
+	          file_io_handle,
+	          cache,
+	          sub_node_data_range,
+	          level + 1,
+	          key_value,
+	          key_value_compare_function,
+	          node,
+	          read_flags,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve leaf node by key.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
 }
 
 /* Retrieves the number of leaf values in the tree
@@ -2041,9 +2219,8 @@ int libfdata_btree_get_leaf_value_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve leaf node for leaf value: %d.",
-		 function,
-		 leaf_value_index );
+		 "%s: unable to retrieve leaf node.",
+		 function );
 
 		return( -1 );
 	}
@@ -2067,7 +2244,6 @@ int libfdata_btree_get_leaf_value_by_index(
 	     file_io_handle,
 	     cache,
 	     leaf_value_data_range,
-	     leaf_value_index,
 	     value,
 	     read_flags,
 	     error ) != 1 )
@@ -2156,9 +2332,8 @@ int libfdata_btree_set_leaf_value_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve leaf node for leaf value: %d.",
-		 function,
-		 leaf_value_index );
+		 "%s: unable to retrieve leaf node.",
+		 function );
 
 		return( -1 );
 	}
@@ -2237,5 +2412,124 @@ int libfdata_btree_set_leaf_value_by_index(
 		return( -1 );
 	}
 	return( 1 );
+}
+
+/* Retrieves a leaf value for a specific key value
+ *
+ * Uses the key_value_compare_function to determine the similarity of the key values
+ * The key_value_compare_function should return LIBFDATA_COMPARE_LESS,
+ * LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER if successful or -1 on error
+ *
+ * Returns 1 if successful, 0 if no such value or -1 on error
+ */
+int libfdata_btree_get_leaf_value_by_key(
+     libfdata_btree_t *tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     intptr_t **value,
+     uint8_t read_flags,
+     libcerror_error_t **error )
+{
+	libfdata_btree_node_t *node                   = NULL;
+	libfdata_btree_range_t *leaf_value_data_range = NULL;
+	libfdata_internal_btree_t *internal_tree      = NULL;
+	static char *function                         = "libfdata_btree_get_leaf_value_by_key";
+	int result                                    = 0;
+
+	if( tree == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid tree.",
+		 function );
+
+		return( -1 );
+	}
+	internal_tree = (libfdata_internal_btree_t *) tree;
+
+	if( internal_tree->root_node_data_range == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid tree - missing root node data range.",
+		 function );
+
+		return( -1 );
+	}
+	result = libfdata_btree_get_leaf_node_by_key(
+	          internal_tree,
+	          file_io_handle,
+	          cache,
+	          internal_tree->root_node_data_range,
+	          0,
+	          key_value,
+	          key_value_compare_function,
+	          &node,
+	          read_flags,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve leaf node.",
+		 function );
+
+		return( -1 );
+	}
+	else if( result != 0 )
+	{
+		result = libfdata_btree_node_get_leaf_value_data_range_by_key(
+		          node,
+		          key_value,
+		          key_value_compare_function,
+		          &leaf_value_data_range,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve leaf value data range.",
+			 function );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			if( libfdata_btree_read_leaf_value(
+			     internal_tree,
+			     file_io_handle,
+			     cache,
+			     leaf_value_data_range,
+			     value,
+			     read_flags,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read leaf value.",
+				 function );
+
+				return( -1 );
+			}
+		}
+	}
+	return( result );
 }
 
