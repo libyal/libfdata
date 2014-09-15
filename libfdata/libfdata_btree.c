@@ -167,7 +167,7 @@ int libfdata_btree_initialize(
 	internal_tree->read_node                              = read_node;
 	internal_tree->read_leaf_value                        = read_leaf_value;
 
-	*tree = (libfdata_tree_t *) internal_tree;
+	*tree = (libfdata_btree_t *) internal_tree;
 
 	return( 1 );
 

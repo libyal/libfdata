@@ -31,12 +31,15 @@
  */
 #if defined( HAVE_LOCAL_LIBFDATA )
 
+#include "libfdata_libfcache.h"
+
+typedef libfcache_cache_t			libfdata_cache_t;
+
 /* The following type definitions hide internal data structures
  */
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
 typedef struct libfdata_btree {}		libfdata_btree_t;
 typedef struct libfdata_btree_node {}		libfdata_btree_node_t;
-typedef struct libfdata_cache {}		libfdata_cache_t;
 typedef struct libfdata_list {}			libfdata_list_t;
 typedef struct libfdata_list_element {}		libfdata_list_element_t;
 typedef struct libfdata_range_list {}		libfdata_range_list_t;
@@ -48,7 +51,6 @@ typedef struct libfdata_vector {}		libfdata_vector_t;
 #else
 typedef intptr_t libfdata_btree_t;
 typedef intptr_t libfdata_btree_node_t;
-typedef intptr_t libfdata_cache_t;
 typedef intptr_t libfdata_list_t;
 typedef intptr_t libfdata_list_element_t;
 typedef intptr_t libfdata_range_list_t;

@@ -63,6 +63,9 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20140915
+* worked on btree
+
 20140914
 * worked on btree
 * worked on tests

@@ -198,12 +198,12 @@ void fdata_test_key_value_fprint(
 /* Key value compare function
  * Returns return LIBFDATA_COMPARE_LESS, LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER if successful or -1 on error
  */
-int fdata_test_key_value_compare_function(
+int fdata_test_key_value_compare(
      uint8_t *first_key_value,
      uint8_t *second_key_value,
      libcerror_error_t **error )
 {
-	static char *function   = "fdata_test_key_value_compare_function";
+	static char *function   = "fdata_test_key_value_compare";
 	ssize_t key_value_index = 0;
 	ssize_t key_value_size  = 0;
 
@@ -565,7 +565,7 @@ int fdata_test_btree_read_leaf_value(
 	     leaf_value_index,
 	     (intptr_t *) leaf_value_data,
 	     (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_leaf_value_data_free,
-	     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,
+	     LIBFDATA_BTREE_LEAF_VALUE_FLAG_MANAGED,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -799,7 +799,7 @@ int fdata_test_btree_read(
 		          NULL,
 		          cache,
 		          (intptr_t *) key_value,
-		          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &fdata_test_key_value_compare_function,
+		          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &fdata_test_key_value_compare,
 		          (intptr_t **) &leaf_value_data,
 		          0,
 		          &error );
@@ -883,7 +883,7 @@ int fdata_test_btree_read(
 			          NULL,
 			          cache,
 			          (intptr_t *) key_value,
-			          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &fdata_test_key_value_compare_function,
+			          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &fdata_test_key_value_compare,
 			          (intptr_t **) &leaf_value_data,
 			          0,
 			          &error );
