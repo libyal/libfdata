@@ -1,4 +1,6 @@
-See:
-* http://code.google.com/p/libfdata/wiki/Building
-* README.macosx
+libfdata is a library to provide generic file data functions.
+
+For more information see:
+* Project documentation: https://github.com/libyal/libfdata/wiki/Home
+* How to build from source: https://github.com/libyal/libfdata/wiki/Building
 
