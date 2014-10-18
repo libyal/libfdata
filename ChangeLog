@@ -63,6 +63,9 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20141018
+* changes for deployment
+
 20141012
 * worked on utility scripts
 
