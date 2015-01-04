@@ -1,4 +1,8 @@
 MSVSCPP_FILES = \
+	fdata_test_btree/fdata_test_btree.vcproj \
+	fdata_test_list/fdata_test_list.vcproj \
+	fdata_test_range_list/fdata_test_range_list.vcproj \
+	fdata_test_vector/fdata_test_vector.vcproj \
 	libcdata/libcdata.vcproj \
 	libcerror/libcerror.vcproj \
 	libcnotify/libcnotify.vcproj \

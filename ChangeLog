@@ -17,15 +17,6 @@ TODO
   - range list (init)
   - tree
   - vector (init, read)
-* update include header and man page
-  - list (update)
-  - list element (update)
-  - range list
-  - stream (done)
-  - tree
-  - tree node
-  - vector
-  - other
 
 Types:
 * list
@@ -62,6 +53,9 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20150104
+* 2015 update
 
 20141018
 * changes for deployment

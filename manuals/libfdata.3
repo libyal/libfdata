@@ -1,4 +1,4 @@
-.Dd September 12, 2014
+.Dd January  4, 2015
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -35,17 +35,85 @@ Error functions
 .Ft int
 .Fn libfdata_error_backtrace_sprint "libfdata_error_t *error, char *string, size_t size"
 .Pp
+Cache functions
+.Ft int
+.Fn libfdata_cache_initialize "libfdata_cache_t **cache, int maximum_cache_entries, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_cache_free "libfdata_cache_t **cache, libfdata_error_t **error"
+.Pp
+Balanced tree functions
+.Pp
 List functions
+.Ft int
+.Fn libfdata_list_initialize "libfdata_list_t **list, intptr_t *data_handle, int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error ), int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error ), int (*read_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t read_flags, libfdata_error_t **error ), int (*write_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t write_flags, libfdata_error_t **error ), uint8_t flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_free "libfdata_list_t **list, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_clone "libfdata_list_t **destination_list, libfdata_list_t *source_list, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_empty "libfdata_list_t *list, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_resize "libfdata_list_t *list, int number_of_elements, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_reverse "libfdata_list_t *list, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_number_of_elements "libfdata_list_t *list, int *number_of_elements, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_list_element_by_index "libfdata_list_t *list, int element_index, libfdata_list_element_t **element, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_element_by_index "libfdata_list_t *list, int element_index, int *element_file_index, off64_t *element_offset, size64_t *element_size, uint32_t *element_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_set_element_by_index "libfdata_list_t *list, int element_index, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_prepend_element "libfdata_list_t *list, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_append_element "libfdata_list_t *list, int *element_index, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_append_list "libfdata_list_t *list, libfdata_list_t *source_list, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_is_element_set "libfdata_list_t *list, int element_index, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_mapped_offset "libfdata_list_t *list, off64_t *mapped_offset, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_set_mapped_offset "libfdata_list_t *list, off64_t mapped_offset, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_mapped_size_by_index "libfdata_list_t *list, int element_index, size64_t *mapped_size, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_set_mapped_size_by_index "libfdata_list_t *list, int element_index, size64_t mapped_size, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_element_by_index_with_mapped_size "libfdata_list_t *list, int element_index, int *element_file_index, off64_t *element_offset, size64_t *element_size, uint32_t *element_flags, size64_t *mapped_size, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_set_element_by_index_with_mapped_size "libfdata_list_t *list, int element_index, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, size64_t mapped_size, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_append_element_with_mapped_size "libfdata_list_t *list, int *element_index, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, size64_t mapped_size, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_element_index_at_offset "libfdata_list_t *list, off64_t offset, int *element_index, off64_t *element_data_offset, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_list_element_at_offset "libfdata_list_t *list, off64_t offset, int *element_index, off64_t *element_data_offset, libfdata_list_element_t **element, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_element_at_offset "libfdata_list_t *list, off64_t offset, int *element_index, off64_t *element_data_offset, int *element_file_index, off64_t *element_offset, size64_t *element_size, uint32_t *element_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_element_value_by_index "libfdata_list_t *list, intptr_t *file_io_handle, libfdata_cache_t *cache, int element_index, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_element_value_at_offset "libfdata_list_t *list, intptr_t *file_io_handle, libfdata_cache_t *cache, off64_t offset, int *element_index, off64_t *element_data_offset, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_set_element_value_by_index "libfdata_list_t *list, intptr_t *file_io_handle, libfdata_cache_t *cache, int element_index, intptr_t *element_value, int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error ), uint8_t write_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_set_element_value_at_offset "libfdata_list_t *list, intptr_t *file_io_handle, libfdata_cache_t *cache, off64_t offset, intptr_t *element_value, int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error ), uint8_t write_flags, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_get_size "libfdata_list_t *list, size64_t *size, libfdata_error_t **error"
 .Pp
 List element functions
 .Ft int
-.Fn libfdata_list_element_get_mapped_size "libfdata_list_element_t *element, size64_t *size, libfdata_error_t **error"
+.Fn libfdata_list_element_get_mapped_size "libfdata_list_element_t *element, size64_t *mapped_size, libfdata_error_t **error"
 .Ft int
-.Fn libfdata_list_element_set_mapped_size "libfdata_list_element_t *element, size64_t size, libfdata_error_t **error"
+.Fn libfdata_list_element_set_mapped_size "libfdata_list_element_t *element, size64_t mapped_size, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_element_get_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfdata_cache_t *cache, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_element_set_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfdata_cache_t *cache, intptr_t *element_value, int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error ), uint8_t write_flags, libfdata_error_t **error"
+.Pp
+Range list functions
 .Pp
 Stream functions
 .Ft int
@@ -77,6 +145,8 @@ Stream functions
 .Ft ssize_t
 .Fn libfdata_stream_read_buffer "libfdata_stream_t *stream, intptr_t *file_io_handle, uint8_t *buffer, size_t buffer_size, uint8_t read_flags, libfdata_error_t **error"
 .Ft ssize_t
+.Fn libfdata_stream_read_buffer_at_offset "libfdata_stream_t *stream, intptr_t *file_io_handle, uint8_t *buffer, size_t buffer_size, off64_t offset, uint8_t read_flags, libfdata_error_t **error"
+.Ft ssize_t
 .Fn libfdata_stream_write_buffer "libfdata_stream_t *stream, intptr_t *file_io_handle, const uint8_t *buffer, size_t buffer_size, uint8_t write_flags, libfdata_error_t **error"
 .Ft off64_t
 .Fn libfdata_stream_seek_offset "libfdata_stream_t *stream, off64_t offset, int whence, libfdata_error_t **error"
@@ -84,24 +154,29 @@ Stream functions
 .Fn libfdata_stream_get_offset "libfdata_stream_t *stream, off64_t *offset, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_get_size "libfdata_stream_t *stream, size64_t *size, libfdata_error_t **error"
+.Pp
+Tree functions
+.Pp
+Vector functions
 .Sh DESCRIPTION
 The
 .Fn libfdata_get_version
 function is used to retrieve the library version.
 .Sh RETURN VALUES
-Most of the functions return NULL or -1 on error, dependent on the return type. For the actual return values refer to libfdata.h
+Most of the functions return NULL or \-1 on error, dependent on the return type.
+For the actual return values see "libfdata.h".
 .Sh ENVIRONMENT
 None
 .Sh FILES
 None
-.Sh NOTES
 .Sh BUGS
-Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
-https://github.com/libyal/libfdata/
+Please report bugs of any kind on the project issue tracker: https://github.com/libyal/libfdata/issues
 .Sh AUTHOR
-These man pages were written by Joachim Metz.
+These man pages are generated from "libfdata.h".
 .Sh COPYRIGHT
-Copyright (c) 2010-2014, Joachim Metz <joachim.metz@gmail.com>.
-This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Copyright (C) 2010-2015, Joachim Metz <joachim.metz@gmail.com>.
+
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .Sh SEE ALSO
 the libfdata.h include file
