@@ -2034,7 +2034,7 @@ int libfdata_vector_get_element_value_by_index(
 	}
 	element_data_offset = (off64_t) ( element_index * internal_vector->element_data_size );
 
-	if( element_data_offset > (off64_t) internal_vector->size )
+	if( (size64_t) element_data_offset > internal_vector->size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2103,7 +2103,7 @@ int libfdata_vector_get_element_value_by_index(
 			return( -1 );
 		}
 /* TODO what about compressed data ranges */
-		if( element_data_offset < (off64_t) segment_data_range->size )
+		if( (size64_t) element_data_offset < segment_data_range->size )
 		{
 			element_data_file_index = segment_data_range->file_index;
 			element_data_offset    += segment_data_range->offset;
@@ -2483,7 +2483,7 @@ int libfdata_vector_set_element_value_by_index(
 	}
 	element_data_offset = (off64_t) ( element_index * internal_vector->element_data_size );
 
-	if( element_data_offset > (off64_t) internal_vector->size )
+	if( (size64_t) element_data_offset > internal_vector->size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2552,7 +2552,7 @@ int libfdata_vector_set_element_value_by_index(
 			return( -1 );
 		}
 /* TODO what about compressed data ranges */
-		if( element_data_offset < (off64_t) segment_data_range->size )
+		if( (size64_t) element_data_offset < segment_data_range->size )
 		{
 			element_data_file_index = segment_data_range->file_index;
 			element_data_offset    += segment_data_range->offset;
