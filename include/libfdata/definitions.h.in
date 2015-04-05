@@ -111,13 +111,21 @@ enum LIBFDATA_COMPARE_DEFINITIONS
 	 */
         LIBFDATA_COMPARE_LESS,
 
+	/* The first value is less equal than the second value
+	 */
+        LIBFDATA_COMPARE_LESS_EQUAL,
+
 	/* The first and second values are equal
 	 */
         LIBFDATA_COMPARE_EQUAL,
 
 	/* The first value is greater than the second value
 	 */
-        LIBFDATA_COMPARE_GREATER
+        LIBFDATA_COMPARE_GREATER,
+
+	/* The first value is greater equal than the second value
+	 */
+        LIBFDATA_COMPARE_GREATER_EQUAL
 };
 
 /* The range flag definitions

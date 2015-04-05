@@ -1920,7 +1920,8 @@ int libfdata_btree_get_leaf_node_by_index(
  *
  * Uses the key_value_compare_function to determine the similarity of the key values
  * The key_value_compare_function should return LIBFDATA_COMPARE_LESS,
- * LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER if successful or -1 on error
+ * LIBFDATA_COMPARE_LESS_EQUAL, LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER,
+ * LIBFDATA_COMPARE_GREATER_EQUAL if successful or -1 on error
  *
  * Returns 1 if successful, 0 if no such value or -1 on error
  */
@@ -1942,6 +1943,8 @@ int libfdata_btree_get_leaf_node_by_key(
 	libfdata_btree_range_t *sub_node_data_range = NULL;
 	static char *function                       = "libfdata_btree_get_leaf_node_by_key";
 	int result                                  = 0;
+	int scan_sub_nodes                          = 0;
+	int sub_node_index                          = 0;
 
 	if( internal_tree == NULL )
 	{
@@ -2037,52 +2040,65 @@ int libfdata_btree_get_leaf_node_by_key(
 	{
 		return( 1 );
 	}
-	result = libfdata_btree_node_get_sub_node_data_range_by_key(
-	          *node,
-	          key_value,
-	          key_value_compare_function,
-	          &sub_node_data_range,
-	          error );
+	scan_sub_nodes = 1;
 
-	if( result == -1 )
+	while( scan_sub_nodes != 0 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve sub node data range by key.",
-		 function );
+		result = libfdata_btree_node_get_sub_node_data_range_by_key(
+		          *node,
+		          sub_node_index,
+		          key_value,
+		          key_value_compare_function,
+		          &sub_node_index,
+		          &sub_node_data_range,
+		          error );
 
-		return( -1 );
-	}
-	else if( result == 0 )
-	{
-		return( 0 );
-	}
-	*node = NULL;
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve sub node data range by key.",
+			 function );
 
-	result = libfdata_btree_get_leaf_node_by_key(
-	          internal_tree,
-	          file_io_handle,
-	          cache,
-	          sub_node_data_range,
-	          level + 1,
-	          key_value,
-	          key_value_compare_function,
-	          node,
-	          read_flags,
-	          error );
+			return( -1 );
+		}
+		else if( result == 0 )
+		{
+			break;
+		}
+		sub_node_index += 1;
 
-	if( result == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve leaf node by key.",
-		 function );
+		*node = NULL;
 
-		return( -1 );
+		result = libfdata_btree_get_leaf_node_by_key(
+		          internal_tree,
+		          file_io_handle,
+		          cache,
+		          sub_node_data_range,
+		          level + 1,
+		          key_value,
+		          key_value_compare_function,
+		          node,
+		          read_flags,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve leaf node by key.",
+			 function );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			break;
+		}
 	}
 	return( result );
 }
@@ -2418,7 +2434,8 @@ int libfdata_btree_set_leaf_value_by_index(
  *
  * Uses the key_value_compare_function to determine the similarity of the key values
  * The key_value_compare_function should return LIBFDATA_COMPARE_LESS,
- * LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER if successful or -1 on error
+ * LIBFDATA_COMPARE_LESS_EQUAL, LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER,
+ * LIBFDATA_COMPARE_GREATER_EQUAL if successful or -1 on error
  *
  * Returns 1 if successful, 0 if no such value or -1 on error
  */

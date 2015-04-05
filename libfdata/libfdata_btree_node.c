@@ -578,24 +578,26 @@ int libfdata_btree_node_get_sub_node_data_range_by_mapped_index(
  *
  * Uses the key_value_compare_function to determine the similarity of the key values
  * The key_value_compare_function should return LIBFDATA_COMPARE_LESS,
- * LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER if successful or -1 on error
+ * LIBFDATA_COMPARE_LESS_EQUAL, LIBFDATA_COMPARE_EQUAL, LIBFDATA_COMPARE_GREATER,
+ * LIBFDATA_COMPARE_GREATER_EQUAL if successful or -1 on error
  *
  * Returns 1 if successful, 0 if no such value or -1 on error
  */
 int libfdata_btree_node_get_sub_node_data_range_by_key(
      libfdata_btree_node_t *node,
+     int start_sub_node_index,
      intptr_t *key_value,
      int (*key_value_compare_function)(
             intptr_t *first_key_value,
             intptr_t *second_key_value,
             libcerror_error_t **error ),
+     int *sub_node_index,
      libfdata_btree_range_t **sub_node_data_range,
      libcerror_error_t **error )
 {
 	libfdata_internal_btree_node_t *internal_tree_node = NULL;
 	static char *function                              = "libfdata_btree_node_get_sub_node_data_range_by_key";
 	int number_of_sub_nodes                            = 0;
-	int sub_node_index                                 = 0;
 	int result                                         = 0;
 
 	if( node == NULL )
@@ -633,6 +635,17 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 
 		return( -1 );
 	}
+	if( sub_node_index == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid sub node index.",
+		 function );
+
+		return( -1 );
+	}
 	if( libcdata_array_get_number_of_entries(
 	     internal_tree_node->sub_node_ranges_array,
 	     &number_of_sub_nodes,
@@ -647,13 +660,25 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 
 		return( -1 );
 	}
-	for( sub_node_index = 0;
-	     sub_node_index < number_of_sub_nodes;
-	     sub_node_index++ )
+	if( ( start_sub_node_index < 0 )
+	 || ( start_sub_node_index >= number_of_sub_nodes ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid start sub node index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	for( *sub_node_index = start_sub_node_index;
+	     *sub_node_index < number_of_sub_nodes;
+	     *sub_node_index += 1 )
 	{
 		if( libcdata_array_get_entry_by_index(
 		     internal_tree_node->sub_node_ranges_array,
-		     sub_node_index,
+		     *sub_node_index,
 		     (intptr_t **) sub_node_data_range,
 		     error ) != 1 )
 		{
@@ -663,7 +688,7 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve entry: %d from sub node ranges array.",
 			 function,
-			 sub_node_index );
+			 *sub_node_index );
 
 			return( -1 );
 		}
@@ -675,7 +700,7 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 			 "%s: missing sub node: %d data range.",
 			 function,
-			 sub_node_index );
+			 *sub_node_index );
 
 			return( -1 );
 		}
@@ -701,17 +726,18 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to compare key value with sub node data range key value: %d.",
 				 function,
-				 sub_node_index );
+				 *sub_node_index );
 
 				return( -1 );
 			}
-			else if( result == LIBFDATA_COMPARE_EQUAL )
+			else if( ( result == LIBFDATA_COMPARE_EQUAL )
+			      || ( result == LIBFDATA_COMPARE_LESS_EQUAL )
+			      || ( result == LIBFDATA_COMPARE_GREATER_EQUAL ) )
 			{
 				return( 1 );
 			}
 			else if( result == LIBFDATA_COMPARE_LESS )
 			{
-/* TODO handle upper bound versus lower bound key value */
 				break;
 			}
 			else if( result != LIBFDATA_COMPARE_GREATER )
@@ -728,6 +754,8 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 			}
 		}
 	}
+	*sub_node_data_range = NULL;
+
 	return( 0 );
 }
 

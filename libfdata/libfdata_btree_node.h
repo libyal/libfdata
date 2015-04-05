@@ -116,11 +116,13 @@ int libfdata_btree_node_get_sub_node_data_range_by_mapped_index(
 
 int libfdata_btree_node_get_sub_node_data_range_by_key(
      libfdata_btree_node_t *node,
+     int start_sub_node_index,
      intptr_t *key_value,
      int (*key_value_compare_function)(
             intptr_t *first_key_value,
             intptr_t *second_key_value,
             libcerror_error_t **error ),
+     int *sub_node_index,
      libfdata_btree_range_t **sub_node_data_range,
      libcerror_error_t **error );
 
