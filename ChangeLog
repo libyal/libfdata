@@ -54,6 +54,9 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20150409
+* worked on btree search flags
+
 20150405
 * added support for less equal and greater equal for compare functions
   in libfdata_btree_node_get_sub_node_data_range_by_key

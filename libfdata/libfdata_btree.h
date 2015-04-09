@@ -273,6 +273,8 @@ int libfdata_btree_get_leaf_node_by_key(
             intptr_t *first_key_value,
             intptr_t *second_key_value,
             libcerror_error_t **error ),
+     libfdata_btree_node_t **parent_node,
+     int *node_index,
      libfdata_btree_node_t **node,
      uint8_t read_flags,
      libcerror_error_t **error );
@@ -319,6 +321,7 @@ int libfdata_btree_get_leaf_value_by_key(
             intptr_t *first_key_value,
             intptr_t *second_key_value,
             libcerror_error_t **error ),
+     uint8_t search_flags,
      intptr_t **value,
      uint8_t read_flags,
      libcerror_error_t **error );

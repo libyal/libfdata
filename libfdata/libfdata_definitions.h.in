@@ -177,6 +177,19 @@ enum LIBFDATA_READ_FLAGS
         LIBFDATA_READ_FLAG_NO_CACHE					= 0x80
 };
 
+/* The btree search flag definitions
+ */
+enum LIBFDATA_BTREE_SEARCH_FLAGS
+{
+	/* Flag to additionally scan the previous node
+	 */
+        LIBFDATA_BTREE_SEARCH_FLAG_SCAN_PREVIOUS_NODE			= 0x01,
+
+	/* Flag to additionally scan the next node
+	 */
+        LIBFDATA_BTREE_SEARCH_FLAG_SCAN_NEXT_NODE			= 0x02
+};
+
 /* The tree node flag definitions
  */
 enum LIBFDATA_TREE_NODE_FLAGS
@@ -216,7 +229,7 @@ enum LIBFDATA_TREE_NODE_INSERT_FLAGS
 
 	/* Only allow unique sub node values, no duplicates
 	 */
-	LIBFDATA_TREE_NODE_INSERT_FLAG_UNIQUE_SUB_NODE_VALUES		= 0x01,
+	LIBFDATA_TREE_NODE_INSERT_FLAG_UNIQUE_SUB_NODE_VALUES		= 0x01
 };
 
 #endif

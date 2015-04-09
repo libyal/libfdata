@@ -585,7 +585,6 @@ int libfdata_btree_node_get_sub_node_data_range_by_mapped_index(
  */
 int libfdata_btree_node_get_sub_node_data_range_by_key(
      libfdata_btree_node_t *node,
-     int start_sub_node_index,
      intptr_t *key_value,
      int (*key_value_compare_function)(
             intptr_t *first_key_value,
@@ -660,19 +659,7 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 
 		return( -1 );
 	}
-	if( ( start_sub_node_index < 0 )
-	 || ( start_sub_node_index >= number_of_sub_nodes ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid start sub node index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	for( *sub_node_index = start_sub_node_index;
+	for( *sub_node_index = 0;
 	     *sub_node_index < number_of_sub_nodes;
 	     *sub_node_index += 1 )
 	{
@@ -731,8 +718,8 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 				return( -1 );
 			}
 			else if( ( result == LIBFDATA_COMPARE_EQUAL )
-			      || ( result == LIBFDATA_COMPARE_LESS_EQUAL )
-			      || ( result == LIBFDATA_COMPARE_GREATER_EQUAL ) )
+			      || ( result == LIBFDATA_COMPARE_GREATER_EQUAL )
+			      || ( result == LIBFDATA_COMPARE_LESS_EQUAL ) )
 			{
 				return( 1 );
 			}

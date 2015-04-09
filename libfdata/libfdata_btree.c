@@ -1936,14 +1936,16 @@ int libfdata_btree_get_leaf_node_by_key(
             intptr_t *first_key_value,
             intptr_t *second_key_value,
             libcerror_error_t **error ),
+     libfdata_btree_node_t **parent_node,
+     int *node_index,
      libfdata_btree_node_t **node,
      uint8_t read_flags,
      libcerror_error_t **error )
 {
 	libfdata_btree_range_t *sub_node_data_range = NULL;
 	static char *function                       = "libfdata_btree_get_leaf_node_by_key";
+	int number_of_sub_nodes                     = 0;
 	int result                                  = 0;
-	int scan_sub_nodes                          = 0;
 	int sub_node_index                          = 0;
 
 	if( internal_tree == NULL )
@@ -1975,6 +1977,28 @@ int libfdata_btree_get_leaf_node_by_key(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: invalid level value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( parent_node == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing parent node.",
+		 function );
+
+		return( -1 );
+	}
+	if( node_index == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing node index.",
 		 function );
 
 		return( -1 );
@@ -2040,65 +2064,57 @@ int libfdata_btree_get_leaf_node_by_key(
 	{
 		return( 1 );
 	}
-	scan_sub_nodes = 1;
+	result = libfdata_btree_node_get_sub_node_data_range_by_key(
+		  *node,
+		  key_value,
+		  key_value_compare_function,
+		  &sub_node_index,
+		  &sub_node_data_range,
+		  error );
 
-	while( scan_sub_nodes != 0 )
+	if( result == -1 )
 	{
-		result = libfdata_btree_node_get_sub_node_data_range_by_key(
-		          *node,
-		          sub_node_index,
-		          key_value,
-		          key_value_compare_function,
-		          &sub_node_index,
-		          &sub_node_data_range,
-		          error );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve sub node data range by key.",
+		 function );
 
-		if( result == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve sub node data range by key.",
-			 function );
+		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
+	}
+	*parent_node = *node;
+	*node_index  = sub_node_index;
+	*node        = NULL;
 
-			return( -1 );
-		}
-		else if( result == 0 )
-		{
-			break;
-		}
-		sub_node_index += 1;
+	result = libfdata_btree_get_leaf_node_by_key(
+		  internal_tree,
+		  file_io_handle,
+		  cache,
+		  sub_node_data_range,
+		  level + 1,
+		  key_value,
+		  key_value_compare_function,
+		  parent_node,
+		  node_index,
+		  node,
+		  read_flags,
+		  error );
 
-		*node = NULL;
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve leaf node by key.",
+		 function );
 
-		result = libfdata_btree_get_leaf_node_by_key(
-		          internal_tree,
-		          file_io_handle,
-		          cache,
-		          sub_node_data_range,
-		          level + 1,
-		          key_value,
-		          key_value_compare_function,
-		          node,
-		          read_flags,
-		          error );
-
-		if( result == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve leaf node by key.",
-			 function );
-
-			return( -1 );
-		}
-		else if( result != 0 )
-		{
-			break;
-		}
+		return( -1 );
 	}
 	return( result );
 }
@@ -2448,14 +2464,20 @@ int libfdata_btree_get_leaf_value_by_key(
             intptr_t *first_key_value,
             intptr_t *second_key_value,
             libcerror_error_t **error ),
+     uint8_t search_flags,
      intptr_t **value,
      uint8_t read_flags,
      libcerror_error_t **error )
 {
-	libfdata_btree_node_t *node                   = NULL;
+	libfdata_btree_node_t *branch_node            = NULL;
+	libfdata_btree_node_t *leaf_node              = NULL;
+	libfdata_btree_range_t *leaf_node_data_range  = NULL;
 	libfdata_btree_range_t *leaf_value_data_range = NULL;
 	libfdata_internal_btree_t *internal_tree      = NULL;
 	static char *function                         = "libfdata_btree_get_leaf_value_by_key";
+	int leaf_node_level                           = 0;
+	int node_index                                = 0;
+	int number_of_sub_nodes                       = 0;
 	int result                                    = 0;
 
 	if( tree == NULL )
@@ -2482,6 +2504,17 @@ int libfdata_btree_get_leaf_value_by_key(
 
 		return( -1 );
 	}
+	if( ( search_flags & ~( LIBFDATA_BTREE_SEARCH_FLAG_SCAN_PREVIOUS_NODE | LIBFDATA_BTREE_SEARCH_FLAG_SCAN_NEXT_NODE ) ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported search flags.",
+		 function );
+
+		return( -1 );
+	}
 	result = libfdata_btree_get_leaf_node_by_key(
 	          internal_tree,
 	          file_io_handle,
@@ -2490,7 +2523,9 @@ int libfdata_btree_get_leaf_value_by_key(
 	          0,
 	          key_value,
 	          key_value_compare_function,
-	          &node,
+	          &branch_node,
+	          &node_index,
+	          &leaf_node,
 	          read_flags,
 	          error );
 
@@ -2505,34 +2540,70 @@ int libfdata_btree_get_leaf_value_by_key(
 
 		return( -1 );
 	}
-	else if( result != 0 )
+	else if( result == 0 )
 	{
-		result = libfdata_btree_node_get_leaf_value_data_range_by_key(
-		          node,
-		          key_value,
-		          key_value_compare_function,
-		          &leaf_value_data_range,
-		          error );
+		return( 0 );
+	}
+	if( libfdata_btree_node_get_level(
+	     leaf_node,
+	     &leaf_node_level,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve leaf node level.",
+		 function );
 
-		if( result == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve leaf value data range.",
-			 function );
+		return( -1 );
+	}
+	result = libfdata_btree_node_get_leaf_value_data_range_by_key(
+	          leaf_node,
+	          key_value,
+	          key_value_compare_function,
+	          &leaf_value_data_range,
+	          error );
 
-			return( -1 );
-		}
-		else if( result != 0 )
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve leaf value data range.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( result == 0 )
+	 && ( ( search_flags & LIBFDATA_BTREE_SEARCH_FLAG_SCAN_PREVIOUS_NODE ) != 0 ) )
+	{
+		if( node_index > 0 )
 		{
-			if( libfdata_btree_read_leaf_value(
+			if( libfdata_btree_node_get_sub_node_data_range_by_index(
+			     branch_node,
+			     node_index - 1,
+			     &leaf_node_data_range,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve previous leaf node data range.",
+				 function );
+
+				return( -1 );
+			}
+			if( libfdata_btree_read_sub_tree(
 			     internal_tree,
 			     file_io_handle,
 			     cache,
-			     leaf_value_data_range,
-			     value,
+			     leaf_node_data_range,
+			     leaf_node_level,
+			     0, /* TODO determine mapped_first_leaf_value_index */
+			     &leaf_node,
 			     read_flags,
 			     error ) != 1 )
 			{
@@ -2540,11 +2611,124 @@ int libfdata_btree_get_leaf_value_by_key(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
 				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read leaf value.",
+				 "%s: unable to read previous leaf node sub tree.",
 				 function );
 
 				return( -1 );
 			}
+			result = libfdata_btree_node_get_leaf_value_data_range_by_key(
+				  leaf_node,
+				  key_value,
+				  key_value_compare_function,
+				  &leaf_value_data_range,
+				  error );
+
+			if( result == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve leaf value data range.",
+				 function );
+
+				return( -1 );
+			}
+		}
+	}
+	if( ( result == 0 )
+	 && ( ( search_flags & LIBFDATA_BTREE_SEARCH_FLAG_SCAN_NEXT_NODE ) != 0 ) )
+	{
+		if( libfdata_btree_node_get_number_of_sub_nodes(
+		     branch_node,
+		     &number_of_sub_nodes,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of sub nodes.",
+			 function );
+
+			return( -1 );
+		}
+		if( ( node_index + 1 ) < number_of_sub_nodes )
+		{
+			if( libfdata_btree_node_get_sub_node_data_range_by_index(
+			     branch_node,
+			     node_index + 1,
+			     &leaf_node_data_range,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve next leaf node data range.",
+				 function );
+
+				return( -1 );
+			}
+			if( libfdata_btree_read_sub_tree(
+			     internal_tree,
+			     file_io_handle,
+			     cache,
+			     leaf_node_data_range,
+			     leaf_node_level,
+			     0, /* TODO determine mapped_first_leaf_value_index */
+			     &leaf_node,
+			     read_flags,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read next leaf node sub tree.",
+				 function );
+
+				return( -1 );
+			}
+			result = libfdata_btree_node_get_leaf_value_data_range_by_key(
+				  leaf_node,
+				  key_value,
+				  key_value_compare_function,
+				  &leaf_value_data_range,
+				  error );
+
+			if( result == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve leaf value data range.",
+				 function );
+
+				return( -1 );
+			}
+		}
+	}
+	if( result != 0 )
+	{
+		if( libfdata_btree_read_leaf_value(
+		     internal_tree,
+		     file_io_handle,
+		     cache,
+		     leaf_value_data_range,
+		     value,
+		     read_flags,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read leaf value.",
+			 function );
+
+			return( -1 );
 		}
 	}
 	return( result );

@@ -800,6 +800,7 @@ int fdata_test_btree_read(
 		          cache,
 		          (intptr_t *) key_value,
 		          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &fdata_test_key_value_compare,
+		          0,
 		          (intptr_t **) &leaf_value_data,
 		          0,
 		          &error );
@@ -841,6 +842,7 @@ int fdata_test_btree_read(
 			          cache,
 			          (intptr_t *) key_value,
 			          NULL,
+			          0,
 			          (intptr_t **) &leaf_value_data,
 			          0,
 			          &error );
@@ -884,6 +886,7 @@ int fdata_test_btree_read(
 			          cache,
 			          (intptr_t *) key_value,
 			          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &fdata_test_key_value_compare,
+			          0,
 			          (intptr_t **) &leaf_value_data,
 			          0,
 			          &error );
