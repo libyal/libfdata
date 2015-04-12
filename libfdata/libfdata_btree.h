@@ -267,15 +267,49 @@ int libfdata_btree_get_leaf_node_by_key(
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      libfdata_btree_range_t *node_data_range,
-     int level,
+     int maximum_node_level,
+     int current_node_level,
      intptr_t *key_value,
      int (*key_value_compare_function)(
             intptr_t *first_key_value,
             intptr_t *second_key_value,
             libcerror_error_t **error ),
-     libfdata_btree_node_t **parent_node,
      int *node_index,
      libfdata_btree_node_t **node,
+     uint8_t read_flags,
+     libcerror_error_t **error );
+
+int libfdata_btree_get_next_leaf_node_by_key(
+     libfdata_internal_btree_t *internal_tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     libfdata_btree_range_t *node_data_range,
+     int node_index,
+     libfdata_btree_node_t *node,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     int *next_node_index,
+     libfdata_btree_node_t **next_node,
+     uint8_t read_flags,
+     libcerror_error_t **error );
+
+int libfdata_btree_get_previous_leaf_node_by_key(
+     libfdata_internal_btree_t *internal_tree,
+     intptr_t *file_io_handle,
+     libfcache_cache_t *cache,
+     libfdata_btree_range_t *node_data_range,
+     int node_index,
+     libfdata_btree_node_t *node,
+     intptr_t *key_value,
+     int (*key_value_compare_function)(
+            intptr_t *first_key_value,
+            intptr_t *second_key_value,
+            libcerror_error_t **error ),
+     int *previous_node_index,
+     libfdata_btree_node_t **previous_node,
      uint8_t read_flags,
      libcerror_error_t **error );
 
