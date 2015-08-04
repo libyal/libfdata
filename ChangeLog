@@ -45,6 +45,7 @@ Types:
   - add mapped offset support ?
   - allow to invalidate sub nodes data range?
 * vector
+  - add mapped offset support ?
   - refactor
   - write on set value ? what about create ?
   - rename element_offset and equiv to element_data_offset
