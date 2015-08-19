@@ -1366,6 +1366,48 @@ on_error:
 	return( -1 );
 }
 
+/* Sets the mapped size
+ * The mapped size cannot be larger than the stream size
+ * A value of 0 is equivalent for the stream size
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_set_mapped_size(
+     libfdata_stream_t *stream,
+     size64_t mapped_size,
+     libcerror_error_t **error )
+{
+	libfdata_internal_stream_t *internal_stream = NULL;
+	static char *function                       = "libfdata_stream_set_mapped_size";
+
+	if( stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream = (libfdata_internal_stream_t *) stream;
+
+	if( mapped_size > internal_stream->size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid mapped size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream->mapped_size = mapped_size;
+
+	return( 1 );
+}
+
 /* Mapped range functions
  */
 
@@ -1534,6 +1576,7 @@ int libfdata_stream_get_segment_index_at_offset(
 	off64_t mapped_range_end_offset             = 0;
 	off64_t mapped_range_start_offset           = 0;
 	size64_t mapped_range_size                  = 0;
+	size64_t stream_size                        = 0;
 	int initial_segment_index                   = 0;
 	int number_of_segments                      = 0;
 	int result                                  = 0;
@@ -1559,17 +1602,6 @@ int libfdata_stream_get_segment_index_at_offset(
 	}
 	internal_stream = (libfdata_internal_stream_t *) stream;
 
-	if( internal_stream->size == 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid stream - size value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
 	if( offset < 0 )
 	{
 		libcerror_error_set(
@@ -1628,7 +1660,15 @@ int libfdata_stream_get_segment_index_at_offset(
 		 offset );
 	}
 #endif
-	if( internal_stream->size == 0 )
+	if( internal_stream->mapped_size != 0 )
+	{
+		stream_size = internal_stream->mapped_size;
+	}
+	else
+	{
+		stream_size = internal_stream->size;
+	}
+	if( stream_size == 0 )
 	{
 		return( 0 );
 	}
@@ -1648,7 +1688,7 @@ int libfdata_stream_get_segment_index_at_offset(
 	}
 	/* This assumes a fairly even distribution of the sizes of the segments
 	 */
-	initial_segment_index = (int) ( ( number_of_segments * offset ) / internal_stream->size );
+	initial_segment_index = (int) ( ( number_of_segments * offset ) / stream_size );
 
 	/* Look for the corresponding segment upwards in the array
 	 */
@@ -2016,6 +2056,7 @@ ssize_t libfdata_stream_read_buffer(
 	off64_t segment_offset                      = 0;
 	size64_t segment_size                       = 0;
 	size64_t segment_data_size                  = 0;
+	size64_t stream_size                        = 0;
 	size_t buffer_offset                        = 0;
 	size_t read_size                            = 0;
 	ssize_t read_count                          = 0;
@@ -2090,16 +2131,24 @@ ssize_t libfdata_stream_read_buffer(
 
 		return( -1 );
 	}
+	if( internal_stream->mapped_size != 0 )
+	{
+		stream_size = internal_stream->mapped_size;
+	}
+	else
+	{
+		stream_size = internal_stream->size;
+	}
 	/* Bail out early for requests to read empty buffers and beyond the end of the stream
 	 */
 	if( ( buffer_size == 0 )
-	 || ( (size64_t) internal_stream->current_offset >= internal_stream->size ) )
+	 || ( (size64_t) internal_stream->current_offset >= stream_size ) )
 	{
 		return( 0 );
 	}
-	if( (size64_t) ( internal_stream->current_offset + buffer_size ) > internal_stream->size )
+	if( (size64_t) ( internal_stream->current_offset + buffer_size ) > stream_size )
 	{
-		buffer_size = (size_t) ( internal_stream->size - internal_stream->current_offset );
+		buffer_size = (size_t) ( stream_size - internal_stream->current_offset );
 	}
 	if( libcdata_array_get_entry_by_index(
 	     internal_stream->segments_array,
@@ -2217,7 +2266,7 @@ ssize_t libfdata_stream_read_buffer(
 		buffer_size                          -= read_size;
 		buffer_offset                        += read_size;
 
-		if( (size64_t) internal_stream->current_offset >= internal_stream->size )
+		if( (size64_t) internal_stream->current_offset >= stream_size )
 		{
 			break;
 		}
@@ -2814,6 +2863,7 @@ off64_t libfdata_stream_seek_offset(
 	libfdata_internal_stream_t *internal_stream = NULL;
 	static char *function                       = "libfdata_stream_seek_offset";
 	off64_t segment_data_offset                 = 0;
+	size64_t stream_size                        = 0;
 	int segment_index                           = 0;
 
 	if( stream == NULL )
@@ -2853,13 +2903,21 @@ off64_t libfdata_stream_seek_offset(
 
 		return( -1 );
 	}
+	if( internal_stream->mapped_size != 0 )
+	{
+		stream_size = internal_stream->mapped_size;
+	}
+	else
+	{
+		stream_size = internal_stream->size;
+	}
 	if( whence == SEEK_CUR )
 	{
 		offset += internal_stream->current_offset;
 	}
 	else if( whence == SEEK_END )
 	{
-		offset += (off64_t) internal_stream->size;
+		offset += (off64_t) stream_size;
 	}
 #if defined( HAVE_VERBOSE_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -2881,7 +2939,7 @@ off64_t libfdata_stream_seek_offset(
 
 		return( -1 );
 	}
-	if( offset < (off64_t) internal_stream->size )
+	if( offset < (off64_t) stream_size )
 	{
 		if( libfdata_stream_get_segment_index_at_offset(
 		     stream,
@@ -3017,8 +3075,14 @@ int libfdata_stream_get_size(
 			return( -1 );
 		}
 	}
-	*size = internal_stream->size;
-
+	if( internal_stream->mapped_size != 0 )
+	{
+		*size = internal_stream->mapped_size;
+	}
+	else
+	{
+		*size = internal_stream->size;
+	}
 	return( 1 );
 }
 

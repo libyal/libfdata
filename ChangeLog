@@ -36,6 +36,7 @@ Types:
   - work in progress
 * stream
   - add mapped offset support ?
+  - add mapped size write support ?
 * tree
   - refactor
   - add mapped offset support ?
@@ -54,6 +55,10 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20150819
+* worked on stream
+  - added mapped size
 
 20150412
 * worked on btree search flags

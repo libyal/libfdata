@@ -736,6 +736,17 @@ int libfdata_stream_append_segment(
      uint32_t segment_flags,
      libfdata_error_t **error );
 
+/* Sets the mapped size
+ * The mapped size cannot be larger than the stream size
+ * A value of 0 is equivalent for the stream size
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_stream_set_mapped_size(
+     libfdata_stream_t *stream,
+     size64_t mapped_size,
+     libfdata_error_t **error );
+
 /* Retrieves the segment index for a specific offset
  * The segment_data_offset value is set to the offset relative to the start of the segment
  * Returns 1 if successful, 0 if not or -1 on error

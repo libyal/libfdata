@@ -56,6 +56,10 @@ struct libfdata_internal_stream
 	 */
 	size64_t size;
 
+	/* The mapped (stream) size
+	 */
+	size64_t mapped_size;
+
 	/* The segments array
 	 */
 	libcdata_array_t *segments_array;
@@ -256,6 +260,12 @@ int libfdata_stream_append_segment(
      off64_t segment_offset,
      size64_t segment_size,
      uint32_t segment_flags,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
+int libfdata_stream_set_mapped_size(
+     libfdata_stream_t *stream,
+     size64_t mapped_size,
      libcerror_error_t **error );
 
 /* Mapped range functions
