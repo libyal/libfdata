@@ -1559,6 +1559,68 @@ int libfdata_stream_calculate_mapped_ranges(
 	return( 1 );
 }
 
+/* Retrieves the mapped range of a specific segment
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_stream_get_segment_mapped_range(
+     libfdata_stream_t *stream,
+     int segment_index,
+     off64_t *mapped_range_offset,
+     size64_t *mapped_range_size,
+     libcerror_error_t **error )
+{
+	libfdata_internal_stream_t *internal_stream = NULL;
+	libfdata_mapped_range_t *mapped_range       = NULL;
+	static char *function                       = "libfdata_stream_get_segment_mapped_range";
+
+	if( stream == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid stream.",
+		 function );
+
+		return( -1 );
+	}
+	internal_stream = (libfdata_internal_stream_t *) stream;
+
+	if( libcdata_array_get_entry_by_index(
+	     internal_stream->mapped_ranges_array,
+	     segment_index,
+	     (intptr_t **) &mapped_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve entry: %d from mapped ranges array.",
+		 function,
+		 segment_index );
+
+		return( -1 );
+	}
+	if( libfdata_mapped_range_get(
+	     mapped_range,
+	     mapped_range_offset,
+	     mapped_range_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to retrieve values from mapped range: %d.",
+		 function,
+		 segment_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 /* Retrieves the segment index for a specific offset
  * The segment_data_offset value is set to the offset relative to the start of the segment
  * Returns 1 if successful, 0 if not or -1 on error

@@ -534,18 +534,27 @@ int libfdata_list_get_size(
  * List element functions
  * ------------------------------------------------------------------------- */
 
+/* Retrieves the mapped size
+ * Returns 1 if successful, 0 if not set or -1 on error
+ */
 LIBFDATA_EXTERN \
 int libfdata_list_element_get_mapped_size(
      libfdata_list_element_t *element,
      size64_t *mapped_size,
      libfdata_error_t **error );
 
+/* Sets the mapped size
+ * Returns 1 if successful or -1 on error
+ */
 LIBFDATA_EXTERN \
 int libfdata_list_element_set_mapped_size(
      libfdata_list_element_t *element,
      size64_t mapped_size,
      libfdata_error_t **error );
 
+/* Retrieves the element value
+ * Returns 1 if successful or -1 on error
+ */
 LIBFDATA_EXTERN \
 int libfdata_list_element_get_element_value(
      libfdata_list_element_t *element,
@@ -555,6 +564,14 @@ int libfdata_list_element_get_element_value(
      uint8_t read_flags,
      libfdata_error_t **error );
 
+/* Sets the element value
+ *
+ * If the flag LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED is set the list element
+ * takes over management of the value and the value is freed when
+ * no longer needed.
+ *
+ * Returns 1 if successful or -1 on error
+ */
 LIBFDATA_EXTERN \
 int libfdata_list_element_set_element_value(
      libfdata_list_element_t *element,
@@ -745,6 +762,17 @@ LIBFDATA_EXTERN \
 int libfdata_stream_set_mapped_size(
      libfdata_stream_t *stream,
      size64_t mapped_size,
+     libfdata_error_t **error );
+
+/* Retrieves the mapped range of a specific segment
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_stream_get_segment_mapped_range(
+     libfdata_stream_t *stream,
+     int segment_index,
+     off64_t *mapped_range_offset,
+     size64_t *mapped_range_size,
      libfdata_error_t **error );
 
 /* Retrieves the segment index for a specific offset

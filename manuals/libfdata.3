@@ -1,4 +1,4 @@
-.Dd August 20, 2015
+.Dd August 25, 2015
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -140,6 +140,8 @@ Stream functions
 .Fn libfdata_stream_append_segment "libfdata_stream_t *stream, int *segment_index, int segment_file_index, off64_t segment_offset, size64_t segment_size, uint32_t segment_flags, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_set_mapped_size "libfdata_stream_t *stream, size64_t mapped_size, libfdata_error_t **error"
+.Ft int
+.Fn libfdata_stream_get_segment_mapped_range "libfdata_stream_t *stream, int segment_index, off64_t *mapped_range_offset, size64_t *mapped_range_size, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_get_segment_index_at_offset "libfdata_stream_t *stream, off64_t data_offset, int *segment_index, off64_t *segment_data_offset, libfdata_error_t **error"
 .Ft int

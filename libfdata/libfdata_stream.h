@@ -275,6 +275,14 @@ int libfdata_stream_calculate_mapped_ranges(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
+int libfdata_stream_get_segment_mapped_range(
+     libfdata_stream_t *stream,
+     int segment_index,
+     off64_t *mapped_range_offset,
+     size64_t *mapped_range_size,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
 int libfdata_stream_get_segment_index_at_offset(
      libfdata_stream_t *stream,
      off64_t offset,
