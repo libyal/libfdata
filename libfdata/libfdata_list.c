@@ -3005,6 +3005,7 @@ int libfdata_list_get_element_index_at_offset(
 	int initial_element_index               = 0;
 	int number_of_elements                  = 0;
 	int result                              = 0;
+	int search_element_index                = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libfdata_list_element_t *element        = NULL;
@@ -3119,13 +3120,13 @@ int libfdata_list_get_element_index_at_offset(
 
 	/* Look for the corresponding element upwards in the array
 	 */
-	for( *element_index = initial_element_index;
-	     *element_index < number_of_elements;
-	     *element_index += 1 )
+	for( search_element_index = initial_element_index;
+	     search_element_index < number_of_elements;
+	     search_element_index++ )
 	{
 		if( libcdata_array_get_entry_by_index(
 		     internal_list->mapped_ranges_array,
-		     *element_index,
+		     search_element_index,
 		     (intptr_t **) &mapped_range,
 		     error ) != 1 )
 		{
@@ -3135,7 +3136,7 @@ int libfdata_list_get_element_index_at_offset(
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve entry: %d from mapped ranges array.",
 			 function,
-			 *element_index );
+			 search_element_index );
 
 			return( -1 );
 		}
@@ -3151,7 +3152,7 @@ int libfdata_list_get_element_index_at_offset(
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to retrieve values from mapped range: %d.",
 			 function,
-			 *element_index );
+			 search_element_index );
 
 			return( -1 );
 		}
@@ -3165,7 +3166,7 @@ int libfdata_list_get_element_index_at_offset(
 			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: invalid element: %d - mapped range value out of bounds.",
 			 function,
-			 *element_index );
+			 search_element_index );
 
 			return( -1 );
 		}
@@ -3175,7 +3176,7 @@ int libfdata_list_get_element_index_at_offset(
 			libcnotify_printf(
 			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 			 function,
-			 *element_index,
+			 search_element_index,
 			 mapped_range_start_offset,
 			 mapped_range_end_offset,
 			 mapped_range_size );
@@ -3194,22 +3195,22 @@ int libfdata_list_get_element_index_at_offset(
 		 */
 		if( offset < mapped_range_start_offset )
 		{
-			*element_index = number_of_elements;
+			search_element_index = number_of_elements;
 
 			break;
 		}
 	}
-	if( *element_index >= number_of_elements )
+	if( search_element_index >= number_of_elements )
 	{
 		/* Look for the corresponding element downwards in the array
 		 */
-		for( *element_index = initial_element_index;
-		     *element_index >= 0;
-		     *element_index -= 1 )
+		for( search_element_index = initial_element_index;
+		     search_element_index >= 0;
+		     search_element_index-- )
 		{
 			if( libcdata_array_get_entry_by_index(
 			     internal_list->mapped_ranges_array,
-			     *element_index,
+			     search_element_index,
 			     (intptr_t **) &mapped_range,
 			     error ) != 1 )
 			{
@@ -3219,7 +3220,7 @@ int libfdata_list_get_element_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve entry: %d from mapped ranges array.",
 				 function,
-				 *element_index );
+				 search_element_index );
 
 				return( -1 );
 			}
@@ -3235,7 +3236,7 @@ int libfdata_list_get_element_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to retrieve values from mapped range: %d.",
 				 function,
-				 *element_index );
+				 search_element_index );
 
 				return( -1 );
 			}
@@ -3249,7 +3250,7 @@ int libfdata_list_get_element_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 				 "%s: invalid element: %d - mapped range value out of bounds.",
 				 function,
-				 *element_index );
+				 search_element_index );
 
 				return( -1 );
 			}
@@ -3259,7 +3260,7 @@ int libfdata_list_get_element_index_at_offset(
 				libcnotify_printf(
 				 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 				 function,
-				 *element_index,
+				 search_element_index,
 				 mapped_range_start_offset,
 				 mapped_range_end_offset,
 				 mapped_range_size );
@@ -3278,14 +3279,14 @@ int libfdata_list_get_element_index_at_offset(
 			 */
 			if( offset > mapped_range_start_offset )
 			{
-				*element_index = -1;
+				search_element_index--;
 
 				break;
 			}
 		}
 	}
-	if( ( *element_index >= 0 )
-	 && ( *element_index < number_of_elements ) )
+	if( ( search_element_index >= 0 )
+	 && ( search_element_index < number_of_elements ) )
 	{
 		if( offset < 0 )
 		{
@@ -3305,7 +3306,7 @@ int libfdata_list_get_element_index_at_offset(
 		{
 			if( libcdata_array_get_entry_by_index(
 			     internal_list->elements_array,
-			     *element_index,
+			     search_element_index,
 			     (intptr_t **) &element,
 			     error ) != 1 )
 			{
@@ -3315,7 +3316,7 @@ int libfdata_list_get_element_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve entry: %d from elements array.",
 				 function,
-				 *element_index );
+				 search_element_index );
 
 				return( -1 );
 			}
@@ -3333,23 +3334,27 @@ int libfdata_list_get_element_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve data range of list element: %d.",
 				 function,
-				 *element_index );
+				 search_element_index );
 
 				return( -1 );
 			}
 			libcnotify_printf(
 			 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 			 function,
-			 *element_index,
+			 search_element_index,
 			 element_file_index,
 			 element_offset,
 			 element_offset + element_size,
 			 element_size );
 		}
 #endif
-		internal_list->current_element_index = *element_index;
+		internal_list->current_element_index = search_element_index;
 
 		result = 1;
+	}
+	if( result == 1 )
+	{
+		*element_index = search_element_index;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )

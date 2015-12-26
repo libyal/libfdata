@@ -1589,12 +1589,12 @@ int libfdata_btree_read_sub_tree(
 				leaf_value_data_range->mapped_last_leaf_value_index  = -1;
 				leaf_value_data_range->mapped_number_of_leaf_values  = 1;
 
-				mapped_first_leaf_value_index += 1;
+				mapped_first_leaf_value_index++;
 			}
 			branch_number_of_leaf_values = number_of_leaf_values;
 
 /* TODO*/
-			level += 1;
+			level++;
 		}
 		else
 		{
@@ -1612,7 +1612,7 @@ int libfdata_btree_read_sub_tree(
 
 				goto on_error;
 			}
-			level += 1;
+			level++;
 
 			for( sub_node_index = 0;
 			     sub_node_index < number_of_sub_nodes;
@@ -2208,7 +2208,7 @@ int libfdata_btree_get_next_leaf_node_by_key(
 
 	while( branch_node_level > 0 )
 	{
-		branch_node_level -= 1;
+		branch_node_level--;
 
 		result = libfdata_btree_get_leaf_node_by_key(
 		          internal_tree,
@@ -2266,7 +2266,7 @@ int libfdata_btree_get_next_leaf_node_by_key(
 
 			return( -1 );
 		}
-		node_index += 1;
+		node_index++;
 
 		if( node_index < number_of_sub_nodes )
 		{
@@ -2414,7 +2414,7 @@ int libfdata_btree_get_previous_leaf_node_by_key(
 
 	while( branch_node_level > 0 )
 	{
-		branch_node_level -= 1;
+		branch_node_level--;
 
 		result = libfdata_btree_get_leaf_node_by_key(
 		          internal_tree,
@@ -2472,7 +2472,7 @@ int libfdata_btree_get_previous_leaf_node_by_key(
 
 			return( -1 );
 		}
-		node_index -= 1;
+		node_index--;
 
 		if( node_index >= 0 )
 		{

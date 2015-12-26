@@ -1384,7 +1384,7 @@ int libfdata_vector_get_number_of_elements(
 
 	if( ( internal_vector->size % internal_vector->element_data_size ) != 0 )
 	{
-		safe_number_of_elements += 1;
+		safe_number_of_elements++;
 	}
 	if( safe_number_of_elements > (size64_t) INT_MAX )
 	{
@@ -1703,7 +1703,7 @@ int libfdata_vector_get_element_index_at_offset(
 	 */
 	for( segment_index = initial_segment_index;
 	     segment_index < number_of_segments;
-	     segment_index += 1 )
+	     segment_index++ )
 	{
 		if( libcdata_array_get_entry_by_index(
 		     internal_vector->mapped_ranges_array,
@@ -1785,7 +1785,7 @@ int libfdata_vector_get_element_index_at_offset(
 		 */
 		for( segment_index = initial_segment_index;
 		     segment_index >= 0;
-		     segment_index -= 1 )
+		     segment_index-- )
 		{
 			if( libcdata_array_get_entry_by_index(
 			     internal_vector->mapped_ranges_array,

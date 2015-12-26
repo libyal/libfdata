@@ -598,6 +598,7 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 	static char *function                              = "libfdata_btree_node_get_sub_node_data_range_by_key";
 	int number_of_sub_nodes                            = 0;
 	int result                                         = 0;
+	int search_node_index                              = 0;
 
 	if( node == NULL )
 	{
@@ -659,13 +660,13 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 
 		return( -1 );
 	}
-	for( *sub_node_index = 0;
-	     *sub_node_index < number_of_sub_nodes;
-	     *sub_node_index += 1 )
+	for( search_node_index = 0;
+	     search_node_index < number_of_sub_nodes;
+	     search_node_index++ )
 	{
 		if( libcdata_array_get_entry_by_index(
 		     internal_tree_node->sub_node_ranges_array,
-		     *sub_node_index,
+		     search_node_index,
 		     (intptr_t **) sub_node_data_range,
 		     error ) != 1 )
 		{
@@ -675,7 +676,7 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve entry: %d from sub node ranges array.",
 			 function,
-			 *sub_node_index );
+			 search_node_index );
 
 			return( -1 );
 		}
@@ -687,7 +688,7 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 			 "%s: missing sub node: %d data range.",
 			 function,
-			 *sub_node_index );
+			 search_node_index );
 
 			return( -1 );
 		}
@@ -695,6 +696,8 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 		{
 			if( key_value == ( *sub_node_data_range )->key_value )
 			{
+				*sub_node_index = search_node_index;
+
 				return( 1 );
 			}
 		}
@@ -713,7 +716,7 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to compare key value with sub node data range key value: %d.",
 				 function,
-				 *sub_node_index );
+				 search_node_index );
 
 				return( -1 );
 			}
@@ -721,6 +724,8 @@ int libfdata_btree_node_get_sub_node_data_range_by_key(
 			      || ( result == LIBFDATA_COMPARE_GREATER_EQUAL )
 			      || ( result == LIBFDATA_COMPARE_LESS_EQUAL ) )
 			{
+				*sub_node_index = search_node_index;
+
 				return( 1 );
 			}
 			else if( result == LIBFDATA_COMPARE_LESS )

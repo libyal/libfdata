@@ -1642,6 +1642,7 @@ int libfdata_stream_get_segment_index_at_offset(
 	int initial_segment_index                   = 0;
 	int number_of_segments                      = 0;
 	int result                                  = 0;
+	int search_segment_index                    = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libfdata_range_t *segment_data_range        = NULL;
@@ -1754,13 +1755,13 @@ int libfdata_stream_get_segment_index_at_offset(
 
 	/* Look for the corresponding segment upwards in the array
 	 */
-	for( *segment_index = initial_segment_index;
-	     *segment_index < number_of_segments;
-	     *segment_index += 1 )
+	for( search_segment_index = initial_segment_index;
+	     search_segment_index < number_of_segments;
+	     search_segment_index++ )
 	{
 		if( libcdata_array_get_entry_by_index(
 		     internal_stream->mapped_ranges_array,
-		     *segment_index,
+		     search_segment_index,
 		     (intptr_t **) &mapped_range,
 		     error ) != 1 )
 		{
@@ -1770,7 +1771,7 @@ int libfdata_stream_get_segment_index_at_offset(
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve entry: %d from mapped ranges array.",
 			 function,
-			 *segment_index );
+			 search_segment_index );
 
 			return( -1 );
 		}
@@ -1786,7 +1787,7 @@ int libfdata_stream_get_segment_index_at_offset(
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to retrieve values from mapped range: %d.",
 			 function,
-			 *segment_index );
+			 search_segment_index );
 
 			return( -1 );
 		}
@@ -1800,7 +1801,7 @@ int libfdata_stream_get_segment_index_at_offset(
 			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: invalid segment: %d - mapped range value out of bounds.",
 			 function,
-			 *segment_index );
+			 search_segment_index );
 
 			return( -1 );
 		}
@@ -1810,7 +1811,7 @@ int libfdata_stream_get_segment_index_at_offset(
 			libcnotify_printf(
 			 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 			 function,
-			 *segment_index,
+			 search_segment_index,
 			 mapped_range_start_offset,
 			 mapped_range_end_offset,
 			 mapped_range_size );
@@ -1829,22 +1830,22 @@ int libfdata_stream_get_segment_index_at_offset(
 		 */
 		if( offset < mapped_range_start_offset )
 		{
-			*segment_index = number_of_segments;
+			search_segment_index = number_of_segments;
 
 			break;
 		}
 	}
-	if( *segment_index >= number_of_segments )
+	if( search_segment_index >= number_of_segments )
 	{
 		/* Look for the corresponding segment downwards in the array
 		 */
-		for( *segment_index = initial_segment_index;
-		     *segment_index >= 0;
-		     *segment_index -= 1 )
+		for( search_segment_index = initial_segment_index;
+		     search_segment_index >= 0;
+		     search_segment_index-- )
 		{
 			if( libcdata_array_get_entry_by_index(
 			     internal_stream->mapped_ranges_array,
-			     *segment_index,
+			     search_segment_index,
 			     (intptr_t **) &mapped_range,
 			     error ) != 1 )
 			{
@@ -1854,7 +1855,7 @@ int libfdata_stream_get_segment_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve entry: %d from mapped ranges array.",
 				 function,
-				 *segment_index );
+				 search_segment_index );
 
 				return( -1 );
 			}
@@ -1870,7 +1871,7 @@ int libfdata_stream_get_segment_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to retrieve values from mapped range: %d.",
 				 function,
-				 *segment_index );
+				 search_segment_index );
 
 				return( -1 );
 			}
@@ -1884,7 +1885,7 @@ int libfdata_stream_get_segment_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 				 "%s: invalid segment: %d - mapped range value out of bounds.",
 				 function,
-				 *segment_index );
+				 search_segment_index );
 
 				return( -1 );
 			}
@@ -1894,7 +1895,7 @@ int libfdata_stream_get_segment_index_at_offset(
 				libcnotify_printf(
 				 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 				 function,
-				 *segment_index,
+				 search_segment_index,
 				 mapped_range_start_offset,
 				 mapped_range_end_offset,
 				 mapped_range_size );
@@ -1913,14 +1914,14 @@ int libfdata_stream_get_segment_index_at_offset(
 			 */
 			if( offset > mapped_range_start_offset )
 			{
-				*segment_index = -1;
+				search_segment_index--;
 
 				break;
 			}
 		}
 	}
-	if( ( *segment_index >= 0 )
-	 && ( *segment_index < number_of_segments ) )
+	if( ( search_segment_index >= 0 )
+	 && ( search_segment_index < number_of_segments ) )
 	{
 		if( offset < 0 )
 		{
@@ -1940,7 +1941,7 @@ int libfdata_stream_get_segment_index_at_offset(
 		{
 			if( libcdata_array_get_entry_by_index(
 			     internal_stream->segments_array,
-			     *segment_index,
+			     search_segment_index,
 			     (intptr_t **) &segment_data_range,
 			     error ) != 1 )
 			{
@@ -1950,7 +1951,7 @@ int libfdata_stream_get_segment_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve entry: %d from segments array.",
 				 function,
-				 *segment_index );
+				 search_segment_index );
 
 				return( -1 );
 			}
@@ -1968,14 +1969,14 @@ int libfdata_stream_get_segment_index_at_offset(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve segment: %d data range values.",
 				 function,
-				 *segment_index );
+				 search_segment_index );
 
 				return( -1 );
 			}
 			libcnotify_printf(
 			 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
 			 function,
-			 *segment_index,
+			 search_segment_index,
 			 segment_file_index,
 			 segment_offset,
 			 segment_offset + segment_size,
@@ -1983,6 +1984,10 @@ int libfdata_stream_get_segment_index_at_offset(
 		}
 #endif
 		result = 1;
+	}
+	if( result == 1 )
+	{
+		*segment_index = search_segment_index;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -2345,8 +2350,9 @@ ssize_t libfdata_stream_read_buffer(
 
 				return( -1 );
 			}
-			internal_stream->current_segment_index += 1;
-			internal_stream->segment_data_offset    = 0;
+			internal_stream->current_segment_index++;
+
+			internal_stream->segment_data_offset = 0;
 
 			if( libcdata_array_get_entry_by_index(
 			     internal_stream->segments_array,
@@ -2644,7 +2650,7 @@ ssize_t libfdata_stream_write_buffer(
 	{
 		if( internal_stream->current_segment_index < number_of_segments )
 		{
-			internal_stream->current_segment_index += 1;
+			internal_stream->current_segment_index++;
 		}
 		internal_stream->segment_data_offset = 0;
 
@@ -2703,7 +2709,7 @@ ssize_t libfdata_stream_write_buffer(
 
 			return( -1 );
 		}
-		number_of_segments += 1;
+		number_of_segments++;
 
 		segment_data_size = segment_size;
 	}
@@ -2786,8 +2792,9 @@ ssize_t libfdata_stream_write_buffer(
 
 				return( -1 );
 			}
-			internal_stream->current_segment_index += 1;
-			internal_stream->segment_data_offset    = 0;
+			internal_stream->current_segment_index++;
+
+			internal_stream->segment_data_offset = 0;
 
 			if( internal_stream->current_segment_index < number_of_segments )
 			{
@@ -2883,7 +2890,7 @@ ssize_t libfdata_stream_write_buffer(
 
 					return( -1 );
 				}
-				number_of_segments += 1;
+				number_of_segments++;
 			}
 			segment_data_size = segment_size;
 
