@@ -17,6 +17,7 @@ TODO
   - range list (init)
   - tree
   - vector (init, read)
+* add generic type for ESEDB page, REGF hive bin, CREG data block, etc
 
 Types:
 * list
