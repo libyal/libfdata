@@ -12,6 +12,7 @@ TODO
   - allow to be NULL by default and fallback to default behavior
   - separate set function
 * add/improve tests
+  - area
   - btree (init)
   - list (init, read)
   - range list (init)
@@ -20,6 +21,10 @@ TODO
 * add generic type for ESEDB page, REGF hive bin, CREG data block, etc
 
 Types:
+* merge segment handling into single source file?
+* area
+  - add mapped offset support ?
+  - add mapped size write support ?
 * list
   - reimplement libfdata_list_get_element_index_at_value_index ?
   - prepend: optimize recalculation of element index ?
@@ -56,6 +61,10 @@ Optimizations:
 * mapped ranges
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
+
+20160116
+* worked on area
+* worked on merging segment handling code
 
 20160106
 * 2016 update

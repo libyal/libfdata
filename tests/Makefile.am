@@ -6,12 +6,14 @@ AM_CPPFLAGS = \
 	@LIBFDATA_DLL_IMPORT@
 
 TESTS = \
+	test_area.sh \
 	test_btree.sh \
 	test_list.sh \
 	test_range_list.sh \
 	test_vector.sh
 
 check_SCRIPTS = \
+	test_area.sh \
 	test_btree.sh \
 	test_list.sh \
 	test_range_list.sh \
@@ -22,10 +24,23 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	fdata_test_area \
 	fdata_test_btree \
 	fdata_test_list \
 	fdata_test_range_list \
 	fdata_test_vector
+
+fdata_test_area_SOURCES = \
+	fdata_test_libcerror.h \
+	fdata_test_libfdata.h \
+	fdata_test_libcstring.h \
+	fdata_test_area.c \
+	fdata_test_unused.h
+
+fdata_test_area_LDADD = \
+	../libfdata/libfdata.la \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@
 
 fdata_test_btree_SOURCES = \
 	fdata_test_btree.c \

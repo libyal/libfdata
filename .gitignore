@@ -112,6 +112,7 @@ stamp-h[1-9]
 /include/libfdata/types.h
 /libfdata/libfdata.rc
 /libfdata/libfdata_definitions.h
+/tests/fdata_test_area
 /tests/fdata_test_btree
 /tests/fdata_test_list
 /tests/fdata_test_range_list

@@ -73,6 +73,11 @@ int libfdata_range_get(
      uint32_t *flags,
      libcerror_error_t **error );
 
+int libfdata_range_get_size(
+     libfdata_range_t *range,
+     size64_t *size,
+     libcerror_error_t **error );
+
 int libfdata_range_set(
      libfdata_range_t *range,
      int file_index,

@@ -287,6 +287,43 @@ int libfdata_range_get(
 	return( 1 );
 }
 
+/* Retrieves the size
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_range_get_size(
+     libfdata_range_t *range,
+     size64_t *size,
+     libcerror_error_t **error )
+{
+	static char *function = "libfdata_range_get_size";
+
+	if( range == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid range.",
+		 function );
+
+		return( -1 );
+	}
+	if( size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid size.",
+		 function );
+
+		return( -1 );
+	}
+	*size = range->size;
+
+	return( 1 );
+}
+
 /* Sets the range values
  * Returns 1 if successful or -1 on error
  */

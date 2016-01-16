@@ -1,5 +1,5 @@
 /*
- * The vector functions
+ * The area functions
  *
  * Copyright (C) 2010-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBFDATA_INTERNAL_VECTOR_H )
-#define _LIBFDATA_INTERNAL_VECTOR_H
+#if !defined( _LIBFDATA_INTERNAL_AREA_H )
+#define _LIBFDATA_INTERNAL_AREA_H
 
 #include <common.h>
 #include <types.h>
@@ -35,15 +35,15 @@
 extern "C" {
 #endif
 
-typedef struct libfdata_internal_vector libfdata_internal_vector_t;
+typedef struct libfdata_internal_area libfdata_internal_area_t;
 
-struct libfdata_internal_vector
+struct libfdata_internal_area
 {
 	/* The element data size
 	 */
 	size64_t element_data_size;
 
-	/* The (vector) size
+	/* The (area) size
 	 */
 	size64_t size;
 
@@ -95,9 +95,9 @@ struct libfdata_internal_vector
 	int (*read_element_data)(
 	       intptr_t *data_handle,
 	       intptr_t *file_io_handle,
-	       libfdata_vector_t *vector,
+	       libfdata_area_t *area,
 	       libfcache_cache_t *cache,
-	       int element_index,
+	       off64_t element_value_offset,
 	       int element_data_file_index,
 	       off64_t element_data_offset,
 	       size64_t element_data_size,
@@ -110,9 +110,9 @@ struct libfdata_internal_vector
 	int (*write_element_data)(
 	       intptr_t *data_handle,
 	       intptr_t *file_io_handle,
-	       libfdata_vector_t *vector,
+	       libfdata_area_t *area,
 	       libfcache_cache_t *cache,
-	       int element_index,
+	       off64_t element_value_offset,
 	       int element_data_file_index,
 	       off64_t element_data_offset,
 	       size64_t element_data_size,
@@ -122,8 +122,8 @@ struct libfdata_internal_vector
 };
 
 LIBFDATA_EXTERN \
-int libfdata_vector_initialize(
-     libfdata_vector_t **vector,
+int libfdata_area_initialize(
+     libfdata_area_t **area,
      size64_t element_data_size,
      intptr_t *data_handle,
      int (*free_data_handle)(
@@ -136,9 +136,9 @@ int libfdata_vector_initialize(
      int (*read_element_data)(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
-            libfdata_vector_t *vector,
+            libfdata_area_t *area,
             libfcache_cache_t *cache,
-            int element_index,
+            off64_t element_value_offset,
             int element_data_file_index,
             off64_t element_data_offset,
             size64_t element_data_size,
@@ -148,9 +148,9 @@ int libfdata_vector_initialize(
      int (*write_element_data)(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
-            libfdata_vector_t *vector,
+            libfdata_area_t *area,
             libfcache_cache_t *cache,
-            int element_index,
+            off64_t element_value_offset,
             int element_data_file_index,
             off64_t element_data_offset,
             size64_t element_data_size,
@@ -161,38 +161,38 @@ int libfdata_vector_initialize(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_free(
-     libfdata_vector_t **vector,
+int libfdata_area_free(
+     libfdata_area_t **area,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_clone(
-     libfdata_vector_t **destination_vector,
-     libfdata_vector_t *source_vector,
+int libfdata_area_clone(
+     libfdata_area_t **destination_area,
+     libfdata_area_t *source_area,
      libcerror_error_t **error );
 
 /* Segment functions
  */
 LIBFDATA_EXTERN \
-int libfdata_vector_empty(
-     libfdata_vector_t *vector,
+int libfdata_area_empty(
+     libfdata_area_t *area,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_resize(
-     libfdata_vector_t *vector,
+int libfdata_area_resize(
+     libfdata_area_t *area,
      int number_of_segments,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_get_number_of_segments(
-     libfdata_vector_t *vector,
+int libfdata_area_get_number_of_segments(
+     libfdata_area_t *area,
      int *number_of_segments,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_get_segment_by_index(
-     libfdata_vector_t *vector,
+int libfdata_area_get_segment_by_index(
+     libfdata_area_t *area,
      int segment_index,
      int *segment_file_index,
      off64_t *segment_offset,
@@ -201,8 +201,8 @@ int libfdata_vector_get_segment_by_index(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_set_segment_by_index(
-     libfdata_vector_t *vector,
+int libfdata_area_set_segment_by_index(
+     libfdata_area_t *area,
      int segment_index,
      int segment_file_index,
      off64_t segment_offset,
@@ -211,8 +211,8 @@ int libfdata_vector_set_segment_by_index(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_prepend_segment(
-     libfdata_vector_t *vector,
+int libfdata_area_prepend_segment(
+     libfdata_area_t *area,
      int segment_file_index,
      off64_t segment_offset,
      size64_t segment_size,
@@ -220,8 +220,8 @@ int libfdata_vector_prepend_segment(
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_append_segment(
-     libfdata_vector_t *vector,
+int libfdata_area_append_segment(
+     libfdata_area_t *area,
      int *segment_index,
      int segment_file_index,
      off64_t segment_offset,
@@ -229,59 +229,32 @@ int libfdata_vector_append_segment(
      uint32_t segment_flags,
      libcerror_error_t **error );
 
-/* Vector element functions
+/* Area element functions
  */
 LIBFDATA_EXTERN \
-int libfdata_vector_get_element_data_size(
-     libfdata_vector_t *vector,
+int libfdata_area_get_element_data_size(
+     libfdata_area_t *area,
      size64_t *element_data_size,
      libcerror_error_t **error );
 
-LIBFDATA_EXTERN \
-int libfdata_vector_get_number_of_elements(
-     libfdata_vector_t *vector,
-     int *number_of_elements,
-     libcerror_error_t **error );
-
-/* Mapped range functions
+/* Area element value functions
  */
 LIBFDATA_EXTERN \
-int libfdata_vector_get_element_index_at_offset(
-     libfdata_vector_t *vector,
-     off64_t element_value_offset,
-     int *element_index,
-     off64_t *element_data_offset,
-     libcerror_error_t **error );
-
-/* Vector element value functions
- */
-LIBFDATA_EXTERN \
-int libfdata_vector_get_element_value_by_index(
-     libfdata_vector_t *vector,
+int libfdata_area_get_element_value_at_offset(
+     libfdata_area_t *area,
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
-     int element_index,
+     off64_t element_value_offset,
      intptr_t **element_value,
      uint8_t read_flags,
      libcerror_error_t **error );
 
 LIBFDATA_EXTERN \
-int libfdata_vector_get_element_value_at_offset(
-     libfdata_vector_t *vector,
+int libfdata_area_set_element_value_at_offset(
+     libfdata_area_t *area,
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
      off64_t element_value_offset,
-     off64_t *element_data_offset,
-     intptr_t **element_value,
-     uint8_t read_flags,
-     libcerror_error_t **error );
-
-LIBFDATA_EXTERN \
-int libfdata_vector_set_element_value_by_index(
-     libfdata_vector_t *vector,
-     intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
-     int element_index,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
@@ -292,8 +265,8 @@ int libfdata_vector_set_element_value_by_index(
 /* IO functions
  */
 LIBFDATA_EXTERN \
-int libfdata_vector_get_size(
-     libfdata_vector_t *vector,
+int libfdata_area_get_size(
+     libfdata_area_t *area,
      size64_t *size,
      libcerror_error_t **error );
 

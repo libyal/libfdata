@@ -38,6 +38,7 @@ typedef libfcache_cache_t			libfdata_cache_t;
 /* The following type definitions hide internal data structures
  */
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
+typedef struct libfdata_area {}			libfdata_area_t;
 typedef struct libfdata_btree {}		libfdata_btree_t;
 typedef struct libfdata_btree_node {}		libfdata_btree_node_t;
 typedef struct libfdata_list {}			libfdata_list_t;
@@ -49,6 +50,7 @@ typedef struct libfdata_tree_node {}		libfdata_tree_node_t;
 typedef struct libfdata_vector {}		libfdata_vector_t;
 
 #else
+typedef intptr_t libfdata_area_t;
 typedef intptr_t libfdata_btree_t;
 typedef intptr_t libfdata_btree_node_t;
 typedef intptr_t libfdata_list_t;

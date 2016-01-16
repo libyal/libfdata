@@ -270,10 +270,6 @@ int libfdata_stream_set_mapped_size(
 
 /* Mapped range functions
  */
-int libfdata_stream_calculate_mapped_ranges(
-     libfdata_internal_stream_t *internal_stream,
-     libcerror_error_t **error );
-
 LIBFDATA_EXTERN \
 int libfdata_stream_get_segment_mapped_range(
      libfdata_stream_t *stream,

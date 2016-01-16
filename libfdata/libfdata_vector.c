@@ -30,6 +30,7 @@
 #include "libfdata_libfcache.h"
 #include "libfdata_mapped_range.h"
 #include "libfdata_range.h"
+#include "libfdata_segments_array.h"
 #include "libfdata_types.h"
 #include "libfdata_unused.h"
 #include "libfdata_vector.h"
@@ -658,7 +659,6 @@ int libfdata_vector_get_segment_by_index(
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
-	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_vector_get_segment_by_index";
 
 	if( vector == NULL )
@@ -674,24 +674,9 @@ int libfdata_vector_get_segment_by_index(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( libcdata_array_get_entry_by_index(
+	if( libfdata_segments_array_get_segment_by_index(
 	     internal_vector->segments_array,
 	     segment_index,
-	     (intptr_t **) &segment_data_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve entry: %d from segments array.",
-		 function,
-		 segment_index );
-
-		return( -1 );
-	}
-	if( libfdata_range_get(
-	     segment_data_range,
 	     segment_file_index,
 	     segment_offset,
 	     segment_size,
@@ -702,7 +687,7 @@ int libfdata_vector_get_segment_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segment: %d data range values.",
+		 "%s: unable to retrieve segment: %d.",
 		 function,
 		 segment_index );
 
@@ -724,13 +709,7 @@ int libfdata_vector_set_segment_by_index(
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
-	libfdata_mapped_range_t *mapped_range       = NULL;
-	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_vector_set_segment_by_index";
-	off64_t previous_segment_offset             = 0;
-	size64_t previous_segment_size              = 0;
-	uint32_t previous_segment_flags             = 0;
-	int previous_segment_file_index             = 0;
 
 	if( vector == NULL )
 	{
@@ -745,104 +724,11 @@ int libfdata_vector_set_segment_by_index(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( segment_file_index < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment file index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( segment_offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment offset value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( libcdata_array_get_entry_by_index(
+	if( libfdata_segments_array_set_segment_by_index(
 	     internal_vector->segments_array,
+	     internal_vector->mapped_ranges_array,
+	     &( internal_vector->size ),
 	     segment_index,
-	     (intptr_t **) &segment_data_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve entry: %d from segments array.",
-		 function,
-		 segment_index );
-
-		return( -1 );
-	}
-	if( segment_data_range == NULL )
-	{
-		if( libfdata_range_initialize(
-		     &segment_data_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create segment data range.",
-			 function );
-
-			return( -1 );
-		}
-		if( libcdata_array_set_entry_by_index(
-		     internal_vector->segments_array,
-		     segment_index,
-		     (intptr_t *) segment_data_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set entry: %d to segments array.",
-			 function,
-			 segment_index );
-
-			libfdata_range_free(
-			 &segment_data_range,
-			 NULL );
-
-			return( -1 );
-		}
-	}
-	else
-	{
-		if( libfdata_range_get(
-		     segment_data_range,
-		     &previous_segment_file_index,
-		     &previous_segment_offset,
-		     &previous_segment_size,
-		     &previous_segment_flags,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve segment: %d data range values.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-		internal_vector->size -= previous_segment_size;
-	}
-	if( libfdata_range_set(
-	     segment_data_range,
 	     segment_file_index,
 	     segment_offset,
 	     segment_size,
@@ -853,66 +739,12 @@ int libfdata_vector_set_segment_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set segment data range values.",
-		 function );
-
-		return( -1 );
-	}
-	/* Make sure the vector has a mapped range entry for every segment
-	 */
-	if( libcdata_array_get_entry_by_index(
-	     internal_vector->mapped_ranges_array,
-	     segment_index,
-	     (intptr_t **) &mapped_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve entry: %d from mapped ranges array.",
+		 "%s: unable to set segment: %d.",
 		 function,
 		 segment_index );
 
 		return( -1 );
 	}
-	if( mapped_range == NULL )
-	{
-		if( libfdata_mapped_range_initialize(
-		     &mapped_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create mapped range.",
-			 function );
-
-			return( -1 );
-		}
-		if( libcdata_array_set_entry_by_index(
-		     internal_vector->mapped_ranges_array,
-		     segment_index,
-		     (intptr_t *) mapped_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set entry: %d in mapped ranges array.",
-			 function,
-			 segment_index );
-
-			libfdata_mapped_range_free(
-			 &mapped_range,
-			 NULL );
-
-			return( -1 );
-		}
-	}
-	internal_vector->size  += segment_size;
 	internal_vector->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	return( 1 );
@@ -930,10 +762,7 @@ int libfdata_vector_prepend_segment(
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
-	libfdata_mapped_range_t *mapped_range       = NULL;
-	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_vector_prepend_segment";
-	int mapped_range_index                      = -1;
 
 	if( vector == NULL )
 	{
@@ -948,97 +777,10 @@ int libfdata_vector_prepend_segment(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( segment_file_index < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment file index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( segment_offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment offset value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( segment_size > (size64_t) INT64_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment size value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfdata_mapped_range_initialize(
-	     &mapped_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create mapped range.",
-		 function );
-
-		goto on_error;
-	}
-	if( libfdata_mapped_range_set(
-	     mapped_range,
-	     (off64_t) internal_vector->size,
-	     segment_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set mapped range values.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_append_entry(
+	if( libfdata_segments_array_prepend_segment(
+	     internal_vector->segments_array,
 	     internal_vector->mapped_ranges_array,
-	     &mapped_range_index,
-	     (intptr_t *) mapped_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to append mapped range to array.",
-		 function );
-
-		goto on_error;
-	}
-	if( libfdata_range_initialize(
-	     &segment_data_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create segment data range.",
-		 function );
-
-		goto on_error;
-	}
-	if( libfdata_range_set(
-	     segment_data_range,
+	     &( internal_vector->size ),
 	     segment_file_index,
 	     segment_offset,
 	     segment_size,
@@ -1048,53 +790,15 @@ int libfdata_vector_prepend_segment(
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set segment data range values.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_prepend_entry(
-	     internal_vector->segments_array,
-	     (intptr_t *) segment_data_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to prepend data range to segments array.",
+		 "%s: unable to prepend segment.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
-	internal_vector->size  += segment_size;
 	internal_vector->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
 
 	return( 1 );
-
-on_error:
-	if( segment_data_range != NULL )
-	{
-		libfdata_range_free(
-		 &segment_data_range,
-		 NULL );
-	}
-	if( mapped_range_index != -1 )
-	{
-		libcdata_array_set_entry_by_index(
-		 internal_vector->mapped_ranges_array,
-		 mapped_range_index,
-		 NULL,
-		 NULL );
-	}
-	if( mapped_range != NULL )
-	{
-		libfdata_mapped_range_free(
-		 &mapped_range,
-		 NULL );
-	}
-	return( -1 );
 }
 
 /* Appends a segment
@@ -1110,10 +814,7 @@ int libfdata_vector_append_segment(
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
-	libfdata_mapped_range_t *mapped_range       = NULL;
-	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_vector_append_segment";
-	int mapped_range_index                      = -1;
 
 	if( vector == NULL )
 	{
@@ -1128,86 +829,11 @@ int libfdata_vector_append_segment(
 	}
 	internal_vector = (libfdata_internal_vector_t *) vector;
 
-	if( segment_file_index < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment file index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( segment_offset < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment offset value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfdata_mapped_range_initialize(
-	     &mapped_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create mapped range.",
-		 function );
-
-		goto on_error;
-	}
-	if( libfdata_mapped_range_set(
-	     mapped_range,
-	     (off64_t) internal_vector->size,
-	     segment_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set mapped range values.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_append_entry(
+	if( libfdata_segments_array_append_segment(
+	     internal_vector->segments_array,
 	     internal_vector->mapped_ranges_array,
-	     &mapped_range_index,
-	     (intptr_t *) mapped_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to append mapped range to array.",
-		 function );
-
-		goto on_error;
-	}
-	if( libfdata_range_initialize(
-	     &segment_data_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create segment data range.",
-		 function );
-
-		goto on_error;
-	}
-	if( libfdata_range_set(
-	     segment_data_range,
+	     &( internal_vector->size ),
+	     segment_index,
 	     segment_file_index,
 	     segment_offset,
 	     segment_size,
@@ -1217,77 +843,13 @@ int libfdata_vector_append_segment(
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set segment data range values.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_append_entry(
-	     internal_vector->segments_array,
-	     segment_index,
-	     (intptr_t *) segment_data_range,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-		 "%s: unable to append data range to segments array.",
+		 "%s: unable to append segment.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
-		 function,
-		 *segment_index,
-		 segment_file_index,
-		 segment_offset,
-		 segment_offset + segment_size,
-		 segment_size );
-
-		libcnotify_printf(
-		 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
-		 function,
-		 *segment_index,
-		 internal_vector->size,
-		 internal_vector->size + segment_size,
-		 segment_size );
-
-		libcnotify_printf(
-		 "\n" );
-	}
-#endif
-	internal_vector->size += segment_size;
-
 	return( 1 );
-
-on_error:
-	if( segment_data_range != NULL )
-	{
-		libfdata_range_free(
-		 &segment_data_range,
-		 NULL );
-	}
-	if( mapped_range_index != -1 )
-	{
-		libcdata_array_set_entry_by_index(
-		 internal_vector->mapped_ranges_array,
-		 mapped_range_index,
-		 NULL,
-		 NULL );
-	}
-	if( mapped_range != NULL )
-	{
-		libfdata_mapped_range_free(
-		 &mapped_range,
-		 NULL );
-	}
-	return( -1 );
 }
 
 /* Vector element functions
@@ -1405,160 +967,12 @@ int libfdata_vector_get_number_of_elements(
 /* Mapped range functions
  */
 
-/* Calculates the mapped ranges
- * Returns 1 if successful or -1 on error
- */
-int libfdata_vector_calculate_mapped_ranges(
-     libfdata_internal_vector_t *internal_vector,
-     libcerror_error_t **error )
-{
-	libfdata_mapped_range_t *mapped_range = NULL;
-	libfdata_range_t *segment_data_range  = NULL;
-	static char *function                 = "libfdata_vector_calculate_mapped_ranges";
-	off64_t mapped_offset                 = 0;
-	off64_t segment_offset                = 0;
-	size64_t segment_size                 = 0;
-	uint32_t segment_flags                = 0;
-	int number_of_segments                = 0;
-	int segment_file_index                = 0;
-	int segment_index                     = 0;
-
-	if( internal_vector == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid vector ",
-		 function );
-
-		return( -1 );
-	}
-	if( libcdata_array_get_number_of_entries(
-	     internal_vector->segments_array,
-	     &number_of_segments,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of entries from segments array.",
-		 function );
-
-		return( -1 );
-	}
-	for( segment_index = 0;
-	     segment_index < number_of_segments;
-	     segment_index++ )
-	{
-		if( libcdata_array_get_entry_by_index(
-		     internal_vector->segments_array,
-		     segment_index,
-		     (intptr_t **) &segment_data_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve entry: %d from segments array.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-		if( libcdata_array_get_entry_by_index(
-		     internal_vector->mapped_ranges_array,
-		     segment_index,
-		     (intptr_t **) &mapped_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve entry: %d from mapped ranges array.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-		if( libfdata_range_get(
-		     segment_data_range,
-		     &segment_file_index,
-		     &segment_offset,
-		     &segment_size,
-		     &segment_flags,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve segment: %d data range values.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
-		{
-			libcnotify_printf(
-			 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
-			 function,
-			 segment_index,
-			 segment_file_index,
-			 segment_offset,
-			 segment_offset + segment_size,
-			 segment_size );
-
-			libcnotify_printf(
-			 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
-			 function,
-			 segment_index,
-			 mapped_offset,
-			 mapped_offset + segment_size,
-			 segment_size );
-		}
-#endif
-		if( libfdata_mapped_range_set(
-		     mapped_range,
-		     mapped_offset,
-		     segment_size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set mapped range: %d values.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-		mapped_offset += (off64_t) segment_size;
-	}
-	internal_vector->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "\n" );
-	}
-#endif
-	return( 1 );
-}
-
 /* Retrieves the element index for a specific offset
  * Returns 1 if successful or -1 on error
  */
 int libfdata_vector_get_element_index_at_offset(
      libfdata_vector_t *vector,
-     off64_t offset,
+     off64_t element_value_offset,
      int *element_index,
      off64_t *element_data_offset,
      libcerror_error_t **error )
@@ -1619,13 +1033,13 @@ int libfdata_vector_get_element_index_at_offset(
 
 		return( -1 );
 	}
-	if( offset < 0 )
+	if( element_value_offset < 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid offset value less than zero.",
+		 "%s: invalid element value offset value less than zero.",
 		 function );
 
 		return( -1 );
@@ -1654,19 +1068,21 @@ int libfdata_vector_get_element_index_at_offset(
 	}
 	if( ( internal_vector->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
 	{
-		if( libfdata_vector_calculate_mapped_ranges(
-		     internal_vector,
+		if( libfdata_segments_array_calculate_mapped_ranges(
+		     internal_vector->segments_array,
+		     internal_vector->mapped_ranges_array,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to calculate mapped ranges.",
+			 "%s: unable to calculate mapped ranges from segments array.",
 			 function );
 
 			return( -1 );
 		}
+		internal_vector->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -1674,7 +1090,7 @@ int libfdata_vector_get_element_index_at_offset(
 		libcnotify_printf(
 		 "%s: requested offset: 0x%08" PRIx64 "\n",
 		 function,
-		 offset );
+		 element_value_offset );
 	}
 #endif
 	if( internal_vector->size == 0 )
@@ -1697,7 +1113,7 @@ int libfdata_vector_get_element_index_at_offset(
 	}
 	/* This assumes a fairly even distribution of the sizes of the segments
 	 */
-	initial_segment_index = (int) ( ( number_of_segments * offset ) / internal_vector->size );
+	initial_segment_index = (int) ( ( number_of_segments * element_value_offset ) / internal_vector->size );
 
 	/* Look for the corresponding segment upwards in the array
 	 */
@@ -1763,16 +1179,16 @@ int libfdata_vector_get_element_index_at_offset(
 			 mapped_range_size );
 		}
 #endif
-		/* Check if the offset is in the mapped range
+		/* Check if the element value offset is in the mapped range
 		 */
-		if( ( offset >= mapped_range_start_offset )
-		 && ( offset < mapped_range_end_offset ) )
+		if( ( element_value_offset >= mapped_range_start_offset )
+		 && ( element_value_offset < mapped_range_end_offset ) )
 		{
 			break;
 		}
-		/* Check if the offset is out of bounds
+		/* Check if the element value offset is out of bounds
 		 */
-		if( offset < mapped_range_start_offset )
+		if( element_value_offset < mapped_range_start_offset )
 		{
 			segment_index = number_of_segments;
 
@@ -1845,16 +1261,16 @@ int libfdata_vector_get_element_index_at_offset(
 				 mapped_range_size );
 			}
 #endif
-			/* Check if the offset is in the mapped range
+			/* Check if the element value offset is in the mapped range
 			 */
-			if( ( offset >= mapped_range_start_offset )
-			 && ( offset < mapped_range_end_offset ) )
+			if( ( element_value_offset >= mapped_range_start_offset )
+			 && ( element_value_offset < mapped_range_end_offset ) )
 			{
 				break;
 			}
-			/* Check if the offset is out of bounds
+			/* Check if the element value offset is out of bounds
 			 */
-			if( offset > mapped_range_start_offset )
+			if( element_value_offset > mapped_range_start_offset )
 			{
 				segment_index = -1;
 
@@ -1913,7 +1329,7 @@ int libfdata_vector_get_element_index_at_offset(
 			 segment_size );
 		}
 #endif
-		calculated_element_index = (uint64_t) offset / internal_vector->element_data_size;
+		calculated_element_index = (uint64_t) element_value_offset / internal_vector->element_data_size;
 
 		if( calculated_element_index > (uint64_t) INT_MAX )
 		{
@@ -1929,7 +1345,7 @@ int libfdata_vector_get_element_index_at_offset(
 		/* The element data offset is relative from the start of the vector element not the underlying segment
 		 */
 		*element_index       = (int) calculated_element_index;
-		*element_data_offset = offset % internal_vector->element_data_size;
+		*element_data_offset = element_value_offset % internal_vector->element_data_size;
 
 		result = 1;
 	}
@@ -1970,9 +1386,7 @@ int libfdata_vector_get_element_value_by_index(
 	int cache_value_file_index                  = -1;
 	int element_data_file_index                 = -1;
 	int number_of_cache_entries                 = 0;
-	int number_of_segments                      = 0;
 	int result                                  = 0;
-	int segment_index                           = 0;
 
 	if( vector == NULL )
 	{
@@ -2045,85 +1459,38 @@ int libfdata_vector_get_element_value_by_index(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_number_of_entries(
+	if( libfdata_segments_array_get_data_range_at_offset(
 	     internal_vector->segments_array,
-	     &number_of_segments,
+	     element_data_offset,
+	     &element_data_offset,
+	     &segment_data_range,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of segments.",
-		 function );
+		 "%s: unable to retrieve segment data range for offset: 0x%08" PRIx64 ".",
+		 function,
+		 element_data_offset );
 
 		return( -1 );
 	}
-	if( number_of_segments <= 0 )
+	if( segment_data_range == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid number of segments value out of bounds.",
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing segment data range.",
 		 function );
 
 		return( -1 );
 	}
-	for( segment_index = 0;
-	     segment_index < number_of_segments;
-	     segment_index++ )
-	{
-		if( libcdata_array_get_entry_by_index(
-		     internal_vector->segments_array,
-		     segment_index,
-		     (intptr_t **) &segment_data_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve segment data range: %d from array.",
-			 function,
-			 segment_index );
+	element_data_file_index = segment_data_range->file_index;
+	element_data_offset    += segment_data_range->offset;
+	element_data_flags      = segment_data_range->flags;
 
-			return( -1 );
-		}
-		if( segment_data_range == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing segment data range: %d.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-/* TODO what about compressed data ranges */
-		if( (size64_t) element_data_offset < segment_data_range->size )
-		{
-			element_data_file_index = segment_data_range->file_index;
-			element_data_offset    += segment_data_range->offset;
-			element_data_flags      = segment_data_range->flags;
-
-			break;
-		}
-		element_data_offset -= segment_data_range->size;
-	}
-	if( segment_index >= number_of_segments )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
 	if( libfcache_cache_get_number_of_entries(
 	     cache,
 	     &number_of_cache_entries,
@@ -2353,7 +1720,7 @@ int libfdata_vector_get_element_value_at_offset(
      libfdata_vector_t *vector,
      intptr_t *file_io_handle,
      libfcache_cache_t *cache,
-     off64_t offset,
+     off64_t element_value_offset,
      off64_t *element_data_offset,
      intptr_t **element_value,
      uint8_t read_flags,
@@ -2364,7 +1731,7 @@ int libfdata_vector_get_element_value_at_offset(
 
 	if( libfdata_vector_get_element_index_at_offset(
 	     vector,
-	     offset,
+	     element_value_offset,
 	     &element_index,
 	     element_data_offset,
 	     error ) != 1 )
@@ -2375,7 +1742,7 @@ int libfdata_vector_get_element_value_at_offset(
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve element index at offset: 0x%08" PRIx64 ".",
 		 function,
-		 offset );
+		 element_value_offset );
 
 		return( -1 );
 	}
@@ -2429,8 +1796,6 @@ int libfdata_vector_set_element_value_by_index(
 	int cache_entry_index                       = -1;
 	int element_data_file_index                 = -1;
 	int number_of_cache_entries                 = 0;
-	int number_of_segments                      = 0;
-	int segment_index                           = 0;
 
 	LIBFDATA_UNREFERENCED_PARAMETER( file_io_handle )
 
@@ -2494,85 +1859,38 @@ int libfdata_vector_set_element_value_by_index(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_number_of_entries(
+	if( libfdata_segments_array_get_data_range_at_offset(
 	     internal_vector->segments_array,
-	     &number_of_segments,
+	     element_data_offset,
+	     &element_data_offset,
+	     &segment_data_range,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of segments.",
-		 function );
+		 "%s: unable to retrieve segment data range for offset: 0x%08" PRIx64 ".",
+		 function,
+		 element_data_offset );
 
 		return( -1 );
 	}
-	if( number_of_segments <= 0 )
+	if( segment_data_range == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid number of segments value out of bounds.",
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing segment data range.",
 		 function );
 
 		return( -1 );
 	}
-	for( segment_index = 0;
-	     segment_index < number_of_segments;
-	     segment_index++ )
-	{
-		if( libcdata_array_get_entry_by_index(
-		     internal_vector->segments_array,
-		     segment_index,
-		     (intptr_t **) &segment_data_range,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve segment data range: %d from array.",
-			 function,
-			 segment_index );
+	element_data_file_index = segment_data_range->file_index;
+	element_data_offset    += segment_data_range->offset;
+	element_data_flags      = segment_data_range->flags;
 
-			return( -1 );
-		}
-		if( segment_data_range == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing segment data range: %d.",
-			 function,
-			 segment_index );
-
-			return( -1 );
-		}
-/* TODO what about compressed data ranges */
-		if( (size64_t) element_data_offset < segment_data_range->size )
-		{
-			element_data_file_index = segment_data_range->file_index;
-			element_data_offset    += segment_data_range->offset;
-			element_data_flags      = segment_data_range->flags;
-
-			break;
-		}
-		element_data_offset -= segment_data_range->size;
-	}
-	if( segment_index >= number_of_segments )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid segment index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
 	if( libfcache_cache_get_number_of_entries(
 	     cache,
 	     &number_of_cache_entries,
@@ -2673,8 +1991,9 @@ int libfdata_vector_get_size(
 	}
 	if( ( internal_vector->flags & LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES ) != 0 )
 	{
-		if( libfdata_vector_calculate_mapped_ranges(
-		     internal_vector,
+		if( libfdata_segments_array_calculate_mapped_ranges(
+		     internal_vector->segments_array,
+		     internal_vector->mapped_ranges_array,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -2686,6 +2005,7 @@ int libfdata_vector_get_size(
 
 			return( -1 );
 		}
+		internal_vector->flags &= ~( LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES );
 	}
 	*size = internal_vector->size;
 
