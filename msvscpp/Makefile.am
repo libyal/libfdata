@@ -1,4 +1,5 @@
 MSVSCPP_FILES = \
+	fdata_test_area/fdata_test_area.vcproj \
 	fdata_test_btree/fdata_test_btree.vcproj \
 	fdata_test_list/fdata_test_list.vcproj \
 	fdata_test_range_list/fdata_test_range_list.vcproj \
