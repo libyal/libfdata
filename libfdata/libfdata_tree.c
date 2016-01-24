@@ -640,7 +640,7 @@ int libfdata_tree_get_node_value(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read node at offset: %" PRIi64 ".",
+			 "%s: unable to read node at offset: 0x%08" PRIx64 ".",
 			 function,
 			 node_offset );
 
@@ -946,7 +946,7 @@ int libfdata_tree_read_sub_nodes(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read sub nodes at offset: %" PRIi64 ".",
+		 "%s: unable to read sub nodes at offset: 0x%08" PRIx64 ".",
 		 function,
 		 sub_nodes_offset );
 
