@@ -648,6 +648,26 @@ int libfdata_list_get_element_at_offset(
      uint32_t *element_flags,
      libfdata_error_t **error );
 
+/* Caches the element value
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_cache_element_value(
+     libfdata_list_t *list,
+     libfdata_cache_t *cache,
+     int element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     time_t element_timestamp,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libfdata_error_t **error ),
+     uint8_t write_flags,
+     libfdata_error_t **error );
+
 /* Retrieves the value of a specific element
  * Returns 1 if successful or -1 on error
  */

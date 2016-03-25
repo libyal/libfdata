@@ -62,6 +62,9 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20160325
+* worked on list
+
 20160116
 * worked on area
 * worked on merging segment handling code

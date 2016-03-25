@@ -3574,6 +3574,117 @@ int libfdata_list_get_element_at_offset(
 /* List element value functions
  */
 
+/* Caches the element value
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_list_cache_element_value(
+     libfdata_list_t *list,
+     libfcache_cache_t *cache,
+     int element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     time_t element_timestamp,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libcerror_error_t **error ),
+     uint8_t write_flags,
+     libcerror_error_t **error )
+{
+	libfdata_internal_list_t *internal_list = NULL;
+	static char *function                   = "libfdata_list_cache_element_value";
+	int cache_entry_index                   = -1;
+	int number_of_cache_entries             = 0;
+
+	if( list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_list = (libfdata_internal_list_t *) list;
+
+	if( element_index < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid element index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfcache_cache_get_number_of_entries(
+	     cache,
+	     &number_of_cache_entries,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of cache entries.",
+		 function );
+
+		return( -1 );
+	}
+	if( number_of_cache_entries <= 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of cache entries value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_list->calculate_cache_entry_index == NULL )
+	{
+		cache_entry_index = element_index % number_of_cache_entries;
+	}
+	else
+	{
+		cache_entry_index = internal_list->calculate_cache_entry_index(
+		                     element_index,
+		                     element_file_index,
+		                     element_offset,
+		                     element_size,
+		                     element_flags,
+		                     number_of_cache_entries );
+	}
+	if( libfcache_cache_set_value_by_index(
+	     cache,
+	     cache_entry_index,
+	     element_file_index,
+	     element_offset,
+	     element_timestamp,
+	     element_value,
+	     free_element_value,
+	     write_flags,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set value in cache entry: %d.",
+		 function,
+		 cache_entry_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 /* Retrieves the element value
  * Returns 1 if successful or -1 on error
  */
@@ -4068,31 +4179,15 @@ int libfdata_list_set_element_value(
      uint8_t write_flags,
      libcerror_error_t **error )
 {
-	libfdata_internal_list_t *internal_list = NULL;
-	static char *function                   = "libfdata_list_set_element_value";
-	off64_t element_offset                  = 0;
-	size64_t element_size                   = 0;
-	time_t element_timestamp                = 0;
-	uint32_t element_flags                  = 0;
-	int cache_entry_index                   = -1;
-	int element_file_index                  = -1;
-	int element_index                       = -1;
-	int number_of_cache_entries             = 0;
+	static char *function    = "libfdata_list_set_element_value";
+	off64_t element_offset   = 0;
+	size64_t element_size    = 0;
+	time_t element_timestamp = 0;
+	uint32_t element_flags   = 0;
+	int element_file_index   = -1;
+	int element_index        = -1;
 
 	LIBFDATA_UNREFERENCED_PARAMETER( file_io_handle )
-
-	if( list == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid list.",
-		 function );
-
-		return( -1 );
-	}
-	internal_list = (libfdata_internal_list_t *) list;
 
 	if( libfdata_list_element_get_data_range(
 	     element,
@@ -4111,34 +4206,6 @@ int libfdata_list_set_element_value(
 
 		return( -1 );
 	}
-	if( libfdata_list_element_get_timestamp(
-	     element,
-	     &element_timestamp,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve time stamp from list element.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfcache_cache_get_number_of_entries(
-	     cache,
-	     &number_of_cache_entries,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of cache entries.",
-		 function );
-
-		return( -1 );
-	}
 	if( libfdata_list_element_get_element_index(
 	     element,
 	     &element_index,
@@ -4153,36 +4220,28 @@ int libfdata_list_set_element_value(
 
 		return( -1 );
 	}
-	if( number_of_cache_entries <= 0 )
+	if( libfdata_list_element_get_timestamp(
+	     element,
+	     &element_timestamp,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid number of cache entries value out of bounds.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve time stamp from list element.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_list->calculate_cache_entry_index == NULL )
-	{
-		cache_entry_index = element_index % number_of_cache_entries;
-	}
-	else
-	{
-		cache_entry_index = internal_list->calculate_cache_entry_index(
-		                     element_index,
-		                     element_file_index,
-		                     element_offset,
-		                     element_size,
-		                     element_flags,
-		                     number_of_cache_entries );
-	}
-	if( libfcache_cache_set_value_by_index(
+	if( libfdata_list_cache_element_value(
+	     list,
 	     cache,
-	     cache_entry_index,
+	     element_index,
 	     element_file_index,
 	     element_offset,
+	     element_size,
+	     element_flags,
 	     element_timestamp,
 	     element_value,
 	     free_element_value,
@@ -4193,9 +4252,8 @@ int libfdata_list_set_element_value(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set value in cache entry: %d.",
-		 function,
-		 cache_entry_index );
+		 "%s: unable to cache element value.",
+		 function );
 
 		return( -1 );
 	}

@@ -352,6 +352,23 @@ int libfdata_list_get_element_at_offset(
 
 /* List element value functions
  */
+LIBFDATA_EXTERN \
+int libfdata_list_cache_element_value(
+     libfdata_list_t *list,
+     libfcache_cache_t *cache,
+     int element_index,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     time_t element_timestamp,
+     intptr_t *element_value,
+     int (*free_element_value)(
+            intptr_t **element_value,
+            libcerror_error_t **error ),
+     uint8_t write_flags,
+     libcerror_error_t **error );
+
 int libfdata_list_get_element_value(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
