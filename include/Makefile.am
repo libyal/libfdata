@@ -1,12 +1,12 @@
 include_HEADERS = \
-        libfdata.h
+	libfdata.h
 
 pkginclude_HEADERS = \
-        libfdata/definitions.h \
-        libfdata/error.h \
-        libfdata/extern.h \
-        libfdata/features.h \
-        libfdata/types.h
+	libfdata/definitions.h \
+	libfdata/error.h \
+	libfdata/extern.h \
+	libfdata/features.h \
+	libfdata/types.h
 
 EXTRA_DIST = \
 	libfdata.h.in \
