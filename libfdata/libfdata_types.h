@@ -61,9 +61,9 @@ typedef intptr_t libfdata_tree_t;
 typedef intptr_t libfdata_tree_node_t;
 typedef intptr_t libfdata_vector_t;
 
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
 
 #endif /* defined( HAVE_LOCAL_LIBFDATA ) */
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_TYPES_H ) */
 

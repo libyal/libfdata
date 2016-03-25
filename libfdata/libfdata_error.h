@@ -70,5 +70,5 @@ int libfdata_error_backtrace_sprint(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_ERROR_H ) */
 
