@@ -3114,6 +3114,15 @@ int libfdata_list_get_element_index_at_offset(
 
 		return( -1 );
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: number of elements: %d\n",
+		 function,
+		 number_of_elements );
+	}
+#endif
 	/* This assumes a fairly even distribution of the sizes of the elements
 	 */
 	initial_element_index = (int) ( ( number_of_elements * list_offset ) / internal_list->size );
