@@ -1041,7 +1041,7 @@ int libfdata_area_get_element_value_at_offset(
 
 		return( -1 );
 	}
-	element_index = element_value_offset / internal_area->element_data_size;
+	element_index = (int) ( element_value_offset / internal_area->element_data_size );
 
 	if( ( read_flags & LIBFDATA_READ_FLAG_IGNORE_CACHE ) == 0 )
 	{
@@ -1377,7 +1377,7 @@ int libfdata_area_set_element_value_at_offset(
 
 		return( -1 );
 	}
-	element_index = element_value_offset / internal_area->element_data_size;
+	element_index = (int) ( element_value_offset / internal_area->element_data_size );
 
 	if( internal_area->calculate_cache_entry_index == NULL )
 	{
