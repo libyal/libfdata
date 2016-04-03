@@ -1,5 +1,5 @@
 /*
- * The libfdata header wrapper
+ * The internal libfdata header
  *
  * Copyright (C) 2010-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -24,14 +24,14 @@
 
 #include <common.h>
 
-/* If libtool DLL support is enabled set LIBFDATA_DLL_IMPORT
+/* If Cygwin libtool DLL support is enabled set LIBFDATA_DLL_IMPORT
  * before including libfdata.h
  */
-#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#if defined( _WIN32 ) && defined( DLL_EXPORT )
 #define LIBFDATA_DLL_IMPORT
 #endif
 
 #include <libfdata.h>
 
-#endif
+#endif /* !defined( _FDATA_TEST_LIBFDATA_H ) */
 

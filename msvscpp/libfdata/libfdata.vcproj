@@ -300,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libfdata\libfdata_libcstring.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfdata\libfdata_libfcache.h"
 				>
 			</File>

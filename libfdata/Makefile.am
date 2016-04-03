@@ -25,6 +25,7 @@ libfdata_la_SOURCES = \
 	libfdata_libcdata.h \
 	libfdata_libcerror.h \
 	libfdata_libcnotify.h \
+	libfdata_libcstring.h \
 	libfdata_libfcache.h \
 	libfdata_list.c libfdata_list.h \
 	libfdata_list_element.c libfdata_list_element.h \

@@ -62,6 +62,10 @@ Optimizations:
   - optimize calculations by adding flag to mapped range ?
     LIBFDATA_MAPPED_RANGE_FLAG_IS_INVALID
 
+20160403
+* worked on tests
+* code clean up
+
 20160325
 * worked on list
 
