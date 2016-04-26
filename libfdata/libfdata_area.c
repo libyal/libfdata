@@ -254,7 +254,7 @@ int libfdata_area_free(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free the segments array.",
+			 "%s: unable to free segments array.",
 			 function );
 
 			result = -1;
@@ -268,7 +268,7 @@ int libfdata_area_free(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free the mapped ranges array.",
+			 "%s: unable to free mapped ranges array.",
 			 function );
 
 			result = -1;

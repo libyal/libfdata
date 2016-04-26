@@ -1,4 +1,4 @@
-.Dd January 16, 2016
+.Dd April  3, 2016
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -71,8 +71,6 @@ Area functions
 .Ft int
 .Fn libfdata_area_get_size "libfdata_area_t *area, size64_t *size, libfdata_error_t **error"
 .Pp
-Balanced tree functions
-.Pp
 List functions
 .Ft int
 .Fn libfdata_list_initialize "libfdata_list_t **list, intptr_t *data_handle, int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error ), int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error ), int (*read_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t read_flags, libfdata_error_t **error ), int (*write_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t write_flags, libfdata_error_t **error ), uint8_t flags, libfdata_error_t **error"
@@ -123,6 +121,8 @@ List functions
 .Ft int
 .Fn libfdata_list_get_element_at_offset "libfdata_list_t *list, off64_t offset, int *element_index, off64_t *element_data_offset, int *element_file_index, off64_t *element_offset, size64_t *element_size, uint32_t *element_flags, libfdata_error_t **error"
 .Ft int
+.Fn libfdata_list_cache_element_value "libfdata_list_t *list, libfdata_cache_t *cache, int element_index, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, time_t element_timestamp, intptr_t *element_value, int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error ), uint8_t write_flags, libfdata_error_t **error"
+.Ft int
 .Fn libfdata_list_get_element_value_by_index "libfdata_list_t *list, intptr_t *file_io_handle, libfdata_cache_t *cache, int element_index, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_get_element_value_at_offset "libfdata_list_t *list, intptr_t *file_io_handle, libfdata_cache_t *cache, off64_t offset, int *element_index, off64_t *element_data_offset, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
@@ -142,8 +142,6 @@ List element functions
 .Fn libfdata_list_element_get_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfdata_cache_t *cache, intptr_t **element_value, uint8_t read_flags, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_element_set_element_value "libfdata_list_element_t *element, intptr_t *file_io_handle, libfdata_cache_t *cache, intptr_t *element_value, int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error ), uint8_t write_flags, libfdata_error_t **error"
-.Pp
-Range list functions
 .Pp
 Stream functions
 .Ft int
@@ -188,8 +186,6 @@ Stream functions
 .Fn libfdata_stream_get_offset "libfdata_stream_t *stream, off64_t *offset, libfdata_error_t **error"
 .Ft int
 .Fn libfdata_stream_get_size "libfdata_stream_t *stream, size64_t *size, libfdata_error_t **error"
-.Pp
-Tree functions
 .Pp
 Vector functions
 .Ft int
