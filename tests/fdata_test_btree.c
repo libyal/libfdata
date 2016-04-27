@@ -395,7 +395,7 @@ int fdata_test_btree_read_node(
 			     0,
 			     (intptr_t *) key_value_data,
 			     (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_key_value_data_free,
-			     0,
+			     LIBFDATA_KEY_VALUE_FLAG_MANAGED,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -465,7 +465,7 @@ int fdata_test_btree_read_node(
 			     0,
 			     (intptr_t *) key_value_data,
 			     (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_key_value_data_free,
-			     0,
+			     LIBFDATA_KEY_VALUE_FLAG_MANAGED,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
