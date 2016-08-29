@@ -1,5 +1,5 @@
 /*
- * Notification functions
+ * Memory allocation functions for testing
  *
  * Copyright (C) 2010-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,45 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBFDATA_NOTIFY_H )
-#define _LIBFDATA_NOTIFY_H
+#if !defined( _FDATA_TEST_MEMORY_H )
+#define _FDATA_TEST_MEMORY_H
 
 #include <common.h>
-#include <file_stream.h>
-#include <types.h>
-
-#include "libfdata_extern.h"
-#include "libfdata_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-#if !defined( HAVE_LOCAL_LIBFDATA )
+#if defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ )
 
-LIBFDATA_EXTERN \
-void libfdata_notify_set_verbose(
-      int verbose );
+#define HAVE_FDATA_TEST_MEMORY		1
 
-LIBFDATA_EXTERN \
-int libfdata_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
+extern int fdata_test_malloc_attempts_before_fail;
 
-LIBFDATA_EXTERN \
-int libfdata_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
+extern int fdata_test_memcpy_attempts_before_fail;
 
-LIBFDATA_EXTERN \
-int libfdata_notify_stream_close(
-     libcerror_error_t **error );
+extern int fdata_test_memset_attempts_before_fail;
 
-#endif /* !defined( HAVE_LOCAL_LIBFDATA ) */
+extern int fdata_test_realloc_attempts_before_fail;
+
+#endif /* defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _LIBFDATA_NOTIFY_H ) */
+#endif /* !defined( _FDATA_TEST_MEMORY_H ) */
 

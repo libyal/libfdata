@@ -20,6 +20,7 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	fdata_test_area \
 	fdata_test_btree \
+	fdata_test_error \
 	fdata_test_get_version \
 	fdata_test_list \
 	fdata_test_range_list \
@@ -49,10 +50,23 @@ fdata_test_btree_LDADD = \
 	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@
 
+fdata_test_error_SOURCES = \
+	fdata_test_error.c \
+	fdata_test_libcstring.h \
+	fdata_test_libfdata.h \
+	fdata_test_macros.h \
+	fdata_test_unused.h
+
+fdata_test_error_LDADD = \
+	../libfdata/libfdata.la \
+	@LIBCSTRING_LIBADD@
+
 fdata_test_get_version_SOURCES = \
 	fdata_test_get_version.c \
 	fdata_test_libcstring.h \
-	fdata_test_libfdata.h
+	fdata_test_libfdata.h \
+	fdata_test_macros.h \
+	fdata_test_unused.h
 
 fdata_test_get_version_LDADD = \
 	../libfdata/libfdata.la \
