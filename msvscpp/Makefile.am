@@ -2,9 +2,9 @@ MSVSCPP_FILES = \
 	fdata_test_area/fdata_test_area.vcproj \
 	fdata_test_btree/fdata_test_btree.vcproj \
 	fdata_test_error/fdata_test_error.vcproj \
-	fdata_test_get_version/fdata_test_get_version.vcproj \
 	fdata_test_list/fdata_test_list.vcproj \
 	fdata_test_range_list/fdata_test_range_list.vcproj \
+	fdata_test_support/fdata_test_support.vcproj \
 	fdata_test_vector/fdata_test_vector.vcproj \
 	libcdata/libcdata.vcproj \
 	libcerror/libcerror.vcproj \

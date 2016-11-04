@@ -122,9 +122,9 @@ stamp-h[1-9]
 /tests/fdata_test_area
 /tests/fdata_test_btree
 /tests/fdata_test_error
-/tests/fdata_test_get_version
 /tests/fdata_test_list
 /tests/fdata_test_range_list
+/tests/fdata_test_support
 /tests/fdata_test_vector
 /tests/tmp*
 
