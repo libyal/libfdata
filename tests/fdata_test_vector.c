@@ -21,16 +21,15 @@
 
 #include <common.h>
 #include <byte_stream.h>
+#include <file_stream.h>
 #include <memory.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include <stdio.h>
-
 #include "fdata_test_libcerror.h"
-#include "fdata_test_libcstring.h"
 #include "fdata_test_libfdata.h"
 #include "fdata_test_unused.h"
 
@@ -439,7 +438,7 @@ on_error:
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain( int argc, wchar_t * const argv[] )
 #else
 int main( int argc, char * const argv[] )

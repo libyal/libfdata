@@ -20,15 +20,14 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include <stdio.h>
-
 #include "fdata_test_libcerror.h"
-#include "fdata_test_libcstring.h"
 #include "fdata_test_libfdata.h"
 
 /* Tests initializing the range list
@@ -123,7 +122,7 @@ int fdata_test_range_list_initialize(
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain( int argc, wchar_t * const argv[] )
 #else
 int main( int argc, char * const argv[] )

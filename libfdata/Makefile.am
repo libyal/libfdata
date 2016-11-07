@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -25,7 +24,6 @@ libfdata_la_SOURCES = \
 	libfdata_libcdata.h \
 	libfdata_libcerror.h \
 	libfdata_libcnotify.h \
-	libfdata_libcstring.h \
 	libfdata_libfcache.h \
 	libfdata_list.c libfdata_list.h \
 	libfdata_list_element.c libfdata_list_element.h \
@@ -43,7 +41,6 @@ libfdata_la_SOURCES = \
 	libfdata_vector.c libfdata_vector.h
 
 libfdata_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCDATA_LIBADD@ \

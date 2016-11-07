@@ -38,10 +38,9 @@
 #include <libfdata/extern.h>
 
 #else
-
 #define LIBFDATA_EXTERN	extern
 
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_EXTERN_H ) */
 
