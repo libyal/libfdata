@@ -450,5 +450,5 @@ int libfdata_list_get_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_LIST_H ) */
 

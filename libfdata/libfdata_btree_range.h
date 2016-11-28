@@ -119,5 +119,5 @@ int libfdata_btree_range_set(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_BTREE_RANGE_H ) */
 

@@ -210,5 +210,5 @@ int libfdata_range_list_set_element_value_at_offset(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_RANGE_LIST_H ) */
 

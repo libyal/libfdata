@@ -264,5 +264,5 @@ int libfdata_btree_node_append_leaf_value(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_BTREE_NODE_H ) */
 

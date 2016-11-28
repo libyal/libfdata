@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="fdata_test_btree"
-	ProjectGUID="{1245E83F-04C5-427A-A07D-CE7A9FD1B616}"
-	RootNamespace="fdata_test_btree"
+	Name="fdata_test_cache"
+	ProjectGUID="{ED9780A0-50DA-4308-A05E-ADE4081FF253}"
+	RootNamespace="fdata_test_cache"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\fdata_test_btree.c"
+				RelativePath="..\..\tests\fdata_test_cache.c"
 				>
 			</File>
 			<File

@@ -274,5 +274,5 @@ int libfdata_area_get_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_AREA_H ) */
 

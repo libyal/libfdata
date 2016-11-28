@@ -122,9 +122,15 @@ stamp-h[1-9]
 /libfdata/libfdata_definitions.h
 /tests/fdata_test_area
 /tests/fdata_test_btree
+/tests/fdata_test_btree_range
+/tests/fdata_test_cache
 /tests/fdata_test_error
 /tests/fdata_test_list
+/tests/fdata_test_mapped_range
+/tests/fdata_test_notify
+/tests/fdata_test_range
 /tests/fdata_test_range_list
+/tests/fdata_test_stream
 /tests/fdata_test_support
 /tests/fdata_test_vector
 /tests/tmp*

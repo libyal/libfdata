@@ -355,5 +355,5 @@ int libfdata_tree_node_get_deleted_leaf_node_by_index(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_TREE_NODE_H ) */
 

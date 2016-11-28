@@ -89,5 +89,5 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_SEGMENTS_ARRAY_H ) */
 

@@ -155,5 +155,5 @@ int libfdata_list_element_set_element_value(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_LIST_ELEMENT_H ) */
 

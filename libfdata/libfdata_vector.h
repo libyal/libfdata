@@ -301,5 +301,5 @@ int libfdata_vector_get_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_VECTOR_H ) */
 

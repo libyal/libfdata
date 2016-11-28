@@ -90,5 +90,5 @@ int libfdata_range_set(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_RANGE_H ) */
 

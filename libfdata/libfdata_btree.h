@@ -364,5 +364,5 @@ int libfdata_btree_get_leaf_value_by_key(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_BTREE_H ) */
 

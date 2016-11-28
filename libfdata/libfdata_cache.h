@@ -52,5 +52,5 @@ int libfdata_cache_free(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_CACHE_H ) */
 

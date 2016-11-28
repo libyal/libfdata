@@ -73,5 +73,5 @@ int libfdata_mapped_range_set(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_MAPPED_RANGE_H ) */
 

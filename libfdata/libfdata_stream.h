@@ -351,5 +351,5 @@ int libfdata_stream_get_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBFDATA_INTERNAL_STREAM_H ) */
 
