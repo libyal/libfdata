@@ -612,8 +612,8 @@ int fdata_test_btree_read(
 	     NULL,
 	     NULL,
 	     NULL,
-	     (int (*)(intptr_t *, intptr_t *, libfdata_btree_node_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &fdata_test_btree_read_node,
-	     (int (*)(intptr_t *, intptr_t *, libfdata_btree_t *, libfdata_cache_t *, int, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &fdata_test_btree_read_leaf_value,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_btree_node_t *, int, off64_t, size64_t, uint32_t, intptr_t *, uint8_t, libcerror_error_t **)) &fdata_test_btree_read_node,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_btree_t *, libfdata_cache_t *, int, int, off64_t, size64_t, uint32_t, intptr_t *, uint8_t, libcerror_error_t **)) &fdata_test_btree_read_leaf_value,
 	     0,
 	     &error ) != 1 )
 	{
