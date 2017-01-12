@@ -1,7 +1,7 @@
 /*
- * Library btree type testing program
+ * Library btree type test program
  *
- * Copyright (C) 2010-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2010-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -32,6 +32,8 @@
 #include "fdata_test_libcerror.h"
 #include "fdata_test_libfdata.h"
 #include "fdata_test_unused.h"
+
+#include "../libfdata/libfdata_btree.h"
 
 #define LEAF_VALUE_DATA_SIZE			512
 #define NODE_DATA_SIZE				512
