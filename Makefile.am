@@ -20,10 +20,9 @@ DPKG_FILES = \
 	dpkg/compat \
 	dpkg/control \
 	dpkg/copyright \
-	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libfdata-dev.docs \
-	dpkg/libfdata.docs \
+	dpkg/libfdata-dev.install \
+	dpkg/libfdata.install \
 	dpkg/source/format
 
 GETTEXT_FILES = \
