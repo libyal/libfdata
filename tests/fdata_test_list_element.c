@@ -35,7 +35,7 @@
 
 #include "../libfdata/libfdata_list_element.h"
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT )
 
 /* Tests the libfdata_list_element_free function
  * Returns 1 if successful or 0 if not
@@ -75,7 +75,7 @@ on_error:
 	return( 0 );
 }
 
-#endif /* defined( __GNUC__ ) */
+#endif /* #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -92,7 +92,7 @@ int main(
 	FDATA_TEST_UNREFERENCED_PARAMETER( argc )
 	FDATA_TEST_UNREFERENCED_PARAMETER( argv )
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT )
 
 	/* TODO: add tests for libfdata_list_element_initialize */
 
@@ -120,7 +120,7 @@ int main(
 
 	/* TODO: add tests for libfdata_list_element_set_element_value */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 

@@ -96,7 +96,7 @@ int main(
 
 	/* TODO: add tests for libfdata_tree_clone */
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT )
 
 	/* TODO: add tests for libfdata_tree_get_node_value */
 
@@ -104,7 +104,7 @@ int main(
 
 	/* TODO: add tests for libfdata_tree_read_sub_nodes */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 	/* TODO: add tests for libfdata_tree_get_root_node */
 
