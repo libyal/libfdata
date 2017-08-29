@@ -64,13 +64,13 @@ int fdata_test_range_initialize(
 	 result,
 	 1 );
 
-        FDATA_TEST_ASSERT_IS_NOT_NULL(
-         "range",
-         range );
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "range",
+	 range );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libfdata_range_free(
 	          &range,
@@ -81,13 +81,13 @@ int fdata_test_range_initialize(
 	 result,
 	 1 );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "range",
-         range );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "range",
+	 range );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -100,9 +100,9 @@ int fdata_test_range_initialize(
 	 result,
 	 -1 );
 
-        FDATA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -118,9 +118,9 @@ int fdata_test_range_initialize(
 	 result,
 	 -1 );
 
-        FDATA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -252,9 +252,9 @@ int fdata_test_range_free(
 	 result,
 	 -1 );
 
-        FDATA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -292,13 +292,13 @@ int fdata_test_range_clone(
 	 result,
 	 1 );
 
-        FDATA_TEST_ASSERT_IS_NOT_NULL(
-         "source_range",
-         source_range );
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "source_range",
+	 source_range );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test regular cases
 	 */
@@ -312,13 +312,13 @@ int fdata_test_range_clone(
 	 result,
 	 1 );
 
-        FDATA_TEST_ASSERT_IS_NOT_NULL(
-         "destination_range",
-         destination_range );
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "destination_range",
+	 destination_range );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libfdata_range_free(
 	          &destination_range,
@@ -329,13 +329,13 @@ int fdata_test_range_clone(
 	 result,
 	 1 );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "destination_range",
-         destination_range );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "destination_range",
+	 destination_range );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libfdata_range_clone(
 	          &destination_range,
@@ -347,13 +347,13 @@ int fdata_test_range_clone(
 	 result,
 	 1 );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "destination_range",
-         destination_range );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "destination_range",
+	 destination_range );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -367,9 +367,9 @@ int fdata_test_range_clone(
 	 result,
 	 -1 );
 
-        FDATA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -385,13 +385,13 @@ int fdata_test_range_clone(
 	 result,
 	 1 );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "source_range",
-         source_range );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "source_range",
+	 source_range );
 
-        FDATA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	return( 1 );
 
