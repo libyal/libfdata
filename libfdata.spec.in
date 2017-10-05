@@ -5,13 +5,13 @@ Summary: Library to provide generic file data functions
 Group: System Environment/Libraries
 License: LGPL
 Source: %{name}-%{version}.tar.gz
-URL: https://github.com/libyal/libfdata/
+URL: https://github.com/libyal/libfdata
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 @libfdata_spec_requires@ @ax_libcdata_spec_requires@ @ax_libcerror_spec_requires@ @ax_libcnotify_spec_requires@ @ax_libcthreads_spec_requires@ @ax_libfcache_spec_requires@
 @libfdata_spec_build_requires@ @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@
 
 %description
-libfdata is a library to provide generic file data functions
+Library to provide generic file data functions
 
 %package devel
 Summary: Header files and libraries for developing applications for libfdata
