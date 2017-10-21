@@ -104,7 +104,7 @@ int main(
 
 	/* TODO: add tests for libfdata_tree_read_sub_nodes */
 
-#endif /* #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 	/* TODO: add tests for libfdata_tree_get_root_node */
 

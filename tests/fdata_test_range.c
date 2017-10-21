@@ -539,7 +539,7 @@ on_error:
 	return( 0 );
 }
 
-#endif /* #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -578,7 +578,7 @@ int main(
 
 	/* TODO: add tests for libfdata_range_set */
 
-#endif /* #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 

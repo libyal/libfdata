@@ -7,4 +7,9 @@ coverage:
     patch: true
     changes: false
   ignore:
+    - "libcdata/*"
+    - "libcerror/*"
+    - "libcnotify/*"
+    - "libcthreads/*"
+    - "libfcache/*"
     - "tests/*"
