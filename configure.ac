@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libfdata],
- [20180107],
+ [20180219],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -45,6 +45,12 @@ AC_SYS_LARGEFILE
 dnl Check if WINAPI support should be enabled
 AX_COMMON_CHECK_ENABLE_WINAPI
 
+dnl Check if verbose output should be enabled
+AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
+
+dnl Check if debug output should be enabled
+AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
+
 dnl Check for type definitions
 AX_TYPES_CHECK_LOCAL
 
@@ -68,12 +74,6 @@ AX_LIBFCACHE_CHECK_ENABLE
 
 dnl Check if libfdata required headers and functions are available
 AX_LIBFDATA_CHECK_LOCAL
-
-dnl Check if libfdata should be build with verbose output
-AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
-
-dnl Check if libfdata should be build with debug output
-AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
 
 dnl Check if tests required headers and functions are available
 AX_TESTS_CHECK_LOCAL
