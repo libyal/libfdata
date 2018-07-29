@@ -1,5 +1,5 @@
 /*
- * The internal libfdata header
+ * The libfdata header wrapper
  *
  * Copyright (C) 2010-2018, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -23,13 +23,6 @@
 #define _FDATA_TEST_LIBFDATA_H
 
 #include <common.h>
-
-/* If Cygwin libtool DLL support is enabled and do not want to create static
- * executables set LIBFDATA_DLL_IMPORT before including libfdata.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
-#define LIBFDATA_DLL_IMPORT
-#endif
 
 #include <libfdata.h>
 

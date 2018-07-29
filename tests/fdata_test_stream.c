@@ -33,6 +33,8 @@
 #include "fdata_test_memory.h"
 #include "fdata_test_unused.h"
 
+#include "../libfdata/libfdata_stream.h"
+
 /* Tests the libfdata_stream_free function
  * Returns 1 if successful or 0 if not
  */

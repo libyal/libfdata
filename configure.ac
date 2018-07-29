@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libfdata],
- [20180327],
+ [20180729],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -83,7 +83,7 @@ AS_IF(
  [test "x$enable_shared" = xyes],
  [AS_CASE(
   [$host],
-  [*cygwin* | *mingw*],
+  [*cygwin* | *mingw* | *msys*],
   [AC_DEFINE(
    [HAVE_DLLMAIN],
    [1],
@@ -92,7 +92,10 @@ AS_IF(
    [HAVE_DLLMAIN],
    [1])
 
-  dnl Used in tests
+  AC_SUBST(
+   [LIBFDATA_DLL_EXPORT],
+   ["-DLIBFDATA_DLL_EXPORT"])
+
   AC_SUBST(
    [LIBFDATA_DLL_IMPORT],
    ["-DLIBFDATA_DLL_IMPORT"])
