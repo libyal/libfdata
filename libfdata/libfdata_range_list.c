@@ -56,7 +56,7 @@ int libfdata_range_list_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int element_file_index,
             off64_t element_offset,
             size64_t element_size,
@@ -67,7 +67,7 @@ int libfdata_range_list_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int element_file_index,
             off64_t element_offset,
             size64_t element_size,
@@ -949,7 +949,7 @@ int libfdata_range_list_insert_element(
 int libfdata_range_list_get_element_value_at_offset(
      libfdata_range_list_t *range_list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      off64_t offset,
      off64_t *element_data_offset,
      intptr_t **element_value,
@@ -1076,7 +1076,7 @@ int libfdata_range_list_get_element_value_at_offset(
 int libfdata_range_list_set_element_value_at_offset(
      libfdata_range_list_t *range_list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      off64_t offset,
      intptr_t *element_value,
      int (*free_element_value)(

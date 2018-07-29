@@ -179,6 +179,10 @@
 				RelativePath="..\..\tests\fdata_test_list_element.c"
 				>
 			</File>
+			<File
+				RelativePath="..\..\tests\fdata_test_memory.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -195,6 +199,10 @@
 			</File>
 			<File
 				RelativePath="..\..\tests\fdata_test_macros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\fdata_test_memory.h"
 				>
 			</File>
 			<File

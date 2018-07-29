@@ -220,8 +220,6 @@ int libfdata_list_element_free(
 int libfdata_list_element_clone(
      libfdata_list_element_t **destination_element,
      libfdata_list_element_t *source_element,
-     libfdata_list_t *list,
-     int element_index,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_element_t *internal_destination_element = NULL;
@@ -246,28 +244,6 @@ int libfdata_list_element_clone(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: destination element already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( list == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid list.",
-		 function );
-
-		return( -1 );
-	}
-	if( element_index < 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid element index value less than zero.",
 		 function );
 
 		return( -1 );
@@ -338,8 +314,8 @@ int libfdata_list_element_clone(
 
 		goto on_error;
 	}
-	internal_destination_element->list          = list;
-	internal_destination_element->element_index = element_index;
+	internal_destination_element->list          = internal_source_element->list;
+	internal_destination_element->element_index = internal_source_element->element_index;
 	internal_destination_element->mapped_size   = internal_source_element->mapped_size;
 
 	*destination_element = (libfdata_list_element_t *) internal_destination_element;
@@ -747,7 +723,7 @@ int libfdata_list_element_set_mapped_size(
 int libfdata_list_element_get_element_value(
      libfdata_list_element_t *element,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      intptr_t **element_value,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -800,7 +776,7 @@ int libfdata_list_element_get_element_value(
 int libfdata_list_element_set_element_value(
      libfdata_list_element_t *element,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,

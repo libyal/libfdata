@@ -824,7 +824,7 @@ int libfdata_tree_node_set_first_leaf_node_index(
 int libfdata_tree_node_get_node_value(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      intptr_t **node_value,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -878,7 +878,7 @@ int libfdata_tree_node_get_node_value(
  */
 int libfdata_tree_node_set_node_value(
      libfdata_tree_node_t *node,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      intptr_t *node_value,
      int (*free_node_value)(
             intptr_t **node_value,
@@ -983,7 +983,7 @@ int libfdata_tree_node_resize_sub_nodes(
 int libfdata_tree_node_get_number_of_sub_nodes(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int *number_of_sub_nodes,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -1077,7 +1077,7 @@ int libfdata_tree_node_get_number_of_sub_nodes(
 int libfdata_tree_node_get_sub_node_by_index(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int sub_node_index,
      libfdata_tree_node_t **sub_node,
      uint8_t read_flags,
@@ -1435,7 +1435,7 @@ on_error:
 int libfdata_tree_node_insert_sub_node(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int *sub_node_index,
      int node_file_index,
      off64_t node_offset,
@@ -1582,7 +1582,7 @@ int libfdata_tree_node_insert_sub_node(
 	if( libfdata_tree_get_node_value(
 	     internal_tree_node->tree,
 	     file_io_handle,
-	     insert_cache,
+	     (libfdata_cache_t *) insert_cache,
 	     insert_sub_node,
 	     &insert_sub_node_value,
 	     read_flags,
@@ -2445,7 +2445,7 @@ int libfdata_tree_node_set_calculate_leaf_node_values(
 int libfdata_tree_node_read_leaf_node_values(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      uint8_t read_flags,
      libcerror_error_t **error )
 {
@@ -2677,7 +2677,7 @@ int libfdata_tree_node_read_leaf_node_values(
 int libfdata_tree_node_is_leaf(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      uint8_t read_flags,
      libcerror_error_t **error )
 {
@@ -2883,7 +2883,7 @@ int libfdata_tree_node_set_leaf_sub_node(
 int libfdata_tree_node_get_number_of_leaf_nodes(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int *number_of_leaf_nodes,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -2946,7 +2946,7 @@ int libfdata_tree_node_get_number_of_leaf_nodes(
 int libfdata_tree_node_get_leaf_node_by_index(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int leaf_node_index,
      libfdata_tree_node_t **leaf_node,
      uint8_t read_flags,
@@ -3174,7 +3174,7 @@ int libfdata_tree_node_get_leaf_node_by_index(
 int libfdata_tree_node_get_number_of_deleted_leaf_nodes(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int *number_of_deleted_leaf_nodes,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -3237,7 +3237,7 @@ int libfdata_tree_node_get_number_of_deleted_leaf_nodes(
 int libfdata_tree_node_get_deleted_leaf_node_by_index(
      libfdata_tree_node_t *node,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int deleted_leaf_node_index,
      libfdata_tree_node_t **deleted_leaf_node,
      uint8_t read_flags,

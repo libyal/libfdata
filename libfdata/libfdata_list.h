@@ -96,7 +96,7 @@ struct libfdata_internal_list
 	       intptr_t *data_handle,
 	       intptr_t *file_io_handle,
 	       libfdata_list_element_t *list_element,
-	       libfcache_cache_t *cache,
+	       libfdata_cache_t *cache,
 	       int element_data_file_index,
 	       off64_t element_data_offset,
 	       size64_t element_data_size,
@@ -110,7 +110,7 @@ struct libfdata_internal_list
 	       intptr_t *data_handle,
 	       intptr_t *file_io_handle,
 	       libfdata_list_element_t *list_element,
-	       libfcache_cache_t *cache,
+	       libfdata_cache_t *cache,
 	       int element_data_file_index,
 	       off64_t element_data_offset,
 	       size64_t element_data_size,
@@ -134,7 +134,7 @@ int libfdata_list_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int element_data_file_index,
             off64_t element_data_offset,
             size64_t element_data_size,
@@ -145,7 +145,7 @@ int libfdata_list_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_list_element_t *list_element,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int element_data_file_index,
             off64_t element_data_offset,
             size64_t element_data_size,
@@ -355,7 +355,7 @@ int libfdata_list_get_element_at_offset(
 LIBFDATA_EXTERN \
 int libfdata_list_cache_element_value(
      libfdata_list_t *list,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_index,
      int element_file_index,
      off64_t element_offset,
@@ -372,7 +372,7 @@ int libfdata_list_cache_element_value(
 int libfdata_list_get_element_value(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      libfdata_list_element_t *element,
      intptr_t **element_value,
      uint8_t read_flags,
@@ -382,7 +382,7 @@ LIBFDATA_EXTERN \
 int libfdata_list_get_element_value_by_index(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_index,
      intptr_t **element_value,
      uint8_t read_flags,
@@ -392,7 +392,7 @@ LIBFDATA_EXTERN \
 int libfdata_list_get_element_value_at_offset(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      off64_t offset,
      int *element_index,
      off64_t *element_data_offset,
@@ -403,7 +403,7 @@ int libfdata_list_get_element_value_at_offset(
 int libfdata_list_set_element_value(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      libfdata_list_element_t *element,
      intptr_t *element_value,
      int (*free_element_value)(
@@ -416,7 +416,7 @@ LIBFDATA_EXTERN \
 int libfdata_list_set_element_value_by_index(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_index,
      intptr_t *element_value,
      int (*free_element_value)(
@@ -429,7 +429,7 @@ LIBFDATA_EXTERN \
 int libfdata_list_set_element_value_at_offset(
      libfdata_list_t *list,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      off64_t offset,
      intptr_t *element_value,
      int (*free_element_value)(

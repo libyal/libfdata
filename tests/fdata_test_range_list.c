@@ -38,9 +38,15 @@ int fdata_test_range_list_initialize(
      libfdata_range_list_t **range_list,
      int expected_result )
 {
-	libcerror_error_t *error = NULL;
-	static char *function    = "fdata_test_range_list_initialize";
-	int result               = 0;
+	libcerror_error_t *error        = NULL;
+	static char *function           = "fdata_test_range_list_initialize";
+	int result                      = 0;
+
+#if defined( HAVE_FDATA_TEST_MEMORY )
+	int number_of_malloc_fail_tests = 1;
+	int number_of_memset_fail_tests = 1;
+	int test_number                 = 0;
+#endif
 
 	fprintf(
 	 stdout,

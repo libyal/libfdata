@@ -223,7 +223,7 @@ int libfdata_area_empty(
      libfdata_area_t *area,
      libfdata_error_t **error );
 
-/* Resizes the segments
+/* Resizes the area
  * Returns 1 if successful or -1 on error
  */
 LIBFDATA_EXTERN \
@@ -316,7 +316,7 @@ int libfdata_area_get_element_value_at_offset(
 
 /* Sets the value of a specific element
  *
- * If the flag LIBFDATA_VECTOR_ELEMENT_VALUE_FLAG_MANAGED is set the area
+ * If the flag LIBFDATA_AREA_ELEMENT_VALUE_FLAG_MANAGED is set the area
  * takes over management of the value and the value is freed when
  * no longer needed.
  *
@@ -331,7 +331,7 @@ int libfdata_area_set_element_value_at_offset(
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
-     libfdata_error_t **error ),
+            libfdata_error_t **error ),
      uint8_t write_flags,
      libfdata_error_t **error );
 

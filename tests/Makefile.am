@@ -124,6 +124,7 @@ fdata_test_list_element_SOURCES = \
 	fdata_test_libfdata.h \
 	fdata_test_list_element.c \
 	fdata_test_macros.h \
+	fdata_test_memory.c fdata_test_memory.h \
 	fdata_test_unused.h
 
 fdata_test_list_element_LDADD = \
@@ -143,13 +144,15 @@ fdata_test_mapped_range_LDADD = \
 	@LIBCERROR_LIBADD@
 
 fdata_test_notify_SOURCES = \
+	fdata_test_libcerror.h \
 	fdata_test_libfdata.h \
 	fdata_test_macros.h \
 	fdata_test_notify.c \
 	fdata_test_unused.h
 
 fdata_test_notify_LDADD = \
-	../libfdata/libfdata.la
+	../libfdata/libfdata.la \
+	@LIBCERROR_LIBADD@
 
 fdata_test_range_SOURCES = \
 	fdata_test_libcerror.h \

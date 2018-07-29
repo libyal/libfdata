@@ -77,8 +77,6 @@ int libfdata_list_element_free(
 int libfdata_list_element_clone(
      libfdata_list_element_t **destination_element,
      libfdata_list_element_t *source_element,
-     libfdata_list_t *list,
-     int element_index,
      libcerror_error_t **error );
 
 int libfdata_list_element_get_element_index(
@@ -134,7 +132,7 @@ LIBFDATA_EXTERN \
 int libfdata_list_element_get_element_value(
      libfdata_list_element_t *element,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      intptr_t **element_value,
      uint8_t read_flags,
      libcerror_error_t **error );
@@ -143,7 +141,7 @@ LIBFDATA_EXTERN \
 int libfdata_list_element_set_element_value(
      libfdata_list_element_t *element,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,

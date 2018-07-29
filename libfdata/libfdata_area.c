@@ -59,7 +59,7 @@ int libfdata_area_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_area_t *area,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             off64_t element_value_offset,
             int element_data_file_index,
             off64_t element_data_offset,
@@ -71,7 +71,7 @@ int libfdata_area_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_area_t *area,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             off64_t element_value_offset,
             int element_data_file_index,
             off64_t element_data_offset,
@@ -351,6 +351,7 @@ int libfdata_area_clone(
 	}
 	internal_source_area = (libfdata_internal_area_t *) source_area;
 
+/* TODO refactor to use libfdata_area_initialize this requires libcdata_array_copy_elements function */
 	internal_destination_area = memory_allocate_structure(
 	                             libfdata_internal_area_t );
 
@@ -462,6 +463,8 @@ int libfdata_area_clone(
 	internal_destination_area->read_element_data  = internal_source_area->read_element_data;
 	internal_destination_area->write_element_data = internal_source_area->write_element_data;
 
+	*destination_area = (libfdata_area_t *) internal_destination_area;
+
 	return( 1 );
 
 on_error:
@@ -546,16 +549,16 @@ int libfdata_area_empty(
 	return( 1 );
 }
 
-/* Resizes the segments
+/* Resizes the area
  * Returns 1 if successful or -1 on error
  */
-int libfdata_area_resize_segments(
+int libfdata_area_resize(
      libfdata_area_t *area,
      int number_of_segments,
      libcerror_error_t **error )
 {
 	libfdata_internal_area_t *internal_area = NULL;
-	static char *function                   = "libfdata_area_resize_segments";
+	static char *function                   = "libfdata_area_resize";
 
 	if( area == NULL )
 	{
@@ -849,6 +852,8 @@ int libfdata_area_append_segment(
 
 		return( -1 );
 	}
+	internal_area->flags |= LIBFDATA_FLAG_CALCULATE_MAPPED_RANGES;
+
 	return( 1 );
 }
 
@@ -904,7 +909,7 @@ int libfdata_area_get_element_data_size(
 int libfdata_area_get_element_value_at_offset(
      libfdata_area_t *area,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      off64_t element_value_offset,
      intptr_t **element_value,
      uint8_t read_flags,
@@ -1017,7 +1022,7 @@ int libfdata_area_get_element_value_at_offset(
 	element_data_flags      = segment_data_range->flags;
 
 	if( libfcache_cache_get_number_of_entries(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     &number_of_cache_entries,
 	     error ) != 1 )
 	{
@@ -1060,7 +1065,7 @@ int libfdata_area_get_element_value_at_offset(
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
-		     cache,
+		     (libfcache_cache_t *) cache,
 		     cache_entry_index,
 		     &cache_value,
 		     error ) != 1 )
@@ -1175,7 +1180,7 @@ int libfdata_area_get_element_value_at_offset(
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
-		     cache,
+		     (libfcache_cache_t *) cache,
 		     cache_entry_index,
 		     &cache_value,
 		     error ) != 1 )
@@ -1242,7 +1247,7 @@ int libfdata_area_get_element_value_at_offset(
 
 /* Sets the value of a specific element
  *
- * If the flag LIBFDATA_VECTOR_ELEMENT_VALUE_FLAG_MANAGED is set the area
+ * If the flag LIBFDATA_AREA_ELEMENT_VALUE_FLAG_MANAGED is set the area
  * takes over management of the value and the value is freed when
  * no longer needed.
  *
@@ -1251,7 +1256,7 @@ int libfdata_area_get_element_value_at_offset(
 int libfdata_area_set_element_value_at_offset(
      libfdata_area_t *area,
      intptr_t *file_io_handle LIBFDATA_ATTRIBUTE_UNUSED,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      off64_t element_value_offset,
      intptr_t *element_value,
      int (*free_element_value)(
@@ -1353,7 +1358,7 @@ int libfdata_area_set_element_value_at_offset(
 	element_data_flags      = segment_data_range->flags;
 
 	if( libfcache_cache_get_number_of_entries(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     &number_of_cache_entries,
 	     error ) != 1 )
 	{
@@ -1394,7 +1399,7 @@ int libfdata_area_set_element_value_at_offset(
 		                     number_of_cache_entries );
 	}
 	if( libfcache_cache_set_value_by_index(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     cache_entry_index,
 	     element_data_file_index,
 	     element_data_offset,

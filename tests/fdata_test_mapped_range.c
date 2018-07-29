@@ -416,6 +416,250 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libfdata_mapped_range_get function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_mapped_range_get(
+     void )
+{
+	libcerror_error_t *error              = NULL;
+	libfdata_mapped_range_t *mapped_range = NULL;
+	size64_t size                         = 0;
+	off64_t offset                        = 0;
+	int result                            = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_mapped_range_initialize(
+	          &mapped_range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "mapped_range",
+	 mapped_range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_mapped_range_get(
+	          mapped_range,
+	          &offset,
+	          &size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_mapped_range_get(
+	          NULL,
+	          &offset,
+	          &size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_mapped_range_get(
+	          mapped_range,
+	          NULL,
+	          &size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_mapped_range_get(
+	          mapped_range,
+	          &offset,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_mapped_range_free(
+	          &mapped_range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "mapped_range",
+	 mapped_range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( mapped_range != NULL )
+	{
+		libfdata_mapped_range_free(
+		 &mapped_range,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_mapped_range_set function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_mapped_range_set(
+     void )
+{
+	libcerror_error_t *error              = NULL;
+	libfdata_mapped_range_t *mapped_range = NULL;
+	size64_t size                         = 0;
+	off64_t offset                        = 0;
+	int result                            = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_mapped_range_initialize(
+	          &mapped_range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "mapped_range",
+	 mapped_range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_mapped_range_set(
+	          mapped_range,
+	          1024,
+	          2048,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_mapped_range_get(
+	          NULL,
+	          1024,
+	          2048,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_mapped_range_free(
+	          &mapped_range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "mapped_range",
+	 mapped_range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( mapped_range != NULL )
+	{
+		libfdata_mapped_range_free(
+		 &mapped_range,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 /* The main program
@@ -447,9 +691,13 @@ int main(
 	 "libfdata_mapped_range_clone",
 	 fdata_test_mapped_range_clone );
 
-	/* TODO: add tests for libfdata_mapped_range_get */
+	FDATA_TEST_RUN(
+	 "libfdata_mapped_range_get",
+	 fdata_test_mapped_range_get );
 
-	/* TODO: add tests for libfdata_mapped_range_set */
+	FDATA_TEST_RUN(
+	 "libfdata_mapped_range_set",
+	 fdata_test_mapped_range_set );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 

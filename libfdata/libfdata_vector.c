@@ -59,7 +59,7 @@ int libfdata_vector_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_vector_t *vector,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int element_index,
             int element_data_file_index,
             off64_t element_data_offset,
@@ -71,7 +71,7 @@ int libfdata_vector_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_vector_t *vector,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int element_index,
             int element_data_file_index,
             off64_t element_data_offset,
@@ -462,6 +462,8 @@ int libfdata_vector_clone(
 	internal_destination_vector->read_element_data  = internal_source_vector->read_element_data;
 	internal_destination_vector->write_element_data = internal_source_vector->write_element_data;
 
+	*destination_vector = (libfdata_vector_t *) internal_destination_vector;
+
 	return( 1 );
 
 on_error:
@@ -549,13 +551,13 @@ int libfdata_vector_empty(
 /* Resizes the segments
  * Returns 1 if successful or -1 on error
  */
-int libfdata_vector_resize_segments(
+int libfdata_vector_resize(
      libfdata_vector_t *vector,
      int number_of_segments,
      libcerror_error_t **error )
 {
 	libfdata_internal_vector_t *internal_vector = NULL;
-	static char *function                       = "libfdata_vector_resize_segments";
+	static char *function                       = "libfdata_vector_resize";
 
 	if( vector == NULL )
 	{
@@ -1368,7 +1370,7 @@ int libfdata_vector_get_element_index_at_offset(
 int libfdata_vector_get_element_value_by_index(
      libfdata_vector_t *vector,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_index,
      intptr_t **element_value,
      uint8_t read_flags,
@@ -1492,7 +1494,7 @@ int libfdata_vector_get_element_value_by_index(
 	element_data_flags      = segment_data_range->flags;
 
 	if( libfcache_cache_get_number_of_entries(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     &number_of_cache_entries,
 	     error ) != 1 )
 	{
@@ -1533,7 +1535,7 @@ int libfdata_vector_get_element_value_by_index(
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
-		     cache,
+		     (libfcache_cache_t *) cache,
 		     cache_entry_index,
 		     &cache_value,
 		     error ) != 1 )
@@ -1648,7 +1650,7 @@ int libfdata_vector_get_element_value_by_index(
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
-		     cache,
+		     (libfcache_cache_t *) cache,
 		     cache_entry_index,
 		     &cache_value,
 		     error ) != 1 )
@@ -1719,7 +1721,7 @@ int libfdata_vector_get_element_value_by_index(
 int libfdata_vector_get_element_value_at_offset(
      libfdata_vector_t *vector,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      off64_t element_value_offset,
      off64_t *element_data_offset,
      intptr_t **element_value,
@@ -1779,7 +1781,7 @@ int libfdata_vector_get_element_value_at_offset(
 int libfdata_vector_set_element_value_by_index(
      libfdata_vector_t *vector,
      intptr_t *file_io_handle LIBFDATA_ATTRIBUTE_UNUSED,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_index,
      intptr_t *element_value,
      int (*free_element_value)(
@@ -1892,7 +1894,7 @@ int libfdata_vector_set_element_value_by_index(
 	element_data_flags      = segment_data_range->flags;
 
 	if( libfcache_cache_get_number_of_entries(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     &number_of_cache_entries,
 	     error ) != 1 )
 	{
@@ -1931,7 +1933,7 @@ int libfdata_vector_set_element_value_by_index(
 		                     number_of_cache_entries );
 	}
 	if( libfcache_cache_set_value_by_index(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     cache_entry_index,
 	     element_data_file_index,
 	     element_data_offset,

@@ -54,7 +54,7 @@ int libfdata_tree_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int node_file_index,
             off64_t node_offset,
             size64_t node_size,
@@ -65,7 +65,7 @@ int libfdata_tree_initialize(
             intptr_t *data_handle,
             intptr_t *file_io_handle,
             libfdata_tree_node_t *node,
-            libfcache_cache_t *cache,
+            libfdata_cache_t *cache,
             int sub_nodes_file_index,
             off64_t sub_nodes_offset,
             size64_t sub_nodes_size,
@@ -430,7 +430,7 @@ on_error:
 int libfdata_tree_get_node_value(
      libfdata_tree_t *tree,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      libfdata_tree_node_t *node,
      intptr_t **node_value,
      uint8_t read_flags,
@@ -493,7 +493,7 @@ int libfdata_tree_get_node_value(
 		return( -1 );
 	}
 	if( libfcache_cache_get_number_of_entries(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     &number_of_cache_entries,
 	     error ) != 1 )
 	{
@@ -533,7 +533,7 @@ int libfdata_tree_get_node_value(
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
-		     cache,
+		     (libfcache_cache_t *) cache,
 		     cache_entry_index,
 		     &cache_value,
 		     error ) != 1 )
@@ -660,7 +660,7 @@ int libfdata_tree_get_node_value(
 			                     number_of_cache_entries );
 		}
 		if( libfcache_cache_get_value_by_index(
-		     cache,
+		     (libfcache_cache_t *) cache,
 		     cache_entry_index,
 		     &cache_value,
 		     error ) != 1 )
@@ -749,7 +749,7 @@ int libfdata_tree_get_node_value(
  */
 int libfdata_tree_set_node_value(
      libfdata_tree_t *tree,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      libfdata_tree_node_t *node,
      intptr_t *node_value,
      int (*free_node_value)(
@@ -810,7 +810,7 @@ int libfdata_tree_set_node_value(
 		return( -1 );
 	}
 	if( libfcache_cache_get_number_of_entries(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     &number_of_cache_entries,
 	     error ) != 1 )
 	{
@@ -848,7 +848,7 @@ int libfdata_tree_set_node_value(
 				     number_of_cache_entries );
 	}
 	if( libfcache_cache_set_value_by_index(
-	     cache,
+	     (libfcache_cache_t *) cache,
 	     cache_entry_index,
 	     node_file_index,
 	     node_offset,
@@ -877,7 +877,7 @@ int libfdata_tree_set_node_value(
 int libfdata_tree_read_sub_nodes(
      libfdata_tree_t *tree,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      libfdata_tree_node_t *node,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -1066,7 +1066,7 @@ int libfdata_tree_set_root_node(
 int libfdata_tree_get_number_of_leaf_nodes(
      libfdata_tree_t *tree,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int *number_of_leaf_nodes,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -1113,7 +1113,7 @@ int libfdata_tree_get_number_of_leaf_nodes(
 int libfdata_tree_get_leaf_node_by_index(
      libfdata_tree_t *tree,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int leaf_node_index,
      libfdata_tree_node_t **leaf_node,
      uint8_t read_flags,
@@ -1163,7 +1163,7 @@ int libfdata_tree_get_leaf_node_by_index(
 int libfdata_tree_get_number_of_deleted_leaf_nodes(
      libfdata_tree_t *tree,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int *number_of_deleted_leaf_nodes,
      uint8_t read_flags,
      libcerror_error_t **error )
@@ -1210,7 +1210,7 @@ int libfdata_tree_get_number_of_deleted_leaf_nodes(
 int libfdata_tree_get_deleted_leaf_node_by_index(
      libfdata_tree_t *tree,
      intptr_t *file_io_handle,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int deleted_leaf_node_index,
      libfdata_tree_node_t **deleted_leaf_node,
      uint8_t read_flags,
