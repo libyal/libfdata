@@ -232,7 +232,7 @@ int fdata_test_area_initialize(
 	int result                      = 0;
 
 #if defined( HAVE_FDATA_TEST_MEMORY )
-	int number_of_malloc_fail_tests = 3;
+	int number_of_malloc_fail_tests = 4;
 	int number_of_memset_fail_tests = 1;
 	int test_number                 = 0;
 #endif
@@ -358,8 +358,9 @@ int fdata_test_area_initialize(
 #if defined( HAVE_FDATA_TEST_MEMORY )
 
 	/* 1 fail in memory_allocate_structure
-	 * 2 fail in memory_allocate of libfdata_area_initialize of segments_array
-	 * 3 fail in memory_allocate of libfdata_area_initialize of mapped_ranges_array
+	 * 2 fail in memory_allocate of libcdata_area_initialize of segments_array
+	 * 3 fail in memory_allocate of libcdata_area_initialize of segments_array
+	 * 4 fail in memory_allocate of libcdata_area_initialize of mapped_ranges_array
 	 */
 	for( test_number = 0;
 	     test_number < number_of_malloc_fail_tests;

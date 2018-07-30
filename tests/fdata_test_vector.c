@@ -2066,6 +2066,244 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libfdata_vector_get_element_index_at_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_vector_get_element_index_at_offset(
+     void )
+{
+	libcerror_error_t *error    = NULL;
+	libfdata_vector_t *vector   = NULL;
+	off64_t element_data_offset = 0;
+	int element_index           = 0;
+	int result                  = 0;
+	int segment_index           = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_vector_initialize(
+	          &vector,
+	          128,
+	          NULL,
+	          &fdata_test_vector_data_handle_free_function,
+	          &fdata_test_vector_data_handle_clone_function,
+	          &fdata_test_vector_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "vector",
+	 vector );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_vector_append_segment(
+	          vector,
+	          &segment_index,
+	          1,
+	          1024,
+	          2048,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	element_index       = -1;
+	element_data_offset = -1;
+
+	result = libfdata_vector_get_element_index_at_offset(
+	          vector,
+	          128 + 64,
+	          &element_index,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_index",
+	 element_index,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_data_offset",
+	 (int64_t) element_data_offset,
+	 (int64_t) 64 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	element_index       = -1;
+	element_data_offset = -1;
+
+#ifdef TODO
+/* TODO fix libfdata_vector_get_element_index_at_offset
+ */
+	result = libfdata_vector_get_element_index_at_offset(
+	          vector,
+	          4096,
+	          &element_index,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_index",
+	 element_index,
+	 -1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_data_offset",
+	 (int64_t) element_data_offset,
+	 (int64_t) -1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+#endif
+
+	/* Test error cases
+	 */
+	element_index       = -1;
+	element_data_offset = -1;
+
+	result = libfdata_vector_get_element_index_at_offset(
+	          NULL,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_vector_get_element_index_at_offset(
+	          vector,
+	          -1,
+	          &element_index,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_vector_get_element_index_at_offset(
+	          vector,
+	          0,
+	          NULL,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_vector_get_element_index_at_offset(
+	          vector,
+	          0,
+	          &element_index,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_vector_free(
+	          &vector,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "vector",
+	 vector );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( vector != NULL )
+	{
+		libfdata_vector_free(
+		 &vector,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libfdata_vector_get_element_value_by_index function
  * Returns 1 if successful or 0 if not
  */
@@ -2489,6 +2727,107 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libfdata_vector_set_element_value_by_index function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_vector_set_element_value_by_index(
+     void )
+{
+	libcerror_error_t *error  = NULL;
+	libfdata_vector_t *vector = NULL;
+	int result                = 0;
+	int value1                = 1;
+
+	/* Initialize test
+	 */
+	result = libfdata_vector_initialize(
+	          &vector,
+	          128,
+	          NULL,
+	          &fdata_test_vector_data_handle_free_function,
+	          &fdata_test_vector_data_handle_clone_function,
+	          &fdata_test_vector_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "vector",
+	 vector );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+/* TODO implement */
+
+	/* Test error cases
+	 */
+	result = libfdata_vector_set_element_value_by_index(
+	          NULL,
+	          NULL,
+	          NULL,
+	          0,
+	          (intptr_t *) &value1,
+	          &fdata_test_vector_element_value_free_function,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_vector_free(
+	          &vector,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "vector",
+	 vector );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( vector != NULL )
+	{
+		libfdata_vector_free(
+		 &vector,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libfdata_vector_get_size function
  * Returns 1 if successful or 0 if not
  */
@@ -2701,7 +3040,9 @@ int main(
 	 "libfdata_vector_get_number_of_elements",
 	 fdata_test_vector_get_number_of_elements );
 
-	/* TODO: add tests for libfdata_vector_get_element_index_at_offset */
+	FDATA_TEST_RUN(
+	 "libfdata_vector_get_element_index_at_offset",
+	 fdata_test_vector_get_element_index_at_offset );
 
 	FDATA_TEST_RUN(
 	 "libfdata_vector_get_element_value_by_index",
@@ -2711,7 +3052,9 @@ int main(
 	 "libfdata_vector_get_element_value_at_offset",
 	 fdata_test_vector_get_element_value_at_offset );
 
-	/* TODO: add tests for libfdata_vector_set_element_value_by_index */
+	FDATA_TEST_RUN(
+	 "libfdata_vector_set_element_value_by_index",
+	 fdata_test_vector_set_element_value_by_index );
 
 	FDATA_TEST_RUN(
 	 "libfdata_vector_get_size",

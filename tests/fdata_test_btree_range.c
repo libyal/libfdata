@@ -113,6 +113,8 @@ int fdata_test_btree_range_initialize(
 	          &btree_range,
 	          &error );
 
+	btree_range = NULL;
+
 	FDATA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int fdata_test_btree_range_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	btree_range = NULL;
 
 #if defined( HAVE_FDATA_TEST_MEMORY )
 

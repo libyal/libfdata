@@ -113,6 +113,8 @@ int fdata_test_mapped_range_initialize(
 	          &mapped_range,
 	          &error );
 
+	mapped_range = NULL;
+
 	FDATA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int fdata_test_mapped_range_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	mapped_range = NULL;
 
 #if defined( HAVE_FDATA_TEST_MEMORY )
 

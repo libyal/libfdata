@@ -1,4 +1,7 @@
 TODO
+* standarize element_file_index or element_data_file_index names
+* add checks for unsupported flags
+
 * hide cache in fdata structures do not pass to callback?
   - pass value and free function instead?
 * add specialize btree node cache/pool?

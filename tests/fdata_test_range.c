@@ -113,6 +113,8 @@ int fdata_test_range_initialize(
 	          &range,
 	          &error );
 
+	range = NULL;
+
 	FDATA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int fdata_test_range_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	range = NULL;
 
 #if defined( HAVE_FDATA_TEST_MEMORY )
 
@@ -374,6 +374,114 @@ int fdata_test_range_clone(
 	libcerror_error_free(
 	 &error );
 
+	destination_range = (libfdata_range_t *) 0x12345678UL;
+
+	result = libfdata_range_clone(
+	          &destination_range,
+	          source_range,
+	          &error );
+
+	destination_range = NULL;
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "destination_range",
+	 destination_range );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+#if defined( HAVE_FDATA_TEST_MEMORY )
+
+	/* Test libfdata_range_clone with malloc failing
+	 */
+	fdata_test_malloc_attempts_before_fail = 0;
+
+	result = libfdata_range_clone(
+	          &destination_range,
+	          source_range,
+	          &error );
+
+	if( fdata_test_malloc_attempts_before_fail != -1 )
+	{
+		fdata_test_malloc_attempts_before_fail = -1;
+
+		if( destination_range != NULL )
+		{
+			libfdata_range_free(
+			 &destination_range,
+			 &error );
+		}
+	}
+	else
+	{
+		FDATA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		FDATA_TEST_ASSERT_IS_NULL(
+		 "destination_range",
+		 destination_range );
+
+		FDATA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#if defined( OPTIMIZATION_DISABLED )
+
+	/* Test libfdata_range_clone with memcpy failing
+	 */
+	fdata_test_memcpy_attempts_before_fail = 0;
+
+	result = libfdata_range_clone(
+	          &destination_range,
+	          source_range,
+	          &error );
+
+	if( fdata_test_memcpy_attempts_before_fail != -1 )
+	{
+		fdata_test_memcpy_attempts_before_fail = -1;
+
+		if( destination_range != NULL )
+		{
+			libfdata_range_free(
+			 &destination_range,
+			 &error );
+		}
+	}
+	else
+	{
+		FDATA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		FDATA_TEST_ASSERT_IS_NULL(
+		 "destination_range",
+		 destination_range );
+
+		FDATA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( OPTIMIZATION_DISABLED ) */
+#endif /* defined( HAVE_FDATA_TEST_MEMORY ) */
+
 	/* Clean up
 	 */
 	result = libfdata_range_free(
@@ -416,6 +524,196 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libfdata_range_get function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_range_get(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_range_t *range  = NULL;
+	size64_t size            = 0;
+	off64_t offset           = 0;
+	uint32_t flags           = 0;
+	int file_index           = 0;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_range_initialize(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_range_get(
+	          range,
+	          &file_index,
+	          &offset,
+	          &size,
+	          &flags,
+	          &error );
+
+	FDATA_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_range_get(
+	          NULL,
+	          &file_index,
+	          &offset,
+	          &size,
+	          &flags,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_range_get(
+	          range,
+	          NULL,
+	          &offset,
+	          &size,
+	          &flags,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_range_get(
+	          range,
+	          &file_index,
+	          NULL,
+	          &size,
+	          &flags,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_range_get(
+	          range,
+	          &file_index,
+	          &offset,
+	          NULL,
+	          &flags,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_range_get(
+	          range,
+	          &file_index,
+	          &offset,
+	          &size,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_range_free(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( range != NULL )
+	{
+		libfdata_range_free(
+		 &range,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libfdata_range_get_size function
  * Returns 1 if successful or 0 if not
  */
@@ -426,7 +724,6 @@ int fdata_test_range_get_size(
 	libfdata_range_t *range  = NULL;
 	size64_t size            = 0;
 	int result               = 0;
-	int size_is_set          = 0;
 
 	/* Initialize test
 	 */
@@ -463,8 +760,6 @@ int fdata_test_range_get_size(
 	 "error",
 	 error );
 
-	size_is_set = result;
-
 	/* Test error cases
 	 */
 	result = libfdata_range_get_size(
@@ -484,25 +779,129 @@ int fdata_test_range_get_size(
 	libcerror_error_free(
 	 &error );
 
-	if( size_is_set != 0 )
+	result = libfdata_range_get_size(
+	          range,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_range_free(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
 	{
-		result = libfdata_range_get_size(
-		          range,
-		          NULL,
-		          &error );
-
-		FDATA_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
-
-		FDATA_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
 		libcerror_error_free(
 		 &error );
 	}
+	if( range != NULL )
+	{
+		libfdata_range_free(
+		 &range,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_range_set function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_range_set(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_range_t *range  = NULL;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_range_initialize(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_range_set(
+	          range,
+	          1,
+	          1024,
+	          2048,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_range_set(
+	          NULL,
+	          1,
+	          1024,
+	          2048,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libfdata_range_free(
@@ -570,13 +969,17 @@ int main(
 	 "libfdata_range_clone",
 	 fdata_test_range_clone );
 
-	/* TODO: add tests for libfdata_range_get */
+	FDATA_TEST_RUN(
+	 "libfdata_range_get",
+	 fdata_test_range_get );
 
 	FDATA_TEST_RUN(
 	 "libfdata_range_get_size",
 	 fdata_test_range_get_size );
 
-	/* TODO: add tests for libfdata_range_set */
+	FDATA_TEST_RUN(
+	 "libfdata_range_set",
+	 fdata_test_range_set );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
