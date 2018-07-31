@@ -606,7 +606,7 @@ int fdata_test_mapped_range_set(
 
 	/* Test error cases
 	 */
-	result = libfdata_mapped_range_get(
+	result = libfdata_mapped_range_set(
 	          NULL,
 	          1024,
 	          2048,

@@ -1374,9 +1374,9 @@ int fdata_test_list_set_element_by_index(
 	result = libfdata_list_set_element_by_index(
 	          list,
 	          0,
-	          0,
-	          0,
-	          0,
+	          1,
+	          1024,
+	          128,
 	          0,
 	          &error );
 
@@ -1394,9 +1394,9 @@ int fdata_test_list_set_element_by_index(
 	result = libfdata_list_set_element_by_index(
 	          NULL,
 	          0,
-	          0,
-	          0,
-	          0,
+	          1,
+	          1024,
+	          128,
 	          0,
 	          &error );
 
@@ -1415,9 +1415,9 @@ int fdata_test_list_set_element_by_index(
 	result = libfdata_list_set_element_by_index(
 	          list,
 	          -1,
-	          0,
-	          0,
-	          0,
+	          1,
+	          1024,
+	          128,
 	          0,
 	          &error );
 
@@ -1962,6 +1962,1541 @@ int fdata_test_list_set_mapped_offset(
 	result = libfdata_list_set_mapped_offset(
 	          list,
 	          -1,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_get_mapped_size_by_index function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_get_mapped_size_by_index(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_list_t *list    = NULL;
+	size64_t mapped_size     = 0;
+	int element_index        = 0;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_append_element(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_get_mapped_size_by_index(
+	          list,
+	          0,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "mapped_size",
+	 (uint64_t) mapped_size,
+	 (uint64_t) 0 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Initialize test
+	 */
+	result = libfdata_list_set_mapped_size_by_index(
+	          list,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_get_mapped_size_by_index(
+	          list,
+	          0,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "mapped_size",
+	 (uint64_t) mapped_size,
+	 (uint64_t) 512 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_get_mapped_size_by_index(
+	          NULL,
+	          0,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_mapped_size_by_index(
+	          list,
+	          -1,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_mapped_size_by_index(
+	          list,
+	          0,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_set_mapped_size_by_index function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_set_mapped_size_by_index(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_list_t *list    = NULL;
+	int element_index        = 0;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_append_element(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_set_mapped_size_by_index(
+	          list,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_set_mapped_size_by_index(
+	          NULL,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_set_mapped_size_by_index(
+	          list,
+	          -1,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_set_mapped_size_by_index(
+	          list,
+	          0,
+	          (size64_t) INT64_MAX + 1,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_get_element_by_index_with_mapped_size function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_get_element_by_index_with_mapped_size(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_list_t *list    = NULL;
+	size64_t element_size    = 0;
+	size64_t mapped_size     = 0;
+	off64_t element_offset   = 0;
+	uint32_t element_flags   = 0;
+	int element_file_index   = 0;
+	int element_index        = 0;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_append_element(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_get_element_by_index_with_mapped_size(
+	          list,
+	          0,
+	          &element_file_index,
+	          &element_offset,
+	          &element_size,
+	          &element_flags,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_file_index",
+	 element_file_index,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_offset",
+	 (int64_t) element_offset,
+	 (int64_t) 1024 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "element_size",
+	 (uint64_t) element_size,
+	 (uint64_t) 128 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT32(
+	 "element_flags",
+	 (uint32_t) element_flags,
+	 (uint32_t) 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "mapped_size",
+	 (uint64_t) mapped_size,
+	 (uint64_t) 0 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Initialize test
+	 */
+	result = libfdata_list_set_mapped_size_by_index(
+	          list,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_get_element_by_index_with_mapped_size(
+	          list,
+	          0,
+	          &element_file_index,
+	          &element_offset,
+	          &element_size,
+	          &element_flags,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_file_index",
+	 element_file_index,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_offset",
+	 (int64_t) element_offset,
+	 (int64_t) 1024 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "element_size",
+	 (uint64_t) element_size,
+	 (uint64_t) 128 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT32(
+	 "element_flags",
+	 (uint32_t) element_flags,
+	 (uint32_t) 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "mapped_size",
+	 (uint64_t) mapped_size,
+	 (uint64_t) 512 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_get_element_by_index_with_mapped_size(
+	          NULL,
+	          0,
+	          &element_file_index,
+	          &element_offset,
+	          &element_size,
+	          &element_flags,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_by_index_with_mapped_size(
+	          list,
+	          -1,
+	          &element_file_index,
+	          &element_offset,
+	          &element_size,
+	          &element_flags,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_set_element_by_index_with_mapped_size function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_set_element_by_index_with_mapped_size(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_list_t *list    = NULL;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_resize(
+	          list,
+	          1,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_set_element_by_index_with_mapped_size(
+	          list,
+	          0,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_set_element_by_index_with_mapped_size(
+	          NULL,
+	          0,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_set_element_by_index_with_mapped_size(
+	          list,
+	          -1,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_append_element_with_mapped_size function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_append_element_with_mapped_size(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_list_t *list    = NULL;
+	int element_index        = 0;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_append_element_with_mapped_size(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_append_element_with_mapped_size(
+	          NULL,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_append_element_with_mapped_size(
+	          list,
+	          NULL,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          512,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_get_element_index_at_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_get_element_index_at_offset(
+     void )
+{
+	libcerror_error_t *error    = NULL;
+	libfdata_list_t *list       = NULL;
+	off64_t element_data_offset = 0;
+	int element_index           = 0;
+	int result                  = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_append_element(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_get_element_index_at_offset(
+	          list,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_index",
+	 element_index,
+	 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_data_offset",
+	 (int64_t) element_data_offset,
+	 (int64_t) 0 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_get_element_index_at_offset(
+	          NULL,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_index_at_offset(
+	          list,
+	          -1,
+	          &element_index,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_index_at_offset(
+	          list,
+	          0,
+	          NULL,
+	          &element_data_offset,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_index_at_offset(
+	          list,
+	          0,
+	          &element_index,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_get_list_element_at_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_get_list_element_at_offset(
+     void )
+{
+	libcerror_error_t *error              = NULL;
+	libfdata_list_t *list                 = NULL;
+	libfdata_list_element_t *list_element = NULL;
+	off64_t element_data_offset           = 0;
+	int element_index                     = 0;
+	int result                            = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_append_element(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	list_element = NULL;
+
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          &list_element,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_index",
+	 element_index,
+	 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_data_offset",
+	 (int64_t) element_data_offset,
+	 (int64_t) 0 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list_element",
+	 list_element );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	list_element = NULL;
+
+	result = libfdata_list_get_list_element_at_offset(
+	          NULL,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          &list_element,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          -1,
+	          &element_index,
+	          &element_data_offset,
+	          &list_element,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          0,
+	          NULL,
+	          &element_data_offset,
+	          &list_element,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          0,
+	          &element_index,
+	          NULL,
+	          &list_element,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_list_element_at_offset(
+	          list,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_list_get_element_at_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_get_element_at_offset(
+     void )
+{
+	libcerror_error_t *error    = NULL;
+	libfdata_list_t *list       = NULL;
+	size64_t element_size       = 0;
+	off64_t element_data_offset = 0;
+	off64_t element_offset      = 0;
+	uint32_t element_flags      = 0;
+	int element_file_index      = 0;
+	int element_index           = 0;
+	int result                  = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_append_element(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_get_element_at_offset(
+	          list,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          &element_file_index,
+	          &element_offset,
+	          &element_size,
+	          &element_flags,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_index",
+	 element_index,
+	 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_data_offset",
+	 (int64_t) element_data_offset,
+	 (int64_t) 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "element_file_index",
+	 element_file_index,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "element_offset",
+	 (int64_t) element_offset,
+	 (int64_t) 1024 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "element_size",
+	 (uint64_t) element_size,
+	 (uint64_t) 128 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT32(
+	 "element_flags",
+	 (uint32_t) element_flags,
+	 (uint32_t) 0 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_get_element_at_offset(
+	          NULL,
+	          0,
+	          &element_index,
+	          &element_data_offset,
+	          &element_file_index,
+	          &element_offset,
+	          &element_size,
+	          &element_flags,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_at_offset(
+	          list,
+	          -1,
+	          &element_index,
+	          &element_data_offset,
+	          &element_file_index,
+	          &element_offset,
+	          &element_size,
+	          &element_flags,
 	          &error );
 
 	FDATA_TEST_ASSERT_EQUAL_INT(
@@ -2886,15 +4421,25 @@ int main(
 	 "libfdata_list_set_mapped_offset",
 	 fdata_test_list_set_mapped_offset );
 
-	/* TODO: add tests for libfdata_list_get_mapped_size_by_index */
+	FDATA_TEST_RUN(
+	 "libfdata_list_get_mapped_size_by_index",
+	 fdata_test_list_get_mapped_size_by_index );
 
-	/* TODO: add tests for libfdata_list_set_mapped_size_by_index */
+	FDATA_TEST_RUN(
+	 "libfdata_list_set_mapped_size_by_index",
+	 fdata_test_list_set_mapped_size_by_index );
 
-	/* TODO: add tests for libfdata_list_get_element_by_index_with_mapped_size */
+	FDATA_TEST_RUN(
+	 "libfdata_list_get_element_by_index_with_mapped_size",
+	 fdata_test_list_get_element_by_index_with_mapped_size );
 
-	/* TODO: add tests for libfdata_list_set_element_by_index_with_mapped_size */
+	FDATA_TEST_RUN(
+	 "libfdata_list_set_element_by_index_with_mapped_size",
+	 fdata_test_list_set_element_by_index_with_mapped_size );
 
-	/* TODO: add tests for libfdata_list_append_element_with_mapped_size */
+	FDATA_TEST_RUN(
+	 "libfdata_list_append_element_with_mapped_size",
+	 fdata_test_list_append_element_with_mapped_size );
 
 #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT )
 
@@ -2902,11 +4447,17 @@ int main(
 
 #endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
-	/* TODO: add tests for libfdata_list_get_element_index_at_offset */
+	FDATA_TEST_RUN(
+	 "libfdata_list_get_element_index_at_offset",
+	 fdata_test_list_get_element_index_at_offset );
 
-	/* TODO: add tests for libfdata_list_get_list_element_at_offset */
+	FDATA_TEST_RUN(
+	 "libfdata_list_get_list_element_at_offset",
+	 fdata_test_list_get_list_element_at_offset );
 
-	/* TODO: add tests for libfdata_list_get_element_at_offset */
+	FDATA_TEST_RUN(
+	 "libfdata_list_get_element_at_offset",
+	 fdata_test_list_get_element_at_offset );
 
 	/* TODO: add tests for libfdata_list_cache_element_value */
 

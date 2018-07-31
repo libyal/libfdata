@@ -2458,6 +2458,1098 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libfdata_tree_node_get_node_value function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_tree_node_get_node_value(
+     void )
+{
+	libcerror_error_t *error        = NULL;
+	libfdata_cache_t *cache         = NULL;
+	libfdata_tree_t *tree           = NULL;
+	libfdata_tree_node_t *tree_node = NULL;
+	intptr_t *node_value            = NULL;
+	int result                      = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_cache_initialize(
+	          &cache,
+	          16,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_initialize(
+	          &tree,
+	          NULL,
+	          NULL,
+	          NULL,
+	          &fdata_test_tree_read_node,
+	          &fdata_test_tree_read_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_node_initialize(
+	          &tree_node,
+	          tree,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_node_set_data_range(
+	          tree_node,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	node_value = NULL;
+
+	result = libfdata_tree_node_get_node_value(
+	          tree_node,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          &node_value,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "node_value",
+	 node_value );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	memory_free(
+	 node_value );
+
+	node_value = NULL;
+
+	/* Test error cases
+	 */
+	result = libfdata_tree_node_get_node_value(
+	          NULL,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          &node_value,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_tree_node_free(
+	          &tree_node,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_free(
+	          &tree,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_cache_free(
+	          &cache,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( tree_node != NULL )
+	{
+		libfdata_tree_node_free(
+		 &tree_node,
+		 NULL );
+	}
+	if( tree != NULL )
+	{
+		libfdata_tree_free(
+		 &tree,
+		 NULL );
+	}
+	if( cache != NULL )
+	{
+		libfdata_cache_free(
+		 &cache,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_tree_node_resize_sub_nodes function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_tree_node_resize_sub_nodes(
+     void )
+{
+	libcerror_error_t *error        = NULL;
+	libfdata_tree_t *tree           = NULL;
+	libfdata_tree_node_t *tree_node = NULL;
+	int result                      = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_tree_initialize(
+	          &tree,
+	          NULL,
+	          NULL,
+	          NULL,
+	          &fdata_test_tree_read_node,
+	          &fdata_test_tree_read_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_node_initialize(
+	          &tree_node,
+	          tree,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_tree_node_resize_sub_nodes(
+	          tree_node,
+	          10,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_tree_node_resize_sub_nodes(
+	          NULL,
+	          10,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_tree_node_resize_sub_nodes(
+	          tree_node,
+	          -1,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_tree_node_free(
+	          &tree_node,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_free(
+	          &tree,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( tree_node != NULL )
+	{
+		libfdata_tree_node_free(
+		 &tree_node,
+		 NULL );
+	}
+	if( tree != NULL )
+	{
+		libfdata_tree_free(
+		 &tree,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_tree_node_get_number_of_sub_nodes function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_tree_node_get_number_of_sub_nodes(
+     void )
+{
+	libcerror_error_t *error        = NULL;
+	libfdata_cache_t *cache         = NULL;
+	libfdata_tree_t *tree           = NULL;
+	libfdata_tree_node_t *tree_node = NULL;
+	int number_of_sub_nodes         = 0;
+	int result                      = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_cache_initialize(
+	          &cache,
+	          16,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_initialize(
+	          &tree,
+	          NULL,
+	          NULL,
+	          NULL,
+	          &fdata_test_tree_read_node,
+	          &fdata_test_tree_read_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_node_initialize(
+	          &tree_node,
+	          tree,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	/* Test libfdata_tree_node_get_number_of_sub_nodes failing in libfdata_tree_get_node_value
+	 */
+	result = libfdata_tree_node_get_number_of_sub_nodes(
+	          tree_node,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          &number_of_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test regular cases
+	 */
+#ifdef TODO
+/* TODO fix test */
+	result = libfdata_tree_node_get_number_of_sub_nodes(
+	          tree_node,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          &number_of_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "number_of_sub_nodes",
+	 number_of_sub_nodes,
+	 0 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+#endif
+
+	/* Initialize test
+	 */
+/* TODO */
+
+	/* Test regular cases
+	 */
+#ifdef TODO
+/* TODO fix test */
+	result = libfdata_tree_node_get_number_of_sub_nodes(
+	          tree_node,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          &number_of_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "number_of_sub_nodes",
+	 number_of_sub_nodes,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+#endif
+
+	/* Test error cases
+	 */
+	result = libfdata_tree_node_get_number_of_sub_nodes(
+	          NULL,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          &number_of_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_tree_node_get_number_of_sub_nodes(
+	          tree_node,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_tree_node_free(
+	          &tree_node,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_free(
+	          &tree,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_cache_free(
+	          &cache,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( tree_node != NULL )
+	{
+		libfdata_tree_node_free(
+		 &tree_node,
+		 NULL );
+	}
+	if( tree != NULL )
+	{
+		libfdata_tree_free(
+		 &tree,
+		 NULL );
+	}
+	if( cache != NULL )
+	{
+		libfdata_cache_free(
+		 &cache,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_tree_node_get_sub_node_by_index function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_tree_node_get_sub_node_by_index(
+     void )
+{
+	libcerror_error_t *error        = NULL;
+	libfdata_cache_t *cache         = NULL;
+	libfdata_tree_t *tree           = NULL;
+	libfdata_tree_node_t *sub_node  = NULL;
+	libfdata_tree_node_t *tree_node = NULL;
+	int result                      = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_cache_initialize(
+	          &cache,
+	          16,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_initialize(
+	          &tree,
+	          NULL,
+	          NULL,
+	          NULL,
+	          &fdata_test_tree_read_node,
+	          &fdata_test_tree_read_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_node_initialize(
+	          &tree_node,
+	          tree,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test libfdata_tree_node_get_number_of_sub_nodes failing in libfdata_tree_get_node_value
+	 */
+	sub_node = NULL;
+
+	result = libfdata_tree_node_get_sub_node_by_index(
+	          tree_node,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          0,
+	          &sub_node,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Initialize test
+	 */
+/* TODO */
+
+	/* Test regular cases
+	 */
+#ifdef TODO
+/* TODO fix test */
+	sub_node = NULL;
+
+	result = libfdata_tree_node_get_sub_node_by_index(
+	          tree_node,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          0,
+	          &sub_node,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "sub_node",
+	 sub_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+#endif
+
+	/* Test error cases
+	 */
+	sub_node = NULL;
+
+	result = libfdata_tree_node_get_sub_node_by_index(
+	          NULL,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          0,
+	          &sub_node,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_tree_node_free(
+	          &tree_node,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_free(
+	          &tree,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_cache_free(
+	          &cache,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( tree_node != NULL )
+	{
+		libfdata_tree_node_free(
+		 &tree_node,
+		 NULL );
+	}
+	if( tree != NULL )
+	{
+		libfdata_tree_free(
+		 &tree,
+		 NULL );
+	}
+	if( cache != NULL )
+	{
+		libfdata_cache_free(
+		 &cache,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_tree_node_append_sub_node function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_tree_node_append_sub_node(
+     void )
+{
+	libcerror_error_t *error        = NULL;
+	libfdata_tree_t *tree           = NULL;
+	libfdata_tree_node_t *tree_node = NULL;
+	int result                      = 0;
+	int sub_node_index              = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_tree_initialize(
+	          &tree,
+	          NULL,
+	          NULL,
+	          NULL,
+	          &fdata_test_tree_read_node,
+	          &fdata_test_tree_read_sub_nodes,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree",
+	 tree );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_node_initialize(
+	          &tree_node,
+	          tree,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_tree_node_append_sub_node(
+	          tree_node,
+	          &sub_node_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_tree_node_append_sub_node(
+	          NULL,
+	          &sub_node_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_tree_node_append_sub_node(
+	          tree_node,
+	          NULL,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_tree_node_free(
+	          &tree_node,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_tree_node_free(
+	          &tree_node,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "tree_node",
+	 tree_node );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( tree_node != NULL )
+	{
+		libfdata_tree_node_free(
+		 &tree_node,
+		 NULL );
+	}
+	if( tree != NULL )
+	{
+		libfdata_tree_free(
+		 &tree,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 /* The main program
@@ -2527,19 +3619,29 @@ int main(
 	 "libfdata_tree_node_set_first_leaf_node_index",
 	 fdata_test_tree_node_set_first_leaf_node_index );
 
-	/* TODO: add tests for libfdata_tree_node_get_node_value */
+	FDATA_TEST_RUN(
+	 "libfdata_tree_node_get_node_value",
+	 fdata_test_tree_node_get_node_value );
 
 	/* TODO: add tests for libfdata_tree_node_set_node_value */
 
-	/* TODO: add tests for libfdata_tree_node_resize_sub_nodes */
+	FDATA_TEST_RUN(
+	 "libfdata_tree_node_resize_sub_nodes",
+	 fdata_test_tree_node_resize_sub_nodes );
 
-	/* TODO: add tests for libfdata_tree_node_get_number_of_sub_nodes */
+	FDATA_TEST_RUN(
+	 "libfdata_tree_node_get_number_of_sub_nodes",
+	 fdata_test_tree_node_get_number_of_sub_nodes );
 
-	/* TODO: add tests for libfdata_tree_node_get_sub_node_by_index */
+	FDATA_TEST_RUN(
+	 "libfdata_tree_node_get_sub_node_by_index",
+	 fdata_test_tree_node_get_sub_node_by_index );
 
 	/* TODO: add tests for libfdata_tree_node_set_sub_node_by_index */
 
-	/* TODO: add tests for libfdata_tree_node_append_sub_node */
+	FDATA_TEST_RUN(
+	 "libfdata_tree_node_append_sub_node",
+	 fdata_test_tree_node_append_sub_node );
 
 	/* TODO: add tests for libfdata_tree_node_insert_sub_node */
 

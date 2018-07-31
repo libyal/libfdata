@@ -1,4 +1,5 @@
 TODO
+* use physical and logical offset terms?
 * standarize element_file_index or element_data_file_index names
 * add checks for unsupported flags
 
