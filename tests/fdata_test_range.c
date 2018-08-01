@@ -567,10 +567,10 @@ int fdata_test_range_get(
 	          &flags,
 	          &error );
 
-	FDATA_TEST_ASSERT_NOT_EQUAL_INT(
+	FDATA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	FDATA_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -751,10 +751,10 @@ int fdata_test_range_get_size(
 	          &size,
 	          &error );
 
-	FDATA_TEST_ASSERT_NOT_EQUAL_INT(
+	FDATA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	FDATA_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -871,10 +871,10 @@ int fdata_test_range_set(
 	          0,
 	          &error );
 
-	FDATA_TEST_ASSERT_NOT_EQUAL_INT(
+	FDATA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	FDATA_TEST_ASSERT_IS_NULL(
 	 "error",

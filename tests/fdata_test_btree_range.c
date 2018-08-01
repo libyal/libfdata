@@ -35,6 +35,21 @@
 
 #include "../libfdata/libfdata_btree_range.h"
 
+int fdata_test_btree_range_key_value_free_function_return_value = 1;
+
+/* Test key value free function
+ * Returns 1 if successful or -1 on error
+ */
+int fdata_test_btree_range_key_value_free_function(
+     intptr_t **key_value FDATA_TEST_ATTRIBUTE_UNUSED,
+     libcerror_error_t **error FDATA_TEST_ATTRIBUTE_UNUSED )
+{
+	FDATA_TEST_UNREFERENCED_PARAMETER( key_value )
+	FDATA_TEST_UNREFERENCED_PARAMETER( error )
+
+	return( fdata_test_btree_range_key_value_free_function_return_value );
+}
+
 #if defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT )
 
 /* Tests the libfdata_btree_range_initialize function
@@ -416,6 +431,390 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libfdata_btree_range_get function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_btree_range_get(
+     void )
+{
+	libcerror_error_t *error      = NULL;
+	libfdata_btree_range_t *range = NULL;
+	intptr_t *key_value           = 0;
+	size64_t data_size            = 0;
+	off64_t data_offset           = 0;
+	uint32_t data_flags           = 0;
+	int data_file_index           = 0;
+	int result                    = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_btree_range_initialize(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	key_value = NULL;
+
+	result = libfdata_btree_range_get(
+	          range,
+	          &data_file_index,
+	          &data_offset,
+	          &data_size,
+	          &data_flags,
+	          &key_value,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	key_value = NULL;
+
+	result = libfdata_btree_range_get(
+	          NULL,
+	          &data_file_index,
+	          &data_offset,
+	          &data_size,
+	          &data_flags,
+	          &key_value,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_btree_range_get(
+	          range,
+	          NULL,
+	          &data_offset,
+	          &data_size,
+	          &data_flags,
+	          &key_value,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_btree_range_get(
+	          range,
+	          &data_file_index,
+	          NULL,
+	          &data_size,
+	          &data_flags,
+	          &key_value,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_btree_range_get(
+	          range,
+	          &data_file_index,
+	          &data_offset,
+	          NULL,
+	          &data_flags,
+	          &key_value,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_btree_range_get(
+	          range,
+	          &data_file_index,
+	          &data_offset,
+	          &data_size,
+	          NULL,
+	          &key_value,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_btree_range_get(
+	          range,
+	          &data_file_index,
+	          &data_offset,
+	          &data_size,
+	          &data_flags,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_btree_range_free(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( range != NULL )
+	{
+		libfdata_btree_range_free(
+		 &range,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libfdata_btree_range_set function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_btree_range_set(
+     void )
+{
+	libcerror_error_t *error      = NULL;
+	libfdata_btree_range_t *range = NULL;
+	char *key_value               = "key";
+	int result                    = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_btree_range_initialize(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_btree_range_set(
+	          range,
+	          1,
+	          1024,
+	          2048,
+	          0,
+	          (intptr_t *) key_value,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_range_key_value_free_function,
+	          LIBFDATA_KEY_VALUE_FLAG_MANAGED,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_btree_range_set(
+	          range,
+	          1,
+	          1024,
+	          2048,
+	          0,
+	          (intptr_t *) key_value,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_range_key_value_free_function,
+	          LIBFDATA_KEY_VALUE_FLAG_MANAGED,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_btree_range_set(
+	          NULL,
+	          1,
+	          1024,
+	          2048,
+	          0,
+	          (intptr_t *) key_value,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_range_key_value_free_function,
+	          LIBFDATA_KEY_VALUE_FLAG_MANAGED,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test libfdata_btree_range_set with free_key_value function failing
+	 */
+	fdata_test_btree_range_key_value_free_function_return_value = -1;
+
+	result = libfdata_btree_range_set(
+	          range,
+	          1,
+	          1024,
+	          2048,
+	          0,
+	          (intptr_t *) key_value,
+	          (int (*)(intptr_t **, libcerror_error_t **)) &fdata_test_btree_range_key_value_free_function,
+	          LIBFDATA_KEY_VALUE_FLAG_MANAGED,
+	          &error );
+
+	fdata_test_btree_range_key_value_free_function_return_value = 1;
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_btree_range_free(
+	          &range,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "range",
+	 range );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( range != NULL )
+	{
+		libfdata_btree_range_free(
+		 &range,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
 /* The main program
@@ -447,9 +846,13 @@ int main(
 	 "libfdata_btree_range_clone",
 	 fdata_test_btree_range_clone );
 
-	/* TODO: add tests for libfdata_btree_range_get */
+	FDATA_TEST_RUN(
+	 "libfdata_btree_range_get",
+	 fdata_test_btree_range_get );
 
-	/* TODO: add tests for libfdata_btree_range_set */
+	FDATA_TEST_RUN(
+	 "libfdata_btree_range_set",
+	 fdata_test_btree_range_set );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBFDATA_DLL_IMPORT ) */
 
