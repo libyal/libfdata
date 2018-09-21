@@ -1893,12 +1893,13 @@ on_error:
 int fdata_test_area_get_element_value_at_offset(
      void )
 {
-	libcerror_error_t *error = NULL;
-	libfdata_area_t *area    = NULL;
-	libfdata_cache_t *cache  = NULL;
-	intptr_t *element_value  = NULL;
-	int result               = 0;
-	int segment_index        = 0;
+	libcerror_error_t *error   = NULL;
+	libfdata_area_t *area      = NULL;
+	libfdata_cache_t *cache    = NULL;
+	intptr_t *element_value    = NULL;
+	size64_t element_data_size = 0;
+	int result                 = 0;
+	int segment_index          = 0;
 
 	/* Initialize test
 	 */
@@ -2016,6 +2017,33 @@ int fdata_test_area_get_element_value_at_offset(
 	libcerror_error_free(
 	 &error );
 
+	element_data_size = ( (libfdata_internal_area_t *) area )->element_data_size;
+
+	( (libfdata_internal_area_t *) area )->element_data_size = 0;
+
+	result = libfdata_area_get_element_value_at_offset(
+	          area,
+	          NULL,
+	          (libfdata_cache_t *) cache,
+	          0,
+	          &element_value,
+	          0,
+	          &error );
+
+	( (libfdata_internal_area_t *) area )->element_data_size = element_data_size;
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	result = libfdata_area_get_element_value_at_offset(
 	          area,
 	          NULL,
@@ -2102,13 +2130,33 @@ on_error:
 int fdata_test_area_set_element_value_at_offset(
      void )
 {
-	libcerror_error_t *error = NULL;
-	libfdata_area_t *area    = NULL;
-	int result               = 0;
-	int value1               = 1;
+	libcerror_error_t *error   = NULL;
+	libfdata_area_t *area      = NULL;
+	libfdata_cache_t *cache    = NULL;
+	size64_t element_data_size = 0;
+	int result                 = 0;
+	int value1                 = 1;
 
 	/* Initialize test
 	 */
+	result = libfdata_cache_initialize(
+	          &cache,
+	          16,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	result = libfdata_area_initialize(
 	          &area,
 	          128,
@@ -2161,6 +2209,34 @@ int fdata_test_area_set_element_value_at_offset(
 	libcerror_error_free(
 	 &error );
 
+	element_data_size = ( (libfdata_internal_area_t *) area )->element_data_size;
+
+	( (libfdata_internal_area_t *) area )->element_data_size = 0;
+
+	result = libfdata_area_set_element_value_at_offset(
+	          area,
+	          NULL,
+	          NULL,
+	          0,
+	          (intptr_t *) &value1,
+	          &fdata_test_area_element_value_free_function,
+	          0,
+	          &error );
+
+	( (libfdata_internal_area_t *) area )->element_data_size = element_data_size;
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libfdata_area_free(
@@ -2180,6 +2256,23 @@ int fdata_test_area_set_element_value_at_offset(
 	 "error",
 	 error );
 
+	result = libfdata_cache_free(
+	          &cache,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "cache",
+	 cache );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	return( 1 );
 
 on_error:
@@ -2192,6 +2285,12 @@ on_error:
 	{
 		libfdata_area_free(
 		 &area,
+		 NULL );
+	}
+	if( cache != NULL )
+	{
+		libfdata_cache_free(
+		 &cache,
 		 NULL );
 	}
 	return( 0 );
