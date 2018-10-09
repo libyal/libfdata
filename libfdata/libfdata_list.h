@@ -361,7 +361,7 @@ int libfdata_list_cache_element_value(
      off64_t element_offset,
      size64_t element_size,
      uint32_t element_flags,
-     time_t element_timestamp,
+     int64_t element_timestamp,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,

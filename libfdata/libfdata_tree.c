@@ -439,16 +439,16 @@ int libfdata_tree_get_node_value(
 	libfcache_cache_value_t *cache_value    = NULL;
 	libfdata_internal_tree_t *internal_tree = NULL;
 	static char *function                   = "libfdata_tree_get_node_value";
+	size64_t node_size                      = 0;
 	off64_t cache_value_offset              = (off64_t) -1;
 	off64_t node_offset                     = 0;
-	size64_t node_size                      = 0;
-	time_t cache_value_timestamp            = 0;
-	time_t node_timestamp                   = 0;
+	int64_t cache_value_timestamp           = 0;
+	int64_t node_timestamp                  = 0;
 	uint32_t node_flags                     = 0;
 	int cache_entry_index                   = -1;
 	int cache_value_file_index              = -1;
-	int number_of_cache_entries             = 0;
 	int node_file_index                     = -1;
+	int number_of_cache_entries             = 0;
 	int result                              = 0;
 
 	if( tree == NULL )
@@ -759,9 +759,9 @@ int libfdata_tree_set_node_value(
      libcerror_error_t **error )
 {
 	static char *function       = "libfdata_tree_set_node_value";
-	off64_t node_offset         = 0;
 	size64_t node_size          = 0;
-	time_t node_timestamp       = 0;
+	off64_t node_offset         = 0;
+	int64_t node_timestamp      = 0;
 	uint32_t node_flags         = 0;
 	int cache_entry_index       = -1;
 	int node_file_index         = -1;

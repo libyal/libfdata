@@ -55,23 +55,13 @@ struct libfdata_internal_vector
 	 */
 	libcdata_array_t *mapped_ranges_array;
 
-	/* The time stamp
+	/* The timestamp
 	 */
-	time_t timestamp;
+	int64_t timestamp;
 
 	/* The flags
 	 */
 	uint8_t flags;
-
-	/* The calculate cache entry index value
-	 */
-	int (*calculate_cache_entry_index)(
-	       int element_index,
-	       int element_data_file_index,
-	       off64_t element_data_offset,
-	       size64_t element_data_size,
-	       uint32_t element_data_flags,
-               int number_of_cache_entries );
 
 	/* The data handle
 	 */

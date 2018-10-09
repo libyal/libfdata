@@ -63,9 +63,9 @@ struct libfdata_internal_tree_node
 	 */
 	libfdata_range_t *sub_nodes_data_range;
 
-	/* The time stamp
+	/* The timestamp
 	 */
-	time_t timestamp;
+	int64_t timestamp;
 
 	/* The flags
 	 */
@@ -159,7 +159,7 @@ int libfdata_tree_node_set_sub_nodes_data_range(
 
 int libfdata_tree_node_get_timestamp(
      libfdata_tree_node_t *node,
-     time_t *timestamp,
+     int64_t *timestamp,
      libcerror_error_t **error );
 
 int libfdata_tree_node_get_first_leaf_node_index(

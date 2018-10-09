@@ -3595,7 +3595,7 @@ int libfdata_list_cache_element_value(
      off64_t element_offset,
      size64_t element_size,
      uint32_t element_flags,
-     time_t element_timestamp,
+     int64_t element_timestamp,
      intptr_t *element_value,
      int (*free_element_value)(
             intptr_t **element_value,
@@ -3710,11 +3710,11 @@ int libfdata_list_get_element_value(
 	libfcache_cache_value_t *cache_value    = NULL;
 	libfdata_internal_list_t *internal_list = NULL;
 	static char *function                   = "libfdata_list_get_element_value";
+	size64_t element_size                   = 0;
         off64_t cache_value_offset              = (off64_t) -1;
 	off64_t element_offset                  = 0;
-	size64_t element_size                   = 0;
-	time_t cache_value_timestamp            = 0;
-	time_t element_timestamp                = 0;
+	int64_t cache_value_timestamp           = 0;
+	int64_t element_timestamp               = 0;
 	uint32_t element_flags                  = 0;
 	int cache_entry_index                   = -1;
 	int cache_value_file_index              = -1;
@@ -4189,13 +4189,13 @@ int libfdata_list_set_element_value(
      uint8_t write_flags,
      libcerror_error_t **error )
 {
-	static char *function    = "libfdata_list_set_element_value";
-	off64_t element_offset   = 0;
-	size64_t element_size    = 0;
-	time_t element_timestamp = 0;
-	uint32_t element_flags   = 0;
-	int element_file_index   = -1;
-	int element_index        = -1;
+	static char *function     = "libfdata_list_set_element_value";
+	size64_t element_size     = 0;
+	off64_t element_offset    = 0;
+	int64_t element_timestamp = 0;
+	uint32_t element_flags    = 0;
+	int element_file_index    = -1;
+	int element_index         = -1;
 
 	LIBFDATA_UNREFERENCED_PARAMETER( file_io_handle )
 

@@ -422,7 +422,7 @@ int libfdata_list_element_set_element_index(
  */
 int libfdata_list_element_get_timestamp(
      libfdata_list_element_t *element,
-     time_t *timestamp,
+     int64_t *timestamp,
      libcerror_error_t **error )
 {
 	libfdata_internal_list_element_t *internal_element = NULL;

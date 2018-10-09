@@ -814,10 +814,10 @@ int libfdata_btree_read_leaf_value(
 	libfcache_cache_value_t *cache_value = NULL;
 	intptr_t *key_value                  = NULL;
 	static char *function                = "libfdata_btree_read_leaf_value";
+	size64_t leaf_value_data_size        = 0;
 	off64_t cache_value_offset           = 0;
 	off64_t leaf_value_data_offset       = 0;
-	size64_t leaf_value_data_size        = 0;
-	time_t cache_value_timestamp         = 0;
+	int64_t cache_value_timestamp        = 0;
 	uint32_t leaf_value_data_flags       = 0;
 	int cache_entry_index                = -1;
 	int cache_value_file_index           = -1;
@@ -1084,10 +1084,10 @@ int libfdata_btree_read_node(
 	libfcache_cache_value_t *cache_value = NULL;
 	intptr_t *key_value                  = NULL;
 	static char *function                = "libfdata_btree_read_node";
+	size64_t node_data_size              = 0;
 	off64_t cache_value_offset           = 0;
 	off64_t node_data_offset             = 0;
-	size64_t node_data_size              = 0;
-	time_t cache_value_timestamp         = 0;
+	int64_t cache_value_timestamp        = 0;
 	uint32_t node_data_flags             = 0;
 	int cache_entry_index                = -1;
 	int cache_value_file_index           = -1;

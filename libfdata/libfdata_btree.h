@@ -44,9 +44,9 @@ struct libfdata_internal_btree
 	 */
 	libfdata_btree_range_t *root_node_data_range;
 
-	/* The time stamp
+	/* The timestamp
 	 */
-	time_t timestamp;
+	int64_t timestamp;
 
 	/* The flags
 	 */

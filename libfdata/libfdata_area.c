@@ -921,7 +921,7 @@ int libfdata_area_get_element_value_at_offset(
 	static char *function                   = "libfdata_area_get_element_value_at_offset";
 	off64_t cache_value_offset              = (off64_t) -1;
 	off64_t element_data_offset             = (off64_t) -1;
-	time_t cache_value_timestamp            = 0;
+	int64_t cache_value_timestamp           = 0;
 	uint32_t element_data_flags             = 0;
 	int cache_entry_index                   = -1;
 	int cache_value_file_index              = -1;

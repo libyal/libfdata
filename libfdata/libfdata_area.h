@@ -55,9 +55,9 @@ struct libfdata_internal_area
 	 */
 	libcdata_array_t *mapped_ranges_array;
 
-	/* The time stamp
+	/* The timestamp
 	 */
-	time_t timestamp;
+	int64_t timestamp;
 
 	/* The flags
 	 */

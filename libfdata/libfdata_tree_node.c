@@ -677,7 +677,7 @@ int libfdata_tree_node_set_sub_nodes_data_range(
  */
 int libfdata_tree_node_get_timestamp(
      libfdata_tree_node_t *node,
-     time_t *timestamp,
+     int64_t *timestamp,
      libcerror_error_t **error )
 {
 	libfdata_internal_tree_node_t *internal_tree_node = NULL;

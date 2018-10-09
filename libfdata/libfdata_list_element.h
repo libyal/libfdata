@@ -55,9 +55,9 @@ struct libfdata_internal_list_element
 	 */
 	size64_t mapped_size;
 
-	/* The time stamp
+	/* The timestamp
 	 */
-	time_t timestamp;
+	int64_t timestamp;
 
 	/* The flags
 	 */
@@ -91,7 +91,7 @@ int libfdata_list_element_set_element_index(
 
 int libfdata_list_element_get_timestamp(
      libfdata_list_element_t *element,
-     time_t *timestamp,
+     int64_t *timestamp,
      libcerror_error_t **error );
 
 /* Data range functions
