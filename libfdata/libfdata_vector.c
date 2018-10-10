@@ -1386,7 +1386,6 @@ int libfdata_vector_get_element_value_by_index(
 	uint32_t element_data_flags                 = 0;
 	int cache_value_file_index                  = -1;
 	int element_data_file_index                 = -1;
-	int number_of_cache_values                  = 0;
 	int result                                  = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -1572,23 +1571,11 @@ int libfdata_vector_get_element_value_by_index(
 
 			return( -1 );
 		}
-		if( libfcache_cache_get_number_of_cache_values(
+		if( libfcache_cache_get_value_by_identifier(
 		     (libfcache_cache_t *) cache,
-		     &number_of_cache_values,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve number of cach values.",
-			 function );
-
-			return( -1 );
-		}
-		if( libfcache_cache_get_value_by_index(
-		     (libfcache_cache_t *) cache,
-		     number_of_cache_values - 1,
+		     element_data_file_index,
+		     element_data_offset,
+		     internal_vector->timestamp,
 		     &cache_value,
 		     error ) != 1 )
 		{
@@ -1596,9 +1583,8 @@ int libfdata_vector_get_element_value_by_index(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve value: %d from cache.",
-			 function,
-			 number_of_cache_values - 1 );
+			 "%s: unable to retrieve value from cache.",
+			 function );
 
 			return( -1 );
 		}

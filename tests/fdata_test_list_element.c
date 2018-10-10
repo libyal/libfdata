@@ -1034,7 +1034,7 @@ int fdata_test_list_element_get_timestamp(
 	libcerror_error_t *error              = NULL;
 	libfdata_list_t *list                 = NULL;
 	libfdata_list_element_t *list_element = NULL;
-	time_t timestamp                      = 0;
+	int64_t timestamp                     = 0;
 	int result                            = 0;
 
 	/* Initialize test
@@ -1095,7 +1095,7 @@ int fdata_test_list_element_get_timestamp(
 
 	FDATA_TEST_ASSERT_NOT_EQUAL_INT64(
 	 "timestamp",
-	 (int64_t) timestamp,
+	 timestamp,
 	 (int64_t) 0 );
 
 	FDATA_TEST_ASSERT_IS_NULL(
