@@ -10,15 +10,15 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 @libfdata_spec_requires@ @ax_libcdata_spec_requires@ @ax_libcerror_spec_requires@ @ax_libcnotify_spec_requires@ @ax_libcthreads_spec_requires@ @ax_libfcache_spec_requires@
 BuildRequires: gcc @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@
 
-%description
+%description -n libfdata
 Library to provide generic file data functions
 
-%package devel
+%package -n libfdata-devel
 Summary: Header files and libraries for developing applications for libfdata
 Group: Development/Libraries
 Requires: libfdata = %{version}-%{release}
 
-%description devel
+%description -n libfdata-devel
 Header files and libraries for developing applications for libfdata.
 
 %prep
@@ -39,13 +39,13 @@ rm -rf %{buildroot}
 
 %postun -p /sbin/ldconfig
 
-%files
+%files -n libfdata
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README
 %attr(755,root,root) %{_libdir}/*.so.*
 
-%files devel
+%files -n libfdata-devel
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README ChangeLog

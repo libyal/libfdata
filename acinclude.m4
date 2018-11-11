@@ -1,6 +1,6 @@
-dnl Checks for required headers and functions
+dnl Functions for libfdata
 dnl
-dnl Version: 20180316
+dnl Version: 20181009
 
 dnl Function to detect if libfdata dependencies are available
 AC_DEFUN([AX_LIBFDATA_CHECK_LOCAL],
