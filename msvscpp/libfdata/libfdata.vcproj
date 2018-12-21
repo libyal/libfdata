@@ -284,10 +284,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfdata\libfdata_inline.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libfdata\libfdata_libcdata.h"
 				>
 			</File>
