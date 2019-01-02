@@ -43,12 +43,29 @@ int fdata_test_tree_node_value_free_function_return_value = 1;
  * Returns 1 if successful or -1 on error
  */
 int fdata_test_tree_node_value_free_function(
-     intptr_t **node_value FDATA_TEST_ATTRIBUTE_UNUSED,
-     libcerror_error_t **error FDATA_TEST_ATTRIBUTE_UNUSED )
+     intptr_t **node_value,
+     libcerror_error_t **error )
 {
-	FDATA_TEST_UNREFERENCED_PARAMETER( node_value )
-	FDATA_TEST_UNREFERENCED_PARAMETER( error )
+	static char *function = "fdata_test_tree_node_value_free_function";
 
+	if( node_value == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid node value.",
+		 function );
+
+		return( -1 );
+	}
+	if( *node_value != NULL )
+	{
+		memory_free(
+		 *node_value );
+
+		*node_value = NULL;
+	}
 	return( fdata_test_tree_node_value_free_function_return_value );
 }
 
@@ -2656,13 +2673,13 @@ int fdata_test_tree_node_get_node_value(
 	 "error",
 	 error );
 
-	memory_free(
-	 node_value );
-
-	node_value = NULL;
+	/* node_value is managed by the cache and does not need to be explicitly freed
+	 */
 
 	/* Test error cases
 	 */
+	node_value = NULL;
+
 	result = libfdata_tree_node_get_node_value(
 	          NULL,
 	          NULL,
@@ -3987,8 +4004,8 @@ int fdata_test_tree_node_append_sub_node(
 	 "error",
 	 error );
 
-	result = libfdata_tree_node_free(
-	          &tree_node,
+	result = libfdata_tree_free(
+	          &tree,
 	          &error );
 
 	FDATA_TEST_ASSERT_EQUAL_INT(
@@ -3997,8 +4014,8 @@ int fdata_test_tree_node_append_sub_node(
 	 1 );
 
 	FDATA_TEST_ASSERT_IS_NULL(
-	 "tree_node",
-	 tree_node );
+	 "tree",
+	 tree );
 
 	FDATA_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -4252,8 +4269,8 @@ int fdata_test_tree_node_insert_sub_node(
 	 "error",
 	 error );
 
-	result = libfdata_tree_node_free(
-	          &tree_node,
+	result = libfdata_tree_free(
+	          &tree,
 	          &error );
 
 	FDATA_TEST_ASSERT_EQUAL_INT(
@@ -4262,8 +4279,8 @@ int fdata_test_tree_node_insert_sub_node(
 	 1 );
 
 	FDATA_TEST_ASSERT_IS_NULL(
-	 "tree_node",
-	 tree_node );
+	 "tree",
+	 tree );
 
 	FDATA_TEST_ASSERT_IS_NULL(
 	 "error",

@@ -9,6 +9,8 @@ Homepage: https://github.com/libyal/libfdata
 Package: libfdata
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libfdata1
+Replaces: libfdata1
 Suggests: libfdata-dbg
 Description: Library to provide generic file data functions
  libfdata is a library to provide generic file data functions.
