@@ -523,7 +523,7 @@ int fdata_test_list_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_list_clone with intialized list
+	/* Test libfdata_list_clone with initialized list
 	 */
 	result = libfdata_list_clone(
 	          &destination_list,
@@ -560,7 +560,7 @@ int fdata_test_list_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_list_clone with non-intialized list
+	/* Test libfdata_list_clone with non-initialized list
 	 */
 	result = libfdata_list_clone(
 	          &destination_list,

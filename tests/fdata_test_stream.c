@@ -397,7 +397,7 @@ int fdata_test_stream_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_stream_clone with intialized stream
+	/* Test libfdata_stream_clone with initialized stream
 	 */
 	result = libfdata_stream_clone(
 	          &destination_stream,
@@ -434,7 +434,7 @@ int fdata_test_stream_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_stream_clone with non-intialized stream
+	/* Test libfdata_stream_clone with non-initialized stream
 	 */
 	result = libfdata_stream_clone(
 	          &destination_stream,

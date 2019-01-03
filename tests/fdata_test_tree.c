@@ -657,7 +657,7 @@ int fdata_test_tree_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_tree_clone with intialized tree
+	/* Test libfdata_tree_clone with initialized tree
 	 */
 	result = libfdata_tree_clone(
 	          &destination_tree,
@@ -694,7 +694,7 @@ int fdata_test_tree_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_tree_clone with non-intialized tree
+	/* Test libfdata_tree_clone with non-initialized tree
 	 */
 	result = libfdata_tree_clone(
 	          &destination_tree,

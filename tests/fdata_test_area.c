@@ -556,7 +556,7 @@ int fdata_test_area_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_area_clone with intialized area
+	/* Test libfdata_area_clone with initialized area
 	 */
 	result = libfdata_area_clone(
 	          &destination_area,
@@ -593,7 +593,7 @@ int fdata_test_area_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_area_clone with non-intialized area
+	/* Test libfdata_area_clone with non-initialized area
 	 */
 	result = libfdata_area_clone(
 	          &destination_area,

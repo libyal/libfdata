@@ -544,7 +544,7 @@ int fdata_test_range_list_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_range_list_clone with intialized range_list
+	/* Test libfdata_range_list_clone with initialized range_list
 	 */
 	result = libfdata_range_list_clone(
 	          &destination_range_list,
@@ -581,7 +581,7 @@ int fdata_test_range_list_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_range_list_clone with non-intialized range_list
+	/* Test libfdata_range_list_clone with non-initialized range_list
 	 */
 	result = libfdata_range_list_clone(
 	          &destination_range_list,

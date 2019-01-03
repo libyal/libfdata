@@ -443,7 +443,7 @@ int fdata_test_list_element_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_list_element_clone with intialized list_element
+	/* Test libfdata_list_element_clone with initialized list_element
 	 */
 	result = libfdata_list_element_clone(
 	          &destination_list_element,
@@ -480,7 +480,7 @@ int fdata_test_list_element_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_list_element_clone with non-intialized list_element
+	/* Test libfdata_list_element_clone with non-initialized list_element
 	 */
 	result = libfdata_list_element_clone(
 	          &destination_list_element,

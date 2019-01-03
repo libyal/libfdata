@@ -407,7 +407,7 @@ int fdata_test_btree_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_btree_clone with intialized btree
+	/* Test libfdata_btree_clone with initialized btree
 	 */
 	result = libfdata_btree_clone(
 	          &destination_btree,
@@ -444,7 +444,7 @@ int fdata_test_btree_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_btree_clone with non-intialized btree
+	/* Test libfdata_btree_clone with non-initialized btree
 	 */
 	result = libfdata_btree_clone(
 	          &destination_btree,

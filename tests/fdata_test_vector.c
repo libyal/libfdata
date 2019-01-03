@@ -563,7 +563,7 @@ int fdata_test_vector_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_vector_clone with intialized vector
+	/* Test libfdata_vector_clone with initialized vector
 	 */
 	result = libfdata_vector_clone(
 	          &destination_vector,
@@ -600,7 +600,7 @@ int fdata_test_vector_clone(
 	 "error",
 	 error );
 
-	/* Test libfdata_vector_clone with non-intialized vector
+	/* Test libfdata_vector_clone with non-initialized vector
 	 */
 	result = libfdata_vector_clone(
 	          &destination_vector,
