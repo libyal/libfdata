@@ -906,14 +906,16 @@ int libfdata_range_list_insert_element(
 
 			return( -1 );
 		}
-		if( libcdata_range_list_insert_range(
-		     internal_range_list->elements_range_list,
-		     (uint64_t) offset,
-		     (uint64_t) size,
-		     (intptr_t *) list,
-		     (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_free,
-		     (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libfdata_list_append_list,
-		     error ) != 1 )
+		result = libcdata_range_list_insert_range(
+		          internal_range_list->elements_range_list,
+		          (uint64_t) offset,
+		          (uint64_t) size,
+		          (intptr_t *) list,
+		          (int (*)(intptr_t **, libcerror_error_t **)) &libfdata_list_free,
+		          (int (*)(intptr_t *, intptr_t *, libcerror_error_t **)) &libfdata_list_append_list,
+		          error );
+
+		if( result == -1 )
 		{
 			libcerror_error_set(
 			 error,
