@@ -454,6 +454,8 @@ int libfdata_stream_clone(
 
 		goto on_error;
 	}
+	internal_destination_stream->size                = internal_source_stream->size;
+	internal_destination_stream->mapped_size         = internal_source_stream->mapped_size;
 	internal_destination_stream->flags               = internal_source_stream->flags | LIBFDATA_DATA_HANDLE_FLAG_MANAGED;
 	internal_destination_stream->free_data_handle    = internal_source_stream->free_data_handle;
 	internal_destination_stream->clone_data_handle   = internal_source_stream->clone_data_handle;
