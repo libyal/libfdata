@@ -205,6 +205,13 @@ int libfdata_vector_initialize(
 on_error:
 	if( internal_vector != NULL )
 	{
+		if( internal_vector->mapped_ranges_array != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_vector->mapped_ranges_array ),
+			 NULL,
+			 NULL );
+		}
 		if( internal_vector->segments_array != NULL )
 		{
 			libcdata_array_free(
