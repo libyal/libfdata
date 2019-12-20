@@ -7,7 +7,7 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-LIBRARY_TESTS="area btree btree_node btree_range cache error list list_element mapped_range notify range range_list stream support tree tree_node vector";
+LIBRARY_TESTS="area cache error list list_element mapped_range notify range range_list stream support tree tree_node vector";
 LIBRARY_TESTS_WITH_INPUT="";
 OPTION_SETS="";
 

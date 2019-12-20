@@ -6,7 +6,7 @@ $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
 
-$LibraryTests = "area btree btree_node btree_range cache error list list_element mapped_range notify range range_list stream support tree tree_node vector"
+$LibraryTests = "area cache error list list_element mapped_range notify range range_list stream support tree tree_node vector"
 $LibraryTestsWithInput = ""
 
 $InputGlob = "*"

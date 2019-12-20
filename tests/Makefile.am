@@ -22,9 +22,6 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	fdata_test_area \
-	fdata_test_btree \
-	fdata_test_btree_node \
-	fdata_test_btree_range \
 	fdata_test_cache \
 	fdata_test_error \
 	fdata_test_list \
@@ -48,42 +45,6 @@ fdata_test_area_SOURCES = \
 	fdata_test_unused.h
 
 fdata_test_area_LDADD = \
-	../libfdata/libfdata.la \
-	@LIBCERROR_LIBADD@
-
-fdata_test_btree_SOURCES = \
-	fdata_test_btree.c \
-	fdata_test_libcerror.h \
-	fdata_test_libfdata.h \
-	fdata_test_macros.h \
-	fdata_test_memory.c fdata_test_memory.h \
-	fdata_test_unused.h
-
-fdata_test_btree_LDADD = \
-	../libfdata/libfdata.la \
-	@LIBCERROR_LIBADD@
-
-fdata_test_btree_node_SOURCES = \
-	fdata_test_btree_node.c \
-	fdata_test_libcerror.h \
-	fdata_test_libfdata.h \
-	fdata_test_macros.h \
-	fdata_test_memory.c fdata_test_memory.h \
-	fdata_test_unused.h
-
-fdata_test_btree_node_LDADD = \
-	../libfdata/libfdata.la \
-	@LIBCERROR_LIBADD@
-
-fdata_test_btree_range_SOURCES = \
-	fdata_test_btree_range.c \
-	fdata_test_libcerror.h \
-	fdata_test_libfdata.h \
-	fdata_test_macros.h \
-	fdata_test_memory.c fdata_test_memory.h \
-	fdata_test_unused.h
-
-fdata_test_btree_range_LDADD = \
 	../libfdata/libfdata.la \
 	@LIBCERROR_LIBADD@
 

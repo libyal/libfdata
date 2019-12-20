@@ -5,7 +5,6 @@ TODO
 
 * hide cache in fdata structures do not pass to callback?
   - pass value and free function instead?
-* add specialize btree node cache/pool?
 * vector: fail on segments that are not multitudes of element size
 * change "at offset" into hexadecimal value
 * list and write - set is also used by read callback
@@ -17,7 +16,6 @@ TODO
   - separate set function
 * add/improve tests
   - area
-  - btree (init)
   - list (init, read)
   - range list (init)
   - tree
