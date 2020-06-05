@@ -27,6 +27,7 @@
 
 #include "libfdata_libcdata.h"
 #include "libfdata_libcerror.h"
+#include "libfdata_range.h"
 
 int libfdata_segments_array_get_segment_by_index(
      libcdata_array_t *segments_array,
