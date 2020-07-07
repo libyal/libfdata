@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #endif
 
-#include "fdata_test_libcerror.h"
 #include "fdata_test_libfdata.h"
 #include "fdata_test_macros.h"
 #include "fdata_test_unused.h"
