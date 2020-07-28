@@ -1446,7 +1446,8 @@ int libfdata_vector_get_element_value_by_index(
 
 		return( -1 );
 	}
-	if( element_index < 0 )
+	if( ( element_index < 0 )
+	 || ( element_index > ( (off64_t) INT64_MAX / internal_vector->element_data_size ) ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1494,6 +1495,17 @@ int libfdata_vector_get_element_value_by_index(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: missing segment data range.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_data_range->offset > ( (off64_t) INT64_MAX - element_data_offset ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid element data offset value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1760,7 +1772,8 @@ int libfdata_vector_set_element_value_by_index(
 
 		return( -1 );
 	}
-	if( element_index < 0 )
+	if( ( element_index < 0 )
+	 || ( element_index > ( (off64_t) INT64_MAX / internal_vector->element_data_size ) ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1808,6 +1821,17 @@ int libfdata_vector_set_element_value_by_index(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: missing segment data range.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_data_range->offset > ( (off64_t) INT64_MAX - element_data_offset ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid element data offset value out of bounds.",
 		 function );
 
 		return( -1 );
