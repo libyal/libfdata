@@ -1447,7 +1447,7 @@ int libfdata_vector_get_element_value_by_index(
 		return( -1 );
 	}
 	if( ( element_index < 0 )
-	 || ( element_index > ( (off64_t) INT64_MAX / internal_vector->element_data_size ) ) )
+	 || ( (uint64_t) element_index > ( (uint64_t) INT64_MAX / internal_vector->element_data_size ) ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1773,7 +1773,7 @@ int libfdata_vector_set_element_value_by_index(
 		return( -1 );
 	}
 	if( ( element_index < 0 )
-	 || ( element_index > ( (off64_t) INT64_MAX / internal_vector->element_data_size ) ) )
+	 || ( (uint64_t) element_index > ( (uint64_t) INT64_MAX / internal_vector->element_data_size ) ) )
 	{
 		libcerror_error_set(
 		 error,
