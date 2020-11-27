@@ -190,6 +190,7 @@ int libfdata_stream_initialize(
 
 		goto on_error;
 	}
+	internal_stream->segment_offset      = -1;
 	internal_stream->flags              |= flags;
 	internal_stream->data_handle         = data_handle;
 	internal_stream->free_data_handle    = free_data_handle;
@@ -1103,8 +1104,9 @@ int libfdata_stream_get_segment_index_at_offset(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: requested offset: 0x%08" PRIx64 "\n",
+		 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 		 function,
+		 offset,
 		 offset );
 	}
 #endif
@@ -1359,15 +1361,18 @@ int libfdata_stream_get_segment_index_at_offset(
 				return( -1 );
 			}
 			libcnotify_printf(
-			 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: segment: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 search_segment_index,
 			 segment_file_index,
 			 segment_offset,
 			 segment_offset + segment_size,
+			 segment_offset,
+			 segment_offset + segment_size,
 			 segment_size );
 		}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 		result = 1;
 	}
 	if( result == 1 )
@@ -1441,8 +1446,9 @@ int libfdata_stream_get_segment_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segment index at offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve segment index at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 offset,
 		 offset );
 
 		return( -1 );
@@ -1652,26 +1658,31 @@ ssize_t libfdata_stream_read_buffer(
 
 	segment_data_size = segment_size - internal_stream->segment_data_offset;
 
-	result_offset = internal_stream->seek_segment_offset(
-	                 internal_stream->data_handle,
-	                 file_io_handle,
-	                 internal_stream->current_segment_index,
-	                 segment_file_index,
-	                 segment_offset,
-	                 error );
-
-	if( result_offset != segment_offset )
+	if( internal_stream->segment_offset != segment_offset )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek segment: %d offset: %" PRIi64 ".",
-		 function,
-		 internal_stream->current_segment_index,
-		 segment_offset );
+		result_offset = internal_stream->seek_segment_offset(
+		                 internal_stream->data_handle,
+		                 file_io_handle,
+		                 internal_stream->current_segment_index,
+		                 segment_file_index,
+		                 segment_offset,
+		                 error );
 
-		return( -1 );
+		if( result_offset != segment_offset )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_SEEK_FAILED,
+			 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
+			 function,
+			 internal_stream->current_segment_index,
+			 segment_offset,
+			 segment_offset );
+
+			return( -1 );
+		}
+		internal_stream->segment_offset = segment_offset;
 	}
 	while( buffer_size > 0 )
 	{
@@ -1704,14 +1715,16 @@ ssize_t libfdata_stream_read_buffer(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read segment: %d data at offset: 0x%08" PRIx64 ".",
+			 "%s: unable to read segment: %d data at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 			 function,
 			 internal_stream->current_segment_index,
+			 segment_offset,
 			 segment_offset );
 
 			return( -1 );
 		}
 		internal_stream->current_offset      += read_size;
+		internal_stream->segment_offset      += read_size;
 		internal_stream->segment_data_offset += read_size;
 		segment_offset                       += read_size;
 		segment_data_size                    -= read_size;
@@ -1789,13 +1802,15 @@ ssize_t libfdata_stream_read_buffer(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
 				 LIBCERROR_IO_ERROR_SEEK_FAILED,
-				 "%s: unable to seek segment: %d offset: %" PRIi64 ".",
+				 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
 				 function,
 				 internal_stream->current_segment_index,
+				 segment_offset,
 				 segment_offset );
 
 				return( -1 );
 			}
+			internal_stream->segment_offset = segment_offset;
 		}
 	}
 	return( (ssize_t) buffer_offset );
@@ -2098,26 +2113,31 @@ ssize_t libfdata_stream_write_buffer(
 
 		segment_data_size = segment_size;
 	}
-	result_offset = internal_stream->seek_segment_offset(
-			 internal_stream->data_handle,
-			 file_io_handle,
-			 internal_stream->current_segment_index,
-			 segment_file_index,
-			 segment_offset,
-			 error );
-
-	if( result_offset != segment_offset )
+	if( internal_stream->segment_offset != segment_offset )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek segment: %d offset: %" PRIi64 ".",
-		 function,
-		 internal_stream->current_segment_index,
-		 segment_offset );
+		result_offset = internal_stream->seek_segment_offset(
+				 internal_stream->data_handle,
+				 file_io_handle,
+				 internal_stream->current_segment_index,
+				 segment_file_index,
+				 segment_offset,
+				 error );
 
-		return( -1 );
+		if( result_offset != segment_offset )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_SEEK_FAILED,
+			 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
+			 function,
+			 internal_stream->current_segment_index,
+			 segment_offset,
+			 segment_offset );
+
+			return( -1 );
+		}
+		internal_stream->segment_offset = segment_offset;
 	}
 	while( buffer_size > 0 )
 	{
@@ -2150,14 +2170,16 @@ ssize_t libfdata_stream_write_buffer(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_WRITE_FAILED,
-			 "%s: unable to write segment: %d data at offset: 0x%08" PRIx64 ".",
+			 "%s: unable to write segment: %d data at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 			 function,
 			 internal_stream->current_segment_index,
+			 segment_offset + internal_stream->segment_data_offset,
 			 segment_offset + internal_stream->segment_data_offset );
 
 			return( -1 );
 		}
 		internal_stream->current_offset      += write_size;
+		internal_stream->segment_offset      += write_size;
 		internal_stream->segment_data_offset += write_size;
 		segment_offset                       += write_size;
 		segment_data_size                    -= write_size;
@@ -2293,13 +2315,15 @@ ssize_t libfdata_stream_write_buffer(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
 				 LIBCERROR_IO_ERROR_SEEK_FAILED,
-				 "%s: unable to seek segment: %d offset: %" PRIi64 ".",
+				 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
 				 function,
 				 internal_stream->current_segment_index,
+				 segment_offset,
 				 segment_offset );
 
 				return( -1 );
 			}
+			internal_stream->segment_offset = segment_offset;
 		}
 	}
 	return( (ssize_t) buffer_offset );
@@ -2377,64 +2401,68 @@ off64_t libfdata_stream_seek_offset(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: seeking offset: %" PRIi64 ".\n",
+		 "%s: seeking offset: %" PRIi64 " (0x%08" PRIx64 ").\n",
 		 function,
+		 offset,
 		 offset );
 	}
 #endif
-	if( offset < 0 )
+	if( internal_stream->current_offset != offset )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: offset value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( offset < (off64_t) stream_size )
-	{
-		if( libfdata_stream_get_segment_index_at_offset(
-		     stream,
-		     offset,
-		     &segment_index,
-		     &segment_data_offset,
-		     error ) != 1 )
+		if( offset < 0 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve segment index at offset: 0x%08" PRIx64 ".",
-			 function,
-			 offset );
-
-			return( -1 );
-		}
-	}
-	else
-	{
-		if( libcdata_array_get_number_of_entries(
-		     internal_stream->segments_array,
-		     &segment_index,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve number of entries from segments array.",
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: offset value out of bounds.",
 			 function );
 
 			return( -1 );
 		}
-		segment_data_offset = 0;
-	}
-	internal_stream->current_segment_index = segment_index;
-	internal_stream->current_offset        = offset;
-	internal_stream->segment_data_offset   = segment_data_offset;
+		if( offset < (off64_t) stream_size )
+		{
+			if( libfdata_stream_get_segment_index_at_offset(
+			     stream,
+			     offset,
+			     &segment_index,
+			     &segment_data_offset,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve segment index at offset: %" PRIi64 " (0x%08" PRIx64 ").",
+				 function,
+				 offset,
+				 offset );
 
+				return( -1 );
+			}
+		}
+		else
+		{
+			if( libcdata_array_get_number_of_entries(
+			     internal_stream->segments_array,
+			     &segment_index,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve number of entries from segments array.",
+				 function );
+
+				return( -1 );
+			}
+			segment_data_offset = 0;
+		}
+		internal_stream->current_segment_index = segment_index;
+		internal_stream->current_offset        = offset;
+		internal_stream->segment_data_offset   = segment_data_offset;
+	}
 	return( offset );
 }
 
