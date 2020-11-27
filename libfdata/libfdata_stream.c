@@ -1508,7 +1508,6 @@ ssize_t libfdata_stream_read_buffer(
          libcerror_error_t **error )
 {
 	libfdata_internal_stream_t *internal_stream = NULL;
-	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_stream_read_buffer";
 	off64_t result_offset                       = 0;
 	off64_t segment_offset                      = 0;
@@ -1608,24 +1607,27 @@ ssize_t libfdata_stream_read_buffer(
 	{
 		buffer_size = (size_t) ( stream_size - internal_stream->current_offset );
 	}
-	if( libcdata_array_get_entry_by_index(
-	     internal_stream->segments_array,
-	     internal_stream->current_segment_index,
-	     (intptr_t **) &segment_data_range,
-	     error ) != 1 )
+	if( internal_stream->current_segment_data_range == NULL )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve entry: %d from segments array.",
-		 function,
-		 internal_stream->current_segment_index );
+		if( libcdata_array_get_entry_by_index(
+		     internal_stream->segments_array,
+		     internal_stream->current_segment_index,
+		     (intptr_t **) &( internal_stream->current_segment_data_range ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve entry: %d from segments array.",
+			 function,
+			 internal_stream->current_segment_index );
 
-		return( -1 );
+			return( -1 );
+		}
 	}
 	if( libfdata_range_get(
-	     segment_data_range,
+	     internal_stream->current_segment_data_range,
 	     &segment_file_index,
 	     &segment_offset,
 	     &segment_size,
@@ -1749,13 +1751,13 @@ ssize_t libfdata_stream_read_buffer(
 				return( -1 );
 			}
 			internal_stream->current_segment_index++;
-
-			internal_stream->segment_data_offset = 0;
+			internal_stream->current_segment_data_range = NULL;
+			internal_stream->segment_data_offset        = 0;
 
 			if( libcdata_array_get_entry_by_index(
 			     internal_stream->segments_array,
 			     internal_stream->current_segment_index,
-			     (intptr_t **) &segment_data_range,
+			     (intptr_t **) &( internal_stream->current_segment_data_range ),
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1769,7 +1771,7 @@ ssize_t libfdata_stream_read_buffer(
 				return( -1 );
 			}
 			if( libfdata_range_get(
-			     segment_data_range,
+			     internal_stream->current_segment_data_range,
 			     &segment_file_index,
 			     &segment_offset,
 			     &segment_size,
@@ -1880,7 +1882,6 @@ ssize_t libfdata_stream_write_buffer(
          libcerror_error_t **error )
 {
 	libfdata_internal_stream_t *internal_stream = NULL;
-	libfdata_range_t *segment_data_range        = NULL;
 	static char *function                       = "libfdata_stream_write_buffer";
 	off64_t result_offset                       = 0;
 	off64_t segment_offset                      = 0;
@@ -1996,24 +1997,27 @@ ssize_t libfdata_stream_write_buffer(
 	}
 	if( (size64_t) internal_stream->current_offset < internal_stream->size )
 	{
-		if( libcdata_array_get_entry_by_index(
-		     internal_stream->segments_array,
-		     internal_stream->current_segment_index,
-		     (intptr_t **) &segment_data_range,
-		     error ) != 1 )
+		if( internal_stream->current_segment_data_range == NULL )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve entry: %d from segments array.",
-			 function,
-			 internal_stream->current_segment_index );
+			if( libcdata_array_get_entry_by_index(
+			     internal_stream->segments_array,
+			     internal_stream->current_segment_index,
+			     (intptr_t **) &( internal_stream->current_segment_data_range ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve entry: %d from segments array.",
+				 function,
+				 internal_stream->current_segment_index );
 
-			return( -1 );
+				return( -1 );
+			}
 		}
 		if( libfdata_range_get(
-		     segment_data_range,
+		     internal_stream->current_segment_data_range,
 		     &segment_file_index,
 		     &segment_offset,
 		     &segment_size,
@@ -2051,6 +2055,7 @@ ssize_t libfdata_stream_write_buffer(
 		if( internal_stream->current_segment_index < number_of_segments )
 		{
 			internal_stream->current_segment_index++;
+			internal_stream->current_segment_data_range = NULL;
 		}
 		internal_stream->segment_data_offset = 0;
 
@@ -2200,15 +2205,15 @@ ssize_t libfdata_stream_write_buffer(
 				return( -1 );
 			}
 			internal_stream->current_segment_index++;
-
-			internal_stream->segment_data_offset = 0;
+			internal_stream->current_segment_data_range = NULL;
+			internal_stream->segment_data_offset        = 0;
 
 			if( internal_stream->current_segment_index < number_of_segments )
 			{
 				if( libcdata_array_get_entry_by_index(
 				     internal_stream->segments_array,
 				     internal_stream->current_segment_index,
-				     (intptr_t **) &segment_data_range,
+				     (intptr_t **) &( internal_stream->current_segment_data_range ),
 				     error ) != 1 )
 				{
 					libcerror_error_set(
@@ -2222,7 +2227,7 @@ ssize_t libfdata_stream_write_buffer(
 					return( -1 );
 				}
 				if( libfdata_range_get(
-				     segment_data_range,
+				     internal_stream->current_segment_data_range,
 				     &segment_file_index,
 				     &segment_offset,
 				     &segment_size,
@@ -2459,9 +2464,10 @@ off64_t libfdata_stream_seek_offset(
 			}
 			segment_data_offset = 0;
 		}
-		internal_stream->current_segment_index = segment_index;
-		internal_stream->current_offset        = offset;
-		internal_stream->segment_data_offset   = segment_data_offset;
+		internal_stream->current_segment_index      = segment_index;
+		internal_stream->current_segment_data_range = NULL;
+		internal_stream->current_offset             = offset;
+		internal_stream->segment_data_offset        = segment_data_offset;
 	}
 	return( offset );
 }

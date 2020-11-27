@@ -44,6 +44,10 @@ struct libfdata_internal_stream
 	 */
 	int current_segment_index;
 
+	/* The current segment data range
+	 */
+	libfdata_range_t *current_segment_data_range;
+
 	/* The current offset
 	 */
 	off64_t current_offset;
