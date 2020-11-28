@@ -255,6 +255,14 @@ int libfdata_list_is_element_set(
 /* Mapped range functions
  */
 LIBFDATA_EXTERN \
+int libfdata_list_get_element_mapped_range(
+     libfdata_list_t *list,
+     int element_index,
+     off64_t *mapped_range_offset,
+     size64_t *mapped_range_size,
+     libcerror_error_t **error );
+
+LIBFDATA_EXTERN \
 int libfdata_list_get_mapped_offset(
      libfdata_list_t *list,
      off64_t *mapped_offset,

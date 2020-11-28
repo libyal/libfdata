@@ -118,7 +118,7 @@ int fdata_test_tree_node_value_compare_function(
  */
 int fdata_test_tree_read_node(
      intptr_t *data_handle,
-     intptr_t *file_io_handle,
+     intptr_t *file_io_handle FDATA_TEST_ATTRIBUTE_UNUSED,
      libfdata_tree_node_t *tree_node,
      libfdata_cache_t *cache,
      int node_file_index,
@@ -131,6 +131,8 @@ int fdata_test_tree_read_node(
 	uint8_t *node_value   = NULL;
 	static char *function = "fdata_test_tree_read_node";
 	uint32_t node_index   = 0;
+
+	FDATA_TEST_UNREFERENCED_PARAMETER( file_io_handle )
 
 	if( data_handle != NULL )
 	{
@@ -253,9 +255,9 @@ on_error:
  */
 int fdata_test_tree_read_sub_nodes(
      intptr_t *data_handle,
-     intptr_t *file_io_handle,
-     libfdata_tree_node_t *tree_node,
-     libfdata_cache_t *cache,
+     intptr_t *file_io_handle FDATA_TEST_ATTRIBUTE_UNUSED,
+     libfdata_tree_node_t *tree_node FDATA_TEST_ATTRIBUTE_UNUSED,
+     libfdata_cache_t *cache FDATA_TEST_ATTRIBUTE_UNUSED,
      int sub_nodes_file_index,
      off64_t sub_nodes_offset,
      size64_t sub_nodes_size,
@@ -264,6 +266,10 @@ int fdata_test_tree_read_sub_nodes(
      libcerror_error_t **error )
 {
 	static char *function = "fdata_test_tree_read_sub_nodes";
+
+	FDATA_TEST_UNREFERENCED_PARAMETER( file_io_handle )
+	FDATA_TEST_UNREFERENCED_PARAMETER( tree_node )
+	FDATA_TEST_UNREFERENCED_PARAMETER( cache )
 
 	if( data_handle != NULL )
 	{

@@ -1717,6 +1717,204 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libfdata_list_get_element_mapped_range function
+ * Returns 1 if successful or 0 if not
+ */
+int fdata_test_list_get_element_mapped_range(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	libfdata_list_t *list    = NULL;
+	size64_t mapped_size     = 0;
+	off64_t mapped_offset    = 0;
+	int element_index        = 0;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libfdata_list_initialize(
+	          &list,
+	          NULL,
+	          &fdata_test_list_data_handle_free_function,
+	          &fdata_test_list_data_handle_clone_function,
+	          &fdata_test_list_read_element_data,
+	          NULL,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libfdata_list_append_element(
+	          list,
+	          &element_index,
+	          1,
+	          1024,
+	          128,
+	          0,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libfdata_list_get_element_mapped_range(
+	          list,
+	          0,
+	          &mapped_offset,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_EQUAL_INT64(
+	 "mapped_offset",
+	 (int64_t) mapped_offset,
+	 (int64_t) 0 );
+
+	FDATA_TEST_ASSERT_EQUAL_UINT64(
+	 "mapped_size",
+	 (uint64_t) mapped_size,
+	 (uint64_t) 128 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libfdata_list_get_element_mapped_range(
+	          NULL,
+	          0,
+	          &mapped_offset,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_mapped_range(
+	          list,
+	          -1,
+	          &mapped_offset,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_mapped_range(
+	          list,
+	          0,
+	          NULL,
+	          &mapped_size,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libfdata_list_get_element_mapped_range(
+	          list,
+	          0,
+	          &mapped_offset,
+	          NULL,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	FDATA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libfdata_list_free(
+	          &list,
+	          &error );
+
+	FDATA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "list",
+	 list );
+
+	FDATA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( list != NULL )
+	{
+		libfdata_list_free(
+		 &list,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libfdata_list_get_mapped_offset function
  * Returns 1 if successful or 0 if not
  */
@@ -4412,6 +4610,10 @@ int main(
 	/* TODO: add tests for libfdata_list_append_list */
 
 	/* TODO: add tests for libfdata_list_is_element_set */
+
+	FDATA_TEST_RUN(
+	 "libfdata_list_get_element_mapped_range",
+	 fdata_test_list_get_element_mapped_range );
 
 	FDATA_TEST_RUN(
 	 "libfdata_list_get_mapped_offset",

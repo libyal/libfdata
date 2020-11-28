@@ -1089,10 +1089,12 @@ int libfdata_list_set_element_by_index(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 "%s: element: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 		 function,
 		 element_index,
 		 element_file_index,
+		 element_offset,
+		 element_offset + element_size,
 		 element_offset,
 		 element_offset + element_size,
 		 element_size );
@@ -1116,9 +1118,11 @@ int libfdata_list_set_element_by_index(
 				return( -1 );
 			}
 			libcnotify_printf(
-			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 element_index,
+			 mapped_range_offset,
+			 mapped_range_offset + mapped_range_size,
 			 mapped_range_offset,
 			 mapped_range_offset + mapped_range_size,
 			 mapped_range_size );
@@ -1126,7 +1130,8 @@ int libfdata_list_set_element_by_index(
 		libcnotify_printf(
 		 "\n" );
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	internal_list->current_element_index = element_index;
 
 	return( 1 );
@@ -1501,18 +1506,22 @@ int libfdata_list_append_element(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 "%s: element: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 		 function,
 		 *element_index,
 		 element_file_index,
 		 element_offset,
 		 element_offset + element_size,
+		 element_offset,
+		 element_offset + element_size,
 		 element_size );
 
 		libcnotify_printf(
-		 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 		 function,
 		 *element_index,
+		 mapped_offset,
+		 mapped_offset + element_size,
 		 mapped_offset,
 		 mapped_offset + element_size,
 		 element_size );
@@ -1520,7 +1529,8 @@ int libfdata_list_append_element(
 		libcnotify_printf(
 		 "\n" );
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	internal_list->current_element_index = *element_index;
 	internal_list->size                 += element_size;
 
@@ -1975,6 +1985,68 @@ int libfdata_list_is_element_set(
 
 /* Mapped range functions
  */
+
+/* Retrieves the mapped range of a specific element
+ * Returns 1 if successful or -1 on error
+ */
+int libfdata_list_get_element_mapped_range(
+     libfdata_list_t *list,
+     int element_index,
+     off64_t *mapped_range_offset,
+     size64_t *mapped_range_size,
+     libcerror_error_t **error )
+{
+	libfdata_internal_list_t *internal_list = NULL;
+	libfdata_mapped_range_t *mapped_range   = NULL;
+	static char *function                   = "libfdata_list_get_element_mapped_range";
+
+	if( list == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid list.",
+		 function );
+
+		return( -1 );
+	}
+	internal_list = (libfdata_internal_list_t *) list;
+
+	if( libcdata_array_get_entry_by_index(
+	     internal_list->mapped_ranges_array,
+	     element_index,
+	     (intptr_t **) &mapped_range,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve entry: %d from mapped ranges array.",
+		 function,
+		 element_index );
+
+		return( -1 );
+	}
+	if( libfdata_mapped_range_get(
+	     mapped_range,
+	     mapped_range_offset,
+	     mapped_range_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to retrieve values from mapped range: %d.",
+		 function,
+		 element_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
 
 /* Retrieves the mapped offset
  * Returns 1 if successful, 0 if not set or -1 on error
@@ -2536,10 +2608,12 @@ int libfdata_list_set_element_by_index_with_mapped_size(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 "%s: element: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 		 function,
 		 element_index,
 		 element_file_index,
+		 element_offset,
+		 element_offset + element_size,
 		 element_offset,
 		 element_offset + element_size,
 		 element_size );
@@ -2563,9 +2637,11 @@ int libfdata_list_set_element_by_index_with_mapped_size(
 				return( -1 );
 			}
 			libcnotify_printf(
-			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 element_index,
+			 mapped_range_offset,
+			 mapped_range_offset + mapped_range_size,
 			 mapped_range_offset,
 			 mapped_range_offset + mapped_range_size,
 			 mapped_range_size );
@@ -2573,7 +2649,8 @@ int libfdata_list_set_element_by_index_with_mapped_size(
 		libcnotify_printf(
 		 "\n" );
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	internal_list->current_element_index = element_index;
 
 	return( 1 );
@@ -2762,18 +2839,22 @@ int libfdata_list_append_element_with_mapped_size(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 "%s: element: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 		 function,
 		 *element_index,
 		 element_file_index,
 		 element_offset,
 		 element_offset + element_size,
+		 element_offset,
+		 element_offset + element_size,
 		 element_size );
 
 		libcnotify_printf(
-		 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+		 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 		 function,
 		 *element_index,
+		 mapped_offset,
+		 mapped_offset + mapped_size,
 		 mapped_offset,
 		 mapped_offset + mapped_size,
 		 mapped_size );
@@ -2781,7 +2862,8 @@ int libfdata_list_append_element_with_mapped_size(
 		libcnotify_printf(
 		 "\n" );
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	internal_list->current_element_index = *element_index;
 	internal_list->size                 += mapped_size;
 
@@ -2937,7 +3019,7 @@ int libfdata_list_calculate_mapped_ranges(
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: element: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 element_index,
 			 element_file_index,
@@ -2946,14 +3028,15 @@ int libfdata_list_calculate_mapped_ranges(
 			 element_size );
 
 			libcnotify_printf(
-			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 element_index,
 			 mapped_offset,
 			 mapped_offset + mapped_size,
 			 mapped_size );
 		}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 		if( libfdata_mapped_range_set(
 		     mapped_range,
 		     mapped_offset,
@@ -3082,8 +3165,9 @@ int libfdata_list_get_element_index_at_offset(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: requested offset: 0x%08" PRIx64 "\n",
+		 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 		 function,
+		 offset,
 		 offset );
 	}
 #endif
@@ -3184,9 +3268,11 @@ int libfdata_list_get_element_index_at_offset(
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 search_element_index,
+			 mapped_range_start_offset,
+			 mapped_range_end_offset,
 			 mapped_range_start_offset,
 			 mapped_range_end_offset,
 			 mapped_range_size );
@@ -3268,9 +3354,11 @@ int libfdata_list_get_element_index_at_offset(
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
-				 "%s: element: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+				 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 				 function,
 				 search_element_index,
+				 mapped_range_start_offset,
+				 mapped_range_end_offset,
 				 mapped_range_start_offset,
 				 mapped_range_end_offset,
 				 mapped_range_size );
@@ -3349,15 +3437,18 @@ int libfdata_list_get_element_index_at_offset(
 				return( -1 );
 			}
 			libcnotify_printf(
-			 "%s: element: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: element: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 search_element_index,
 			 element_file_index,
 			 element_offset,
 			 element_offset + element_size,
+			 element_offset,
+			 element_offset + element_size,
 			 element_size );
 		}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 		internal_list->current_element_index = search_element_index;
 
 		result = 1;
@@ -3451,8 +3542,9 @@ int libfdata_list_get_list_element_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element index at offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve element index at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 offset,
 		 offset );
 
 		return( -1 );
@@ -3535,8 +3627,9 @@ int libfdata_list_get_element_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element index at offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve element index at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 offset,
 		 offset );
 
 		return( -1 );
@@ -3896,7 +3989,7 @@ int libfdata_list_get_element_value(
 				 number_of_cache_entries );
 			}
 		}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 	}
 	if( result == 0 )
 	{
@@ -3927,8 +4020,9 @@ int libfdata_list_get_element_value(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read element data at offset: 0x%08" PRIx64 ".",
+			 "%s: unable to read element data at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 			 function,
+			 element_offset,
 			 element_offset );
 
 			return( -1 );
@@ -4138,8 +4232,9 @@ int libfdata_list_get_element_value_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element at offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve element at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 offset,
 		 offset );
 
 		return( -1 );
@@ -4387,8 +4482,9 @@ int libfdata_list_set_element_value_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element at offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve element at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 offset,
 		 offset );
 
 		return( -1 );

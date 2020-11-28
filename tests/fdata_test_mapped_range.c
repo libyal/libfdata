@@ -564,8 +564,6 @@ int fdata_test_mapped_range_set(
 {
 	libcerror_error_t *error              = NULL;
 	libfdata_mapped_range_t *mapped_range = NULL;
-	size64_t size                         = 0;
-	off64_t offset                        = 0;
 	int result                            = 0;
 
 	/* Initialize test

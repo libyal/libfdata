@@ -528,6 +528,17 @@ int libfdata_list_is_element_set(
      int element_index,
      libfdata_error_t **error );
 
+/* Retrieves the mapped range of a specific element
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_get_element_mapped_range(
+     libfdata_list_t *list,
+     int element_index,
+     off64_t *mapped_range_offset,
+     size64_t *mapped_range_size,
+     libfdata_error_t **error );
+
 /* Retrieves the mapped offset
  * Returns 1 if successful, 0 if not set or -1 on error
  */
