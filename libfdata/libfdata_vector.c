@@ -1097,8 +1097,9 @@ int libfdata_vector_get_element_index_at_offset(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: requested offset: 0x%08" PRIx64 "\n",
+		 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 		 function,
+		 element_value_offset,
 		 element_value_offset );
 	}
 #endif
@@ -1180,9 +1181,11 @@ int libfdata_vector_get_element_index_at_offset(
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: segment: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 segment_index,
+			 mapped_range_start_offset,
+			 mapped_range_end_offset,
 			 mapped_range_start_offset,
 			 mapped_range_end_offset,
 			 mapped_range_size );
@@ -1262,9 +1265,11 @@ int libfdata_vector_get_element_index_at_offset(
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
-				 "%s: segment: %03d\tmapped range: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+				 "%s: segment: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 				 function,
 				 segment_index,
+				 mapped_range_start_offset,
+				 mapped_range_end_offset,
 				 mapped_range_start_offset,
 				 mapped_range_end_offset,
 				 mapped_range_size );
@@ -1329,15 +1334,18 @@ int libfdata_vector_get_element_index_at_offset(
 				return( -1 );
 			}
 			libcnotify_printf(
-			 "%s: segment: %03d\tfile index: %03d offset: 0x%08" PRIx64 " - 0x%08" PRIx64 " (size: %" PRIu64 ")\n",
+			 "%s: segment: %03d\tfile index: %03d offset: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 segment_index,
 			 segment_file_index,
 			 segment_offset,
 			 segment_offset + segment_size,
+			 segment_offset,
+			 segment_offset + segment_size,
 			 segment_size );
 		}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 		calculated_element_index = (uint64_t) element_value_offset / internal_vector->element_data_size;
 
 		if( calculated_element_index > (uint64_t) INT_MAX )
@@ -1482,8 +1490,9 @@ int libfdata_vector_get_element_value_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segment data range for offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve segment data range for offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 element_data_offset,
 		 element_data_offset );
 
 		return( -1 );
@@ -1584,8 +1593,9 @@ int libfdata_vector_get_element_value_by_index(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read element data at offset: 0x%08" PRIx64 ".",
+			 "%s: unable to read element data at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 			 function,
+			 element_data_offset,
 			 element_data_offset );
 
 			return( -1 );
@@ -1681,8 +1691,9 @@ int libfdata_vector_get_element_value_at_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve element index at offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve element index at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 element_value_offset,
 		 element_value_offset );
 
 		return( -1 );
@@ -1808,8 +1819,9 @@ int libfdata_vector_set_element_value_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segment data range for offset: 0x%08" PRIx64 ".",
+		 "%s: unable to retrieve segment data range for offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
+		 element_data_offset,
 		 element_data_offset );
 
 		return( -1 );

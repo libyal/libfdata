@@ -29,6 +29,7 @@ Types:
   - add mapped size write support ?
   - change behavior of libfdata_area_get_element_value_at_offset to return 0 if offset is out of bounds like libfdata_list_set_element_value_at_offset?
 * list
+  - remove libfdata_list_cache_element_value ?
   - reimplement libfdata_list_get_element_index_at_value_index ?
   - prepend: optimize recalculation of element index ?
   - add stream like read/write buffer ?

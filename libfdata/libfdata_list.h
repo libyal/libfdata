@@ -63,16 +63,6 @@ struct libfdata_internal_list
 	 */
 	uint8_t flags;
 
-	/* The calculate cache entry index value
-	 */
-	int (*calculate_cache_entry_index)(
-	       int element_index,
-	       int element_file_index,
-	       off64_t element_offset,
-	       size64_t element_size,
-	       uint32_t element_flags,
-               int number_of_cache_entries );
-
 	/* The data handle
 	 */
 	intptr_t *data_handle;
@@ -366,9 +356,9 @@ int libfdata_list_cache_element_value(
      libfdata_cache_t *cache,
      int element_index,
      int element_file_index,
-     off64_t element_offset,
-     size64_t element_size,
-     uint32_t element_flags,
+     off64_t element_data_offset,
+     size64_t element_data_size,
+     uint32_t element_data_flags,
      int64_t element_timestamp,
      intptr_t *element_value,
      int (*free_element_value)(

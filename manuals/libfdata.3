@@ -1,4 +1,4 @@
-.Dd November 28, 20220
+.Dd November 29, 2020
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -120,8 +120,6 @@ List functions
 .Fn libfdata_list_get_list_element_at_offset "libfdata_list_t *list" "off64_t offset" "int *element_index" "off64_t *element_data_offset" "libfdata_list_element_t **element" "libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_get_element_at_offset "libfdata_list_t *list" "off64_t offset" "int *element_index" "off64_t *element_data_offset" "int *element_file_index" "off64_t *element_offset" "size64_t *element_size" "uint32_t *element_flags" "libfdata_error_t **error"
-.Ft int
-.Fn libfdata_list_cache_element_value "libfdata_list_t *list" "libfdata_cache_t *cache" "int element_index" "int element_file_index" "off64_t element_offset" "size64_t element_size" "uint32_t element_flags" "int64_t element_timestamp" "intptr_t *element_value" "int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error )" "uint8_t write_flags" "libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_get_element_value_by_index "libfdata_list_t *list" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "int element_index" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
 .Ft int
