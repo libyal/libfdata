@@ -1660,10 +1660,12 @@ int libfdata_list_append_list(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: appending source list with mapped offset: %" PRIi64 " and size: %" PRIu64 " to list with mapped offset: %" PRIi64 " and size: %" PRIu64 "\n",
+		 "%s: appending source list with mapped offset: %" PRIi64 " (0x%08" PRIx64 ") and size: %" PRIu64 " to list with mapped offset: %" PRIi64 " (0x%08" PRIx64 ") and size: %" PRIu64 "\n",
 		 function,
 		 internal_source_list->mapped_offset,
+		 internal_source_list->mapped_offset,
 		 internal_source_list->size,
+		 internal_list->mapped_offset,
 		 internal_list->mapped_offset,
 		 internal_list->size );
 	}
@@ -2147,8 +2149,9 @@ int libfdata_list_set_mapped_offset(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: mapped offset: %" PRIi64 "\n",
+		 "%s: mapped offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 		 function,
+		 mapped_offset,
 		 mapped_offset );
 
 		libcnotify_printf(
@@ -3041,12 +3044,16 @@ int libfdata_list_calculate_mapped_ranges(
 			 element_file_index,
 			 element_offset,
 			 element_offset + element_size,
+			 element_offset,
+			 element_offset + element_size,
 			 element_size );
 
 			libcnotify_printf(
 			 "%s: element: %03d\tmapped range: %" PRIi64 " - %" PRIi64 " (0x%08" PRIx64 " - 0x%08" PRIx64 ") (size: %" PRIu64 ")\n",
 			 function,
 			 element_index,
+			 mapped_offset,
+			 mapped_offset + mapped_size,
 			 mapped_offset,
 			 mapped_offset + mapped_size,
 			 mapped_size );
