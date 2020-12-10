@@ -1598,14 +1598,17 @@ ssize_t libfdata_stream_read_buffer(
 	}
 	/* Bail out early for requests to read empty buffers and beyond the end of the stream
 	 */
-	if( ( buffer_size == 0 )
-	 || ( (size64_t) internal_stream->current_offset >= stream_size ) )
+	if( (size64_t) internal_stream->current_offset >= stream_size )
 	{
-		return( 0 );
+		buffer_size = 0;
 	}
-	if( (size64_t) ( internal_stream->current_offset + buffer_size ) > stream_size )
+	else if( (size64_t) buffer_size > ( stream_size - internal_stream->current_offset ) )
 	{
 		buffer_size = (size_t) ( stream_size - internal_stream->current_offset );
+	}
+	if( buffer_size == 0 )
+	{
+		return( 0 );
 	}
 	if( internal_stream->current_segment_data_range == NULL )
 	{
