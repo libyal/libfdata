@@ -1648,6 +1648,7 @@ ssize_t libfdata_stream_read_buffer(
 		return( -1 );
 	}
 	if( ( internal_stream->segment_data_offset < 0 )
+	 || ( segment_offset > ( INT64_MAX - internal_stream->segment_data_offset ) )
 	 || ( (size64_t) internal_stream->segment_data_offset >= segment_size ) )
 	{
 		libcerror_error_set(
