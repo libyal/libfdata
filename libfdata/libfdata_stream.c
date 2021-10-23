@@ -1664,32 +1664,32 @@ ssize_t libfdata_stream_read_buffer(
 
 	segment_data_size = segment_size - internal_stream->segment_data_offset;
 
-	if( internal_stream->segment_offset != segment_offset )
+	/* Make sure the file IO handle is pointing to the correct offset
+	 */
+	result_offset = internal_stream->seek_segment_offset(
+	                 internal_stream->data_handle,
+	                 file_io_handle,
+	                 internal_stream->current_segment_index,
+	                 segment_file_index,
+	                 segment_offset,
+	                 error );
+
+	if( result_offset != segment_offset )
 	{
-		result_offset = internal_stream->seek_segment_offset(
-		                 internal_stream->data_handle,
-		                 file_io_handle,
-		                 internal_stream->current_segment_index,
-		                 segment_file_index,
-		                 segment_offset,
-		                 error );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
+		 function,
+		 internal_stream->current_segment_index,
+		 segment_offset,
+		 segment_offset );
 
-		if( result_offset != segment_offset )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
-			 function,
-			 internal_stream->current_segment_index,
-			 segment_offset,
-			 segment_offset );
-
-			return( -1 );
-		}
-		internal_stream->segment_offset = segment_offset;
+		return( -1 );
 	}
+	internal_stream->segment_offset = segment_offset;
+
 	while( buffer_size > 0 )
 	{
 		if( (size64_t) buffer_size <= segment_data_size )
@@ -2122,32 +2122,32 @@ ssize_t libfdata_stream_write_buffer(
 
 		segment_data_size = segment_size;
 	}
-	if( internal_stream->segment_offset != segment_offset )
-	{
-		result_offset = internal_stream->seek_segment_offset(
-				 internal_stream->data_handle,
-				 file_io_handle,
-				 internal_stream->current_segment_index,
-				 segment_file_index,
-				 segment_offset,
-				 error );
-
-		if( result_offset != segment_offset )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
-			 function,
+	/* Make sure the file IO handle is pointing to the correct offset
+	 */
+	result_offset = internal_stream->seek_segment_offset(
+			 internal_stream->data_handle,
+			 file_io_handle,
 			 internal_stream->current_segment_index,
+			 segment_file_index,
 			 segment_offset,
-			 segment_offset );
+			 error );
 
-			return( -1 );
-		}
-		internal_stream->segment_offset = segment_offset;
+	if( result_offset != segment_offset )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek segment: %d offset: %" PRIi64 " (0x%08" PRIx64 ").",
+		 function,
+		 internal_stream->current_segment_index,
+		 segment_offset,
+		 segment_offset );
+
+		return( -1 );
 	}
+	internal_stream->segment_offset = segment_offset;
+
 	while( buffer_size > 0 )
 	{
 		if( (size64_t) buffer_size <= segment_data_size )
