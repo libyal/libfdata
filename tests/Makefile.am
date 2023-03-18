@@ -32,8 +32,6 @@ check_PROGRAMS = \
 	fdata_test_range_list \
 	fdata_test_stream \
 	fdata_test_support \
-	fdata_test_tree \
-	fdata_test_tree_node \
 	fdata_test_vector
 
 fdata_test_area_SOURCES = \
@@ -160,30 +158,6 @@ fdata_test_support_SOURCES = \
 
 fdata_test_support_LDADD = \
 	../libfdata/libfdata.la
-
-fdata_test_tree_SOURCES = \
-	fdata_test_libcerror.h \
-	fdata_test_libfdata.h \
-	fdata_test_macros.h \
-	fdata_test_memory.c fdata_test_memory.h \
-	fdata_test_tree.c \
-	fdata_test_unused.h
-
-fdata_test_tree_LDADD = \
-	../libfdata/libfdata.la \
-	@LIBCERROR_LIBADD@
-
-fdata_test_tree_node_SOURCES = \
-	fdata_test_libcerror.h \
-	fdata_test_libfdata.h \
-	fdata_test_macros.h \
-	fdata_test_memory.c fdata_test_memory.h \
-	fdata_test_tree_node.c \
-	fdata_test_unused.h
-
-fdata_test_tree_node_LDADD = \
-	../libfdata/libfdata.la \
-	@LIBCERROR_LIBADD@
 
 fdata_test_vector_SOURCES = \
 	fdata_test_libcerror.h \

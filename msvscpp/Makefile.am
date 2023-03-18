@@ -10,8 +10,6 @@ MSVSCPP_FILES = \
 	fdata_test_range_list/fdata_test_range_list.vcproj \
 	fdata_test_stream/fdata_test_stream.vcproj \
 	fdata_test_support/fdata_test_support.vcproj \
-	fdata_test_tree/fdata_test_tree.vcproj \
-	fdata_test_tree_node/fdata_test_tree_node.vcproj \
 	fdata_test_vector/fdata_test_vector.vcproj \
 	libcdata/libcdata.vcproj \
 	libcerror/libcerror.vcproj \

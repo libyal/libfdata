@@ -207,8 +207,6 @@ typedef intptr_t libfdata_list_t;
 typedef intptr_t libfdata_list_element_t;
 typedef intptr_t libfdata_range_list_t;
 typedef intptr_t libfdata_stream_t;
-typedef intptr_t libfdata_tree_t;
-typedef intptr_t libfdata_tree_node_t;
 typedef intptr_t libfdata_vector_t;
 
 #ifdef __cplusplus

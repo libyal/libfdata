@@ -135,8 +135,6 @@ stamp-h[1-9]
 /tests/fdata_test_range_list
 /tests/fdata_test_stream
 /tests/fdata_test_support
-/tests/fdata_test_tree
-/tests/fdata_test_tree_node
 /tests/fdata_test_vector
 /tests/tmp*
 

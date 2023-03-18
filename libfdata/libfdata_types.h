@@ -40,8 +40,6 @@ typedef struct libfdata_list {}		libfdata_list_t;
 typedef struct libfdata_list_element {}	libfdata_list_element_t;
 typedef struct libfdata_range_list {}	libfdata_range_list_t;
 typedef struct libfdata_stream {}	libfdata_stream_t;
-typedef struct libfdata_tree {}		libfdata_tree_t;
-typedef struct libfdata_tree_node {}	libfdata_tree_node_t;
 typedef struct libfdata_vector {}	libfdata_vector_t;
 
 #else
@@ -51,8 +49,6 @@ typedef intptr_t libfdata_list_t;
 typedef intptr_t libfdata_list_element_t;
 typedef intptr_t libfdata_range_list_t;
 typedef intptr_t libfdata_stream_t;
-typedef intptr_t libfdata_tree_t;
-typedef intptr_t libfdata_tree_node_t;
 typedef intptr_t libfdata_vector_t;
 
 #endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */

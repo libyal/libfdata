@@ -31,8 +31,6 @@ libfdata_la_SOURCES = \
 	libfdata_segments_array.c libfdata_segments_array.h \
 	libfdata_stream.c libfdata_stream.h \
 	libfdata_support.c libfdata_support.h \
-	libfdata_tree.c libfdata_tree.h \
-	libfdata_tree_node.c libfdata_tree_node.h \
 	libfdata_types.h \
 	libfdata_unused.h \
 	libfdata_vector.c libfdata_vector.h
