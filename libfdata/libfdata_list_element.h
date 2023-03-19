@@ -79,6 +79,7 @@ int libfdata_list_element_clone(
      libfdata_list_element_t *source_element,
      libcerror_error_t **error );
 
+LIBFDATA_EXTERN \
 int libfdata_list_element_get_element_index(
      libfdata_list_element_t *element,
      int *element_index,
