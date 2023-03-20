@@ -97,6 +97,7 @@ int libfdata_list_element_get_timestamp(
 
 /* Data range functions
  */
+LIBFDATA_EXTERN \
 int libfdata_list_element_get_data_range(
      libfdata_list_element_t *element,
      int *file_index,

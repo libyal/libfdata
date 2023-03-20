@@ -770,6 +770,18 @@ int libfdata_list_element_get_element_index(
      int *element_index,
      libfdata_error_t **error );
 
+/* Retrieves the data range
+ * Returns 1 if successful or -1 on error
+ */
+LIBFDATA_EXTERN \
+int libfdata_list_element_get_data_range(
+     libfdata_list_element_t *element,
+     int *file_index,
+     off64_t *offset,
+     size64_t *size,
+     uint32_t *flags,
+     libfdata_error_t **error );
+
 /* Retrieves the mapped size
  * Returns 1 if successful, 0 if not set or -1 on error
  */

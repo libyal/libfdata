@@ -1,4 +1,4 @@
-.Dd November 29, 2020
+.Dd March 20, 2023
 .Dt libfdata 3
 .Os libfdata
 .Sh NAME
@@ -134,6 +134,8 @@ List functions
 List element functions
 .Ft int
 .Fn libfdata_list_element_get_element_index "libfdata_list_element_t *element" "int *element_index" "libfdata_error_t **error"
+.Ft int
+.Fn libfdata_list_element_get_data_range "libfdata_list_element_t *element" "int *file_index" "off64_t *offset" "size64_t *size" "uint32_t *flags" "libfdata_error_t **error"
 .Ft int
 .Fn libfdata_list_element_get_mapped_size "libfdata_list_element_t *element" "size64_t *mapped_size" "libfdata_error_t **error"
 .Ft int
