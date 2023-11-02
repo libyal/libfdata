@@ -18,9 +18,9 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libfdata.h
-	/bin/rm -f libfdata/definitions.h
-	/bin/rm -f libfdata/features.h
-	/bin/rm -f libfdata/types.h
-	/bin/rm -f Makefile
+	-rm -f libfdata.h
+	-rm -f libfdata/definitions.h
+	-rm -f libfdata/features.h
+	-rm -f libfdata/types.h
+	-rm -f Makefile
 
