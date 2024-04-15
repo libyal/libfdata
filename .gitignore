@@ -140,6 +140,7 @@ stamp-h[1-9]
 /tests/fdata_test_stream
 /tests/fdata_test_support
 /tests/fdata_test_vector
+/tests/notify_stream.log
 /tests/tmp*
 
 # Local library dependencies specific files
