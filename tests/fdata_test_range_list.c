@@ -170,7 +170,7 @@ int fdata_test_range_list_read_element_data(
 		return( -1 );
 	}
 	element_value = (uint8_t *) memory_allocate(
-	                             sizeof( uint32_t ) );
+	                              4 * sizeof( uint8_t ) );
 
 	if( element_value == NULL )
 	{

@@ -991,7 +991,6 @@ int libfdata_vector_get_element_index_at_offset(
 	static char *function                       = "libfdata_vector_get_element_index_at_offset";
 	off64_t mapped_range_end_offset             = 0;
 	off64_t mapped_range_start_offset           = 0;
-	off64_t segment_data_offset                 = 0;
 	size64_t mapped_range_size                  = 0;
 	uint64_t calculated_element_index           = 0;
 	int initial_segment_index                   = 0;
@@ -1290,7 +1289,6 @@ int libfdata_vector_get_element_index_at_offset(
 
 				break;
 			}
-			segment_data_offset += (off64_t) mapped_range_size;
 		}
 	}
 	if( ( segment_index >= 0 )
