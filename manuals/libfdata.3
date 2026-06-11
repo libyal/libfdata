@@ -1,6 +1,6 @@
-.Dd March 20, 2023
-.Dt libfdata 3
-.Os libfdata
+.Dd June 11, 2026
+.Dt LIBFDATA 3
+.Os
 .Sh NAME
 .Nm libfdata.h
 .Nd Library to provide generic file data functions
@@ -8,261 +8,1171 @@
 .In libfdata.h
 .Pp
 Support functions
+.nf
 .Ft const char *
-.Fn libfdata_get_version "void"
+.Fo libfdata_get_version
+.Fa "void"
+.Fc
+.fi
 .Pp
 Notify functions
+.nf
 .Ft void
-.Fn libfdata_notify_set_verbose "int verbose"
+.Fo libfdata_notify_set_verbose
+.Fa "int verbose"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_notify_set_stream "FILE *stream" "libfdata_error_t **error"
+.Fo libfdata_notify_set_stream
+.Fa "FILE *stream"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_notify_stream_open "const char *filename" "libfdata_error_t **error"
+.Fo libfdata_notify_stream_open
+.Fa "const char *filename"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_notify_stream_close "libfdata_error_t **error"
+.Fo libfdata_notify_stream_close
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Pp
 Error functions
+.nf
 .Ft void
-.Fn libfdata_error_free "libfdata_error_t **error"
+.Fo libfdata_error_free
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_error_fprint "libfdata_error_t *error" "FILE *stream"
+.Fo libfdata_error_fprint
+.Fa "libfdata_error_t *error"
+.Fa "FILE *stream"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_error_sprint "libfdata_error_t *error" "char *string" "size_t size"
+.Fo libfdata_error_sprint
+.Fa "libfdata_error_t *error"
+.Fa "char *string"
+.Fa "size_t size"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_error_backtrace_fprint "libfdata_error_t *error" "FILE *stream"
+.Fo libfdata_error_backtrace_fprint
+.Fa "libfdata_error_t *error"
+.Fa "FILE *stream"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_error_backtrace_sprint "libfdata_error_t *error" "char *string" "size_t size"
+.Fo libfdata_error_backtrace_sprint
+.Fa "libfdata_error_t *error"
+.Fa "char *string"
+.Fa "size_t size"
+.Fc
+.fi
 .Pp
 Cache functions
+.nf
 .Ft int
-.Fn libfdata_cache_initialize "libfdata_cache_t **cache" "int maximum_cache_entries" "libfdata_error_t **error"
+.Fo libfdata_cache_initialize
+.Fa "libfdata_cache_t **cache"
+.Fa "int maximum_cache_entries"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_cache_free "libfdata_cache_t **cache" "libfdata_error_t **error"
+.Fo libfdata_cache_free
+.Fa "libfdata_cache_t **cache"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Pp
 Area functions
+.nf
 .Ft int
-.Fn libfdata_area_initialize "libfdata_area_t **area" "size64_t element_data_size" "intptr_t *data_handle" "int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error )" "int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error )" "int (*read_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_area_t *area, libfdata_cache_t *cache, off64_t element_value_offset, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t read_flags, libfdata_error_t **error )" "int (*write_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_area_t *area, libfdata_cache_t *cache, off64_t element_value_offset, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t write_flags, libfdata_error_t **error )" "uint8_t flags" "libfdata_error_t **error"
+.Fo libfdata_area_initialize
+.Fa "libfdata_area_t **area"
+.Fa "size64_t element_data_size"
+.Fa "intptr_t *data_handle"
+.Fa "int (*free_data_handle)( intptr_t **data_handle, \
+libfdata_error_t **error )"
+.Fa "int (*clone_data_handle)( intptr_t **destination_data_handle, \
+intptr_t *source_data_handle, libfdata_error_t **error )"
+.Fa "int (*read_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_area_t *area, libfdata_cache_t *cache, \
+off64_t element_value_offset, int element_data_file_index, \
+off64_t element_data_offset, size64_t element_data_size, \
+uint32_t element_data_flags, uint8_t read_flags, libfdata_error_t **error )"
+.Fa "int (*write_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_area_t *area, libfdata_cache_t *cache, \
+off64_t element_value_offset, int element_data_file_index, \
+off64_t element_data_offset, size64_t element_data_size, \
+uint32_t element_data_flags, uint8_t write_flags, libfdata_error_t **error )"
+.Fa "uint8_t flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_free "libfdata_area_t **area" "libfdata_error_t **error"
+.Fo libfdata_area_free
+.Fa "libfdata_area_t **area"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_clone "libfdata_area_t **destination_area" "libfdata_area_t *source_area" "libfdata_error_t **error"
+.Fo libfdata_area_clone
+.Fa "libfdata_area_t **destination_area"
+.Fa "libfdata_area_t *source_area"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_empty "libfdata_area_t *area" "libfdata_error_t **error"
+.Fo libfdata_area_empty
+.Fa "libfdata_area_t *area"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_resize "libfdata_area_t *area" "int number_of_segments" "libfdata_error_t **error"
+.Fo libfdata_area_resize
+.Fa "libfdata_area_t *area"
+.Fa "int number_of_segments"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_get_number_of_segments "libfdata_area_t *area" "int *number_of_segments" "libfdata_error_t **error"
+.Fo libfdata_area_get_number_of_segments
+.Fa "libfdata_area_t *area"
+.Fa "int *number_of_segments"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_get_segment_by_index "libfdata_area_t *area" "int segment_index" "int *segment_file_index" "off64_t *segment_offset" "size64_t *segment_size" "uint32_t *segment_flags" "libfdata_error_t **error"
+.Fo libfdata_area_get_segment_by_index
+.Fa "libfdata_area_t *area"
+.Fa "int segment_index"
+.Fa "int *segment_file_index"
+.Fa "off64_t *segment_offset"
+.Fa "size64_t *segment_size"
+.Fa "uint32_t *segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_set_segment_by_index "libfdata_area_t *area" "int segment_index" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_area_set_segment_by_index
+.Fa "libfdata_area_t *area"
+.Fa "int segment_index"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_prepend_segment "libfdata_area_t *area" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_area_prepend_segment
+.Fa "libfdata_area_t *area"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_append_segment "libfdata_area_t *area" "int *segment_index" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_area_append_segment
+.Fa "libfdata_area_t *area"
+.Fa "int *segment_index"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_get_element_data_size "libfdata_area_t *area" "size64_t *element_data_size" "libfdata_error_t **error"
+.Fo libfdata_area_get_element_data_size
+.Fa "libfdata_area_t *area"
+.Fa "size64_t *element_data_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_get_element_value_at_offset "libfdata_area_t *area" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "off64_t element_value_offset" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_area_get_element_value_at_offset
+.Fa "libfdata_area_t *area"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "off64_t element_value_offset"
+.Fa "intptr_t **element_value"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_set_element_value_at_offset "libfdata_area_t *area" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "off64_t element_value_offset" "intptr_t *element_value" "int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error )" "uint8_t write_flags" "libfdata_error_t **error"
+.Fo libfdata_area_set_element_value_at_offset
+.Fa "libfdata_area_t *area"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "off64_t element_value_offset"
+.Fa "intptr_t *element_value"
+.Fa "int (*free_element_value)( intptr_t **element_value, \
+libfdata_error_t **error )"
+.Fa "uint8_t write_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_area_get_size "libfdata_area_t *area" "size64_t *size" "libfdata_error_t **error"
+.Fo libfdata_area_get_size
+.Fa "libfdata_area_t *area"
+.Fa "size64_t *size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Pp
 List functions
+.nf
 .Ft int
-.Fn libfdata_list_initialize "libfdata_list_t **list" "intptr_t *data_handle" "int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error )" "int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error )" "int (*read_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t read_flags, libfdata_error_t **error )" "int (*write_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t write_flags, libfdata_error_t **error )" "uint8_t flags" "libfdata_error_t **error"
+.Fo libfdata_list_initialize
+.Fa "libfdata_list_t **list"
+.Fa "intptr_t *data_handle"
+.Fa "int (*free_data_handle)( intptr_t **data_handle, \
+libfdata_error_t **error )"
+.Fa "int (*clone_data_handle)( intptr_t **destination_data_handle, \
+intptr_t *source_data_handle, libfdata_error_t **error )"
+.Fa "int (*read_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_list_element_t *list_element, \
+libfdata_cache_t *cache, int element_data_file_index, \
+off64_t element_data_offset, size64_t element_data_size, \
+uint32_t element_data_flags, uint8_t read_flags, libfdata_error_t **error )"
+.Fa "int (*write_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_list_element_t *list_element, \
+libfdata_cache_t *cache, int element_data_file_index, \
+off64_t element_data_offset, size64_t element_data_size, \
+uint32_t element_data_flags, uint8_t write_flags, libfdata_error_t **error )"
+.Fa "uint8_t flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_free "libfdata_list_t **list" "libfdata_error_t **error"
+.Fo libfdata_list_free
+.Fa "libfdata_list_t **list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_clone "libfdata_list_t **destination_list" "libfdata_list_t *source_list" "libfdata_error_t **error"
+.Fo libfdata_list_clone
+.Fa "libfdata_list_t **destination_list"
+.Fa "libfdata_list_t *source_list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_empty "libfdata_list_t *list" "libfdata_error_t **error"
+.Fo libfdata_list_empty
+.Fa "libfdata_list_t *list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_resize "libfdata_list_t *list" "int number_of_elements" "libfdata_error_t **error"
+.Fo libfdata_list_resize
+.Fa "libfdata_list_t *list"
+.Fa "int number_of_elements"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_reverse "libfdata_list_t *list" "libfdata_error_t **error"
+.Fo libfdata_list_reverse
+.Fa "libfdata_list_t *list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_number_of_elements "libfdata_list_t *list" "int *number_of_elements" "libfdata_error_t **error"
+.Fo libfdata_list_get_number_of_elements
+.Fa "libfdata_list_t *list"
+.Fa "int *number_of_elements"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_list_element_by_index "libfdata_list_t *list" "int element_index" "libfdata_list_element_t **element" "libfdata_error_t **error"
+.Fo libfdata_list_get_list_element_by_index
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "libfdata_list_element_t **element"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_element_by_index "libfdata_list_t *list" "int element_index" "int *element_file_index" "off64_t *element_offset" "size64_t *element_size" "uint32_t *element_flags" "libfdata_error_t **error"
+.Fo libfdata_list_get_element_by_index
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "int *element_file_index"
+.Fa "off64_t *element_offset"
+.Fa "size64_t *element_size"
+.Fa "uint32_t *element_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_set_element_by_index "libfdata_list_t *list" "int element_index" "int element_file_index" "off64_t element_offset" "size64_t element_size" "uint32_t element_flags" "libfdata_error_t **error"
+.Fo libfdata_list_set_element_by_index
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "int element_file_index"
+.Fa "off64_t element_offset"
+.Fa "size64_t element_size"
+.Fa "uint32_t element_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_prepend_element "libfdata_list_t *list" "int element_file_index" "off64_t element_offset" "size64_t element_size" "uint32_t element_flags" "libfdata_error_t **error"
+.Fo libfdata_list_prepend_element
+.Fa "libfdata_list_t *list"
+.Fa "int element_file_index"
+.Fa "off64_t element_offset"
+.Fa "size64_t element_size"
+.Fa "uint32_t element_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_append_element "libfdata_list_t *list" "int *element_index" "int element_file_index" "off64_t element_offset" "size64_t element_size" "uint32_t element_flags" "libfdata_error_t **error"
+.Fo libfdata_list_append_element
+.Fa "libfdata_list_t *list"
+.Fa "int *element_index"
+.Fa "int element_file_index"
+.Fa "off64_t element_offset"
+.Fa "size64_t element_size"
+.Fa "uint32_t element_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_append_list "libfdata_list_t *list" "libfdata_list_t *source_list" "libfdata_error_t **error"
+.Fo libfdata_list_append_list
+.Fa "libfdata_list_t *list"
+.Fa "libfdata_list_t *source_list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_is_element_set "libfdata_list_t *list" "int element_index" "libfdata_error_t **error"
+.Fo libfdata_list_is_element_set
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_element_mapped_range "libfdata_list_t *list" "int element_index" "off64_t *mapped_range_offset" "size64_t *mapped_range_size" "libfdata_error_t **error"
+.Fo libfdata_list_get_element_mapped_range
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "off64_t *mapped_range_offset"
+.Fa "size64_t *mapped_range_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_mapped_offset "libfdata_list_t *list" "off64_t *mapped_offset" "libfdata_error_t **error"
+.Fo libfdata_list_get_mapped_offset
+.Fa "libfdata_list_t *list"
+.Fa "off64_t *mapped_offset"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_set_mapped_offset "libfdata_list_t *list" "off64_t mapped_offset" "libfdata_error_t **error"
+.Fo libfdata_list_set_mapped_offset
+.Fa "libfdata_list_t *list"
+.Fa "off64_t mapped_offset"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_mapped_size_by_index "libfdata_list_t *list" "int element_index" "size64_t *mapped_size" "libfdata_error_t **error"
+.Fo libfdata_list_get_mapped_size_by_index
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "size64_t *mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_set_mapped_size_by_index "libfdata_list_t *list" "int element_index" "size64_t mapped_size" "libfdata_error_t **error"
+.Fo libfdata_list_set_mapped_size_by_index
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "size64_t mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_element_by_index_with_mapped_size "libfdata_list_t *list" "int element_index" "int *element_file_index" "off64_t *element_offset" "size64_t *element_size" "uint32_t *element_flags" "size64_t *mapped_size" "libfdata_error_t **error"
+.Fo libfdata_list_get_element_by_index_with_mapped_size
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "int *element_file_index"
+.Fa "off64_t *element_offset"
+.Fa "size64_t *element_size"
+.Fa "uint32_t *element_flags"
+.Fa "size64_t *mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_set_element_by_index_with_mapped_size "libfdata_list_t *list" "int element_index" "int element_file_index" "off64_t element_offset" "size64_t element_size" "uint32_t element_flags" "size64_t mapped_size" "libfdata_error_t **error"
+.Fo libfdata_list_set_element_by_index_with_mapped_size
+.Fa "libfdata_list_t *list"
+.Fa "int element_index"
+.Fa "int element_file_index"
+.Fa "off64_t element_offset"
+.Fa "size64_t element_size"
+.Fa "uint32_t element_flags"
+.Fa "size64_t mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_append_element_with_mapped_size "libfdata_list_t *list" "int *element_index" "int element_file_index" "off64_t element_offset" "size64_t element_size" "uint32_t element_flags" "size64_t mapped_size" "libfdata_error_t **error"
+.Fo libfdata_list_append_element_with_mapped_size
+.Fa "libfdata_list_t *list"
+.Fa "int *element_index"
+.Fa "int element_file_index"
+.Fa "off64_t element_offset"
+.Fa "size64_t element_size"
+.Fa "uint32_t element_flags"
+.Fa "size64_t mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_element_index_at_offset "libfdata_list_t *list" "off64_t offset" "int *element_index" "off64_t *element_data_offset" "libfdata_error_t **error"
+.Fo libfdata_list_get_element_index_at_offset
+.Fa "libfdata_list_t *list"
+.Fa "off64_t offset"
+.Fa "int *element_index"
+.Fa "off64_t *element_data_offset"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_list_element_at_offset "libfdata_list_t *list" "off64_t offset" "int *element_index" "off64_t *element_data_offset" "libfdata_list_element_t **element" "libfdata_error_t **error"
+.Fo libfdata_list_get_list_element_at_offset
+.Fa "libfdata_list_t *list"
+.Fa "off64_t offset"
+.Fa "int *element_index"
+.Fa "off64_t *element_data_offset"
+.Fa "libfdata_list_element_t **element"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_element_at_offset "libfdata_list_t *list" "off64_t offset" "int *element_index" "off64_t *element_data_offset" "int *element_file_index" "off64_t *element_offset" "size64_t *element_size" "uint32_t *element_flags" "libfdata_error_t **error"
+.Fo libfdata_list_get_element_at_offset
+.Fa "libfdata_list_t *list"
+.Fa "off64_t offset"
+.Fa "int *element_index"
+.Fa "off64_t *element_data_offset"
+.Fa "int *element_file_index"
+.Fa "off64_t *element_offset"
+.Fa "size64_t *element_size"
+.Fa "uint32_t *element_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_element_value_by_index "libfdata_list_t *list" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "int element_index" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_list_get_element_value_by_index
+.Fa "libfdata_list_t *list"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "int element_index"
+.Fa "intptr_t **element_value"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_element_value_at_offset "libfdata_list_t *list" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "off64_t offset" "int *element_index" "off64_t *element_data_offset" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_list_get_element_value_at_offset
+.Fa "libfdata_list_t *list"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "off64_t offset"
+.Fa "int *element_index"
+.Fa "off64_t *element_data_offset"
+.Fa "intptr_t **element_value"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_set_element_value_by_index "libfdata_list_t *list" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "int element_index" "intptr_t *element_value" "int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error )" "uint8_t write_flags" "libfdata_error_t **error"
+.Fo libfdata_list_set_element_value_by_index
+.Fa "libfdata_list_t *list"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "int element_index"
+.Fa "intptr_t *element_value"
+.Fa "int (*free_element_value)( intptr_t **element_value, \
+libfdata_error_t **error )"
+.Fa "uint8_t write_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_set_element_value_at_offset "libfdata_list_t *list" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "off64_t offset" "intptr_t *element_value" "int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error )" "uint8_t write_flags" "libfdata_error_t **error"
+.Fo libfdata_list_set_element_value_at_offset
+.Fa "libfdata_list_t *list"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "off64_t offset"
+.Fa "intptr_t *element_value"
+.Fa "int (*free_element_value)( intptr_t **element_value, \
+libfdata_error_t **error )"
+.Fa "uint8_t write_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_get_size "libfdata_list_t *list" "size64_t *size" "libfdata_error_t **error"
+.Fo libfdata_list_get_size
+.Fa "libfdata_list_t *list"
+.Fa "size64_t *size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Pp
 List element functions
+.nf
 .Ft int
-.Fn libfdata_list_element_get_element_index "libfdata_list_element_t *element" "int *element_index" "libfdata_error_t **error"
+.Fo libfdata_list_element_get_element_index
+.Fa "libfdata_list_element_t *element"
+.Fa "int *element_index"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_element_get_data_range "libfdata_list_element_t *element" "int *file_index" "off64_t *offset" "size64_t *size" "uint32_t *flags" "libfdata_error_t **error"
+.Fo libfdata_list_element_get_data_range
+.Fa "libfdata_list_element_t *element"
+.Fa "int *file_index"
+.Fa "off64_t *offset"
+.Fa "size64_t *size"
+.Fa "uint32_t *flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_element_get_mapped_size "libfdata_list_element_t *element" "size64_t *mapped_size" "libfdata_error_t **error"
+.Fo libfdata_list_element_get_mapped_size
+.Fa "libfdata_list_element_t *element"
+.Fa "size64_t *mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_element_set_mapped_size "libfdata_list_element_t *element" "size64_t mapped_size" "libfdata_error_t **error"
+.Fo libfdata_list_element_set_mapped_size
+.Fa "libfdata_list_element_t *element"
+.Fa "size64_t mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_element_get_element_value "libfdata_list_element_t *element" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_list_element_get_element_value
+.Fa "libfdata_list_element_t *element"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "intptr_t **element_value"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_list_element_set_element_value "libfdata_list_element_t *element" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "intptr_t *element_value" "int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error )" "uint8_t write_flags" "libfdata_error_t **error"
+.Fo libfdata_list_element_set_element_value
+.Fa "libfdata_list_element_t *element"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "intptr_t *element_value"
+.Fa "int (*free_element_value)( intptr_t **element_value, \
+libfdata_error_t **error )"
+.Fa "uint8_t write_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Pp
 Range list functions
+.nf
 .Ft int
-.Fn libfdata_range_list_initialize "libfdata_range_list_t **range_list" "intptr_t *data_handle" "int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error )" "int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error )" "int (*read_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, uint8_t read_flags, libfdata_error_t **error )" "int (*write_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_list_element_t *list_element, libfdata_cache_t *cache, int element_file_index, off64_t element_offset, size64_t element_size, uint32_t element_flags, uint8_t write_flags, libfdata_error_t **error )" "uint8_t flags" "libfdata_error_t **error"
+.Fo libfdata_range_list_initialize
+.Fa "libfdata_range_list_t **range_list"
+.Fa "intptr_t *data_handle"
+.Fa "int (*free_data_handle)( intptr_t **data_handle, \
+libfdata_error_t **error )"
+.Fa "int (*clone_data_handle)( intptr_t **destination_data_handle, \
+intptr_t *source_data_handle, libfdata_error_t **error )"
+.Fa "int (*read_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_list_element_t *list_element, \
+libfdata_cache_t *cache, int element_file_index, off64_t element_offset, \
+size64_t element_size, uint32_t element_flags, uint8_t read_flags, \
+libfdata_error_t **error )"
+.Fa "int (*write_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_list_element_t *list_element, \
+libfdata_cache_t *cache, int element_file_index, off64_t element_offset, \
+size64_t element_size, uint32_t element_flags, uint8_t write_flags, \
+libfdata_error_t **error )"
+.Fa "uint8_t flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_free "libfdata_range_list_t **range_list" "libfdata_error_t **error"
+.Fo libfdata_range_list_free
+.Fa "libfdata_range_list_t **range_list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_clone "libfdata_range_list_t **destination_range_list" "libfdata_range_list_t *source_range_list" "libfdata_error_t **error"
+.Fo libfdata_range_list_clone
+.Fa "libfdata_range_list_t **destination_range_list"
+.Fa "libfdata_range_list_t *source_range_list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_empty "libfdata_range_list_t *range_list" "libfdata_error_t **error"
+.Fo libfdata_range_list_empty
+.Fa "libfdata_range_list_t *range_list"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_get_list_element_at_offset "libfdata_range_list_t *range_list" "off64_t offset" "off64_t *element_data_offset" "libfdata_list_element_t **element" "libfdata_error_t **error"
+.Fo libfdata_range_list_get_list_element_at_offset
+.Fa "libfdata_range_list_t *range_list"
+.Fa "off64_t offset"
+.Fa "off64_t *element_data_offset"
+.Fa "libfdata_list_element_t **element"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_get_element_at_offset "libfdata_range_list_t *range_list" "off64_t offset" "off64_t *element_data_offset" "int *element_file_index" "off64_t *element_offset" "size64_t *element_size" "uint32_t *element_flags" "libfdata_error_t **error"
+.Fo libfdata_range_list_get_element_at_offset
+.Fa "libfdata_range_list_t *range_list"
+.Fa "off64_t offset"
+.Fa "off64_t *element_data_offset"
+.Fa "int *element_file_index"
+.Fa "off64_t *element_offset"
+.Fa "size64_t *element_size"
+.Fa "uint32_t *element_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_insert_element "libfdata_range_list_t *range_list" "off64_t offset" "size64_t size" "int element_file_index" "off64_t element_offset" "size64_t element_size" "uint32_t element_flags" "libfdata_error_t **error"
+.Fo libfdata_range_list_insert_element
+.Fa "libfdata_range_list_t *range_list"
+.Fa "off64_t offset"
+.Fa "size64_t size"
+.Fa "int element_file_index"
+.Fa "off64_t element_offset"
+.Fa "size64_t element_size"
+.Fa "uint32_t element_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_get_element_value_at_offset "libfdata_range_list_t *range_list" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "off64_t offset" "off64_t *element_data_offset" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_range_list_get_element_value_at_offset
+.Fa "libfdata_range_list_t *range_list"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "off64_t offset"
+.Fa "off64_t *element_data_offset"
+.Fa "intptr_t **element_value"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_range_list_set_element_value_at_offset "libfdata_range_list_t *range_list" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "off64_t offset" "intptr_t *element_value" "int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error )" "uint8_t write_flags" "libfdata_error_t **error"
+.Fo libfdata_range_list_set_element_value_at_offset
+.Fa "libfdata_range_list_t *range_list"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "off64_t offset"
+.Fa "intptr_t *element_value"
+.Fa "int (*free_element_value)( intptr_t **element_value, \
+libfdata_error_t **error )"
+.Fa "uint8_t write_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Pp
 Stream functions
+.nf
 .Ft int
-.Fn libfdata_stream_initialize "libfdata_stream_t **stream" "intptr_t *data_handle" "int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error )" "int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error )" "int (*create_segment)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int *segment_file_index, off64_t *segment_offset, size64_t *segment_size, uint32_t *segment_flags, libfdata_error_t **error )" "ssize_t (*read_segment_data)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int segment_file_index, uint8_t *segment_data, size_t segment_data_size, uint32_t segment_flags, uint8_t read_flags, libfdata_error_t **error )" "ssize_t (*write_segment_data)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int segment_file_index, const uint8_t *segment_data, size_t segment_data_size, uint32_t segment_flags, uint8_t write_flags, libfdata_error_t **error )" "off64_t (*seek_segment_offset)( intptr_t *data_handle, intptr_t *file_io_handle, int segment_index, int segment_file_index, off64_t segment_offset, libfdata_error_t **error )" "uint8_t flags" "libfdata_error_t **error"
+.Fo libfdata_stream_initialize
+.Fa "libfdata_stream_t **stream"
+.Fa "intptr_t *data_handle"
+.Fa "int (*free_data_handle)( intptr_t **data_handle, \
+libfdata_error_t **error )"
+.Fa "int (*clone_data_handle)( intptr_t **destination_data_handle, \
+intptr_t *source_data_handle, libfdata_error_t **error )"
+.Fa "int (*create_segment)( intptr_t *data_handle, \
+intptr_t *file_io_handle, int segment_index, int *segment_file_index, \
+off64_t *segment_offset, size64_t *segment_size, uint32_t *segment_flags, \
+libfdata_error_t **error )"
+.Fa "ssize_t (*read_segment_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, int segment_index, int segment_file_index, \
+uint8_t *segment_data, size_t segment_data_size, uint32_t segment_flags, \
+uint8_t read_flags, libfdata_error_t **error )"
+.Fa "ssize_t (*write_segment_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, int segment_index, int segment_file_index, \
+const uint8_t *segment_data, size_t segment_data_size, uint32_t segment_flags, \
+uint8_t write_flags, libfdata_error_t **error )"
+.Fa "off64_t (*seek_segment_offset)( intptr_t *data_handle, \
+intptr_t *file_io_handle, int segment_index, int segment_file_index, \
+off64_t segment_offset, libfdata_error_t **error )"
+.Fa "uint8_t flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_free "libfdata_stream_t **stream" "libfdata_error_t **error"
+.Fo libfdata_stream_free
+.Fa "libfdata_stream_t **stream"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_clone "libfdata_stream_t **destination_stream" "libfdata_stream_t *source_stream" "libfdata_error_t **error"
+.Fo libfdata_stream_clone
+.Fa "libfdata_stream_t **destination_stream"
+.Fa "libfdata_stream_t *source_stream"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_empty "libfdata_stream_t *stream" "libfdata_error_t **error"
+.Fo libfdata_stream_empty
+.Fa "libfdata_stream_t *stream"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_resize "libfdata_stream_t *stream" "int number_of_segments" "libfdata_error_t **error"
+.Fo libfdata_stream_resize
+.Fa "libfdata_stream_t *stream"
+.Fa "int number_of_segments"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_reverse "libfdata_stream_t *stream" "libfdata_error_t **error"
+.Fo libfdata_stream_reverse
+.Fa "libfdata_stream_t *stream"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_get_number_of_segments "libfdata_stream_t *stream" "int *number_of_segments" "libfdata_error_t **error"
+.Fo libfdata_stream_get_number_of_segments
+.Fa "libfdata_stream_t *stream"
+.Fa "int *number_of_segments"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_get_segment_by_index "libfdata_stream_t *stream" "int segment_index" "int *segment_file_index" "off64_t *segment_offset" "size64_t *segment_size" "uint32_t *segment_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_get_segment_by_index
+.Fa "libfdata_stream_t *stream"
+.Fa "int segment_index"
+.Fa "int *segment_file_index"
+.Fa "off64_t *segment_offset"
+.Fa "size64_t *segment_size"
+.Fa "uint32_t *segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_set_segment_by_index "libfdata_stream_t *stream" "int segment_index" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_set_segment_by_index
+.Fa "libfdata_stream_t *stream"
+.Fa "int segment_index"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_prepend_segment "libfdata_stream_t *stream" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_prepend_segment
+.Fa "libfdata_stream_t *stream"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_append_segment "libfdata_stream_t *stream" "int *segment_index" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_append_segment
+.Fa "libfdata_stream_t *stream"
+.Fa "int *segment_index"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_set_mapped_size "libfdata_stream_t *stream" "size64_t mapped_size" "libfdata_error_t **error"
+.Fo libfdata_stream_set_mapped_size
+.Fa "libfdata_stream_t *stream"
+.Fa "size64_t mapped_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_get_segment_mapped_range "libfdata_stream_t *stream" "int segment_index" "off64_t *mapped_range_offset" "size64_t *mapped_range_size" "libfdata_error_t **error"
+.Fo libfdata_stream_get_segment_mapped_range
+.Fa "libfdata_stream_t *stream"
+.Fa "int segment_index"
+.Fa "off64_t *mapped_range_offset"
+.Fa "size64_t *mapped_range_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_get_segment_index_at_offset "libfdata_stream_t *stream" "off64_t data_offset" "int *segment_index" "off64_t *segment_data_offset" "libfdata_error_t **error"
+.Fo libfdata_stream_get_segment_index_at_offset
+.Fa "libfdata_stream_t *stream"
+.Fa "off64_t data_offset"
+.Fa "int *segment_index"
+.Fa "off64_t *segment_data_offset"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_get_segment_at_offset "libfdata_stream_t *stream" "off64_t offset" "int *segment_index" "off64_t *segment_data_offset" "int *segment_file_index" "off64_t *segment_offset" "size64_t *segment_size" "uint32_t *segment_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_get_segment_at_offset
+.Fa "libfdata_stream_t *stream"
+.Fa "off64_t offset"
+.Fa "int *segment_index"
+.Fa "off64_t *segment_data_offset"
+.Fa "int *segment_file_index"
+.Fa "off64_t *segment_offset"
+.Fa "size64_t *segment_size"
+.Fa "uint32_t *segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft ssize_t
-.Fn libfdata_stream_read_buffer "libfdata_stream_t *stream" "intptr_t *file_io_handle" "uint8_t *buffer" "size_t buffer_size" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_read_buffer
+.Fa "libfdata_stream_t *stream"
+.Fa "intptr_t *file_io_handle"
+.Fa "uint8_t *buffer"
+.Fa "size_t buffer_size"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft ssize_t
-.Fn libfdata_stream_read_buffer_at_offset "libfdata_stream_t *stream" "intptr_t *file_io_handle" "uint8_t *buffer" "size_t buffer_size" "off64_t offset" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_read_buffer_at_offset
+.Fa "libfdata_stream_t *stream"
+.Fa "intptr_t *file_io_handle"
+.Fa "uint8_t *buffer"
+.Fa "size_t buffer_size"
+.Fa "off64_t offset"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft ssize_t
-.Fn libfdata_stream_write_buffer "libfdata_stream_t *stream" "intptr_t *file_io_handle" "const uint8_t *buffer" "size_t buffer_size" "uint8_t write_flags" "libfdata_error_t **error"
+.Fo libfdata_stream_write_buffer
+.Fa "libfdata_stream_t *stream"
+.Fa "intptr_t *file_io_handle"
+.Fa "const uint8_t *buffer"
+.Fa "size_t buffer_size"
+.Fa "uint8_t write_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft off64_t
-.Fn libfdata_stream_seek_offset "libfdata_stream_t *stream" "off64_t offset" "int whence" "libfdata_error_t **error"
+.Fo libfdata_stream_seek_offset
+.Fa "libfdata_stream_t *stream"
+.Fa "off64_t offset"
+.Fa "int whence"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_get_offset "libfdata_stream_t *stream" "off64_t *offset" "libfdata_error_t **error"
+.Fo libfdata_stream_get_offset
+.Fa "libfdata_stream_t *stream"
+.Fa "off64_t *offset"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_stream_get_size "libfdata_stream_t *stream" "size64_t *size" "libfdata_error_t **error"
+.Fo libfdata_stream_get_size
+.Fa "libfdata_stream_t *stream"
+.Fa "size64_t *size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Pp
 Vector functions
+.nf
 .Ft int
-.Fn libfdata_vector_initialize "libfdata_vector_t **vector" "size64_t element_data_size" "intptr_t *data_handle" "int (*free_data_handle)( intptr_t **data_handle, libfdata_error_t **error )" "int (*clone_data_handle)( intptr_t **destination_data_handle, intptr_t *source_data_handle, libfdata_error_t **error )" "int (*read_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_vector_t *vector, libfdata_cache_t *cache, int element_index, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t read_flags, libfdata_error_t **error )" "int (*write_element_data)( intptr_t *data_handle, intptr_t *file_io_handle, libfdata_vector_t *vector, libfdata_cache_t *cache, int element_index, int element_data_file_index, off64_t element_data_offset, size64_t element_data_size, uint32_t element_data_flags, uint8_t write_flags, libfdata_error_t **error )" "uint8_t flags" "libfdata_error_t **error"
+.Fo libfdata_vector_initialize
+.Fa "libfdata_vector_t **vector"
+.Fa "size64_t element_data_size"
+.Fa "intptr_t *data_handle"
+.Fa "int (*free_data_handle)( intptr_t **data_handle, \
+libfdata_error_t **error )"
+.Fa "int (*clone_data_handle)( intptr_t **destination_data_handle, \
+intptr_t *source_data_handle, libfdata_error_t **error )"
+.Fa "int (*read_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_vector_t *vector, libfdata_cache_t *cache, \
+int element_index, int element_data_file_index, off64_t element_data_offset, \
+size64_t element_data_size, uint32_t element_data_flags, uint8_t read_flags, \
+libfdata_error_t **error )"
+.Fa "int (*write_element_data)( intptr_t *data_handle, \
+intptr_t *file_io_handle, libfdata_vector_t *vector, libfdata_cache_t *cache, \
+int element_index, int element_data_file_index, off64_t element_data_offset, \
+size64_t element_data_size, uint32_t element_data_flags, uint8_t write_flags, \
+libfdata_error_t **error )"
+.Fa "uint8_t flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_free "libfdata_vector_t **vector" "libfdata_error_t **error"
+.Fo libfdata_vector_free
+.Fa "libfdata_vector_t **vector"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_clone "libfdata_vector_t **destination_vector" "libfdata_vector_t *source_vector" "libfdata_error_t **error"
+.Fo libfdata_vector_clone
+.Fa "libfdata_vector_t **destination_vector"
+.Fa "libfdata_vector_t *source_vector"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_empty "libfdata_vector_t *vector" "libfdata_error_t **error"
+.Fo libfdata_vector_empty
+.Fa "libfdata_vector_t *vector"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_resize "libfdata_vector_t *vector" "int number_of_segments" "libfdata_error_t **error"
+.Fo libfdata_vector_resize
+.Fa "libfdata_vector_t *vector"
+.Fa "int number_of_segments"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_number_of_segments "libfdata_vector_t *vector" "int *number_of_segments" "libfdata_error_t **error"
+.Fo libfdata_vector_get_number_of_segments
+.Fa "libfdata_vector_t *vector"
+.Fa "int *number_of_segments"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_segment_by_index "libfdata_vector_t *vector" "int segment_index" "int *segment_file_index" "off64_t *segment_offset" "size64_t *segment_size" "uint32_t *segment_flags" "libfdata_error_t **error"
+.Fo libfdata_vector_get_segment_by_index
+.Fa "libfdata_vector_t *vector"
+.Fa "int segment_index"
+.Fa "int *segment_file_index"
+.Fa "off64_t *segment_offset"
+.Fa "size64_t *segment_size"
+.Fa "uint32_t *segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_set_segment_by_index "libfdata_vector_t *vector" "int segment_index" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_vector_set_segment_by_index
+.Fa "libfdata_vector_t *vector"
+.Fa "int segment_index"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_prepend_segment "libfdata_vector_t *vector" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_vector_prepend_segment
+.Fa "libfdata_vector_t *vector"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_append_segment "libfdata_vector_t *vector" "int *segment_index" "int segment_file_index" "off64_t segment_offset" "size64_t segment_size" "uint32_t segment_flags" "libfdata_error_t **error"
+.Fo libfdata_vector_append_segment
+.Fa "libfdata_vector_t *vector"
+.Fa "int *segment_index"
+.Fa "int segment_file_index"
+.Fa "off64_t segment_offset"
+.Fa "size64_t segment_size"
+.Fa "uint32_t segment_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_element_data_size "libfdata_vector_t *vector" "size64_t *element_data_size" "libfdata_error_t **error"
+.Fo libfdata_vector_get_element_data_size
+.Fa "libfdata_vector_t *vector"
+.Fa "size64_t *element_data_size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_number_of_elements "libfdata_vector_t *vector" "int *number_of_elements" "libfdata_error_t **error"
+.Fo libfdata_vector_get_number_of_elements
+.Fa "libfdata_vector_t *vector"
+.Fa "int *number_of_elements"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_element_index_at_offset "libfdata_vector_t *vector" "off64_t element_value_offset" "int *element_index" "off64_t *element_data_offset" "libfdata_error_t **error"
+.Fo libfdata_vector_get_element_index_at_offset
+.Fa "libfdata_vector_t *vector"
+.Fa "off64_t element_value_offset"
+.Fa "int *element_index"
+.Fa "off64_t *element_data_offset"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_element_value_by_index "libfdata_vector_t *vector" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "int element_index" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_vector_get_element_value_by_index
+.Fa "libfdata_vector_t *vector"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "int element_index"
+.Fa "intptr_t **element_value"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_element_value_at_offset "libfdata_vector_t *vector" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "off64_t element_value_offset" "off64_t *element_data_offset" "intptr_t **element_value" "uint8_t read_flags" "libfdata_error_t **error"
+.Fo libfdata_vector_get_element_value_at_offset
+.Fa "libfdata_vector_t *vector"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "off64_t element_value_offset"
+.Fa "off64_t *element_data_offset"
+.Fa "intptr_t **element_value"
+.Fa "uint8_t read_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_set_element_value_by_index "libfdata_vector_t *vector" "intptr_t *file_io_handle" "libfdata_cache_t *cache" "int element_index" "intptr_t *element_value" "int (*free_element_value)( intptr_t **element_value, libfdata_error_t **error )" "uint8_t write_flags" "libfdata_error_t **error"
+.Fo libfdata_vector_set_element_value_by_index
+.Fa "libfdata_vector_t *vector"
+.Fa "intptr_t *file_io_handle"
+.Fa "libfdata_cache_t *cache"
+.Fa "int element_index"
+.Fa "intptr_t *element_value"
+.Fa "int (*free_element_value)( intptr_t **element_value, \
+libfdata_error_t **error )"
+.Fa "uint8_t write_flags"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libfdata_vector_get_size "libfdata_vector_t *vector" "size64_t *size" "libfdata_error_t **error"
+.Fo libfdata_vector_get_size
+.Fa "libfdata_vector_t *vector"
+.Fa "size64_t *size"
+.Fa "libfdata_error_t **error"
+.Fc
+.fi
 .Sh DESCRIPTION
 The
 .Fn libfdata_get_version
 function is used to retrieve the library version.
 .Sh RETURN VALUES
-Most of the functions return NULL or \-1 on error, dependent on the return type.
-For the actual return values see "libfdata.h".
+Most of the functions return NULL or \-1 on error, dependent on the return \
+type.
+For the actual return values see
+.In libfdata.h .
 .Sh ENVIRONMENT
 None
 .Sh FILES
 None
+.Sh SEE ALSO
+.In libfdata.h
+.Sh AUTHORS
+.An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS
-Please report bugs of any kind on the project issue tracker: https://github.com/libyal/libfdata/issues
-.Sh AUTHOR
-These man pages are generated from "libfdata.h".
+Please report bugs of any kind on the project issue tracker: \
+https://github.com/libyal/libfdata/issues
 .Sh COPYRIGHT
 Copyright (C) 2010-2026, Joachim Metz <joachim.metz@gmail.com>.
 .sp
 This is free software; see the source for copying conditions.
-There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-.Sh SEE ALSO
-the libfdata.h include file
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.
