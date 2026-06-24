@@ -2,7 +2,7 @@ man_MANS = \
 	libfdata.3
 
 EXTRA_DIST = \
-	libfdata.3
+	$(man_MANS)
 
 DISTCLEANFILES = \
 	Makefile \
